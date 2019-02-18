@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += core network
 
 QT       -= gui
 
@@ -15,4 +15,16 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    threadspi.cpp \
+    threadspioled.cpp \
+    objbase.cpp \
+    objoled.cpp \
+    objfb.cpp
+
+HEADERS += \
+    threadspi.h \
+    threadspioled.h \
+    objbase.h \
+    objoled.h \
+    objfb.h
