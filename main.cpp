@@ -8,6 +8,7 @@
 
 void testGBK()
 {
+    QString stra="啊";
 
 }
 
