@@ -46,7 +46,7 @@ public:
 signals:
 
 public slots:
-    void slotKey(int);
+    virtual void slotKey(int);
 
 };
 

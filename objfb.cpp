@@ -633,6 +633,7 @@ void objFB::show0001()
 
 void objFB::slotKey(int)
 {
+#if 0
     if(0==m_nPage){
         show0001();
         m_nPage = 1;
@@ -641,6 +642,9 @@ void objFB::slotKey(int)
         show0000();
         m_nPage=0;
     }
+#endif
+    //QKeyEvent *ev=new QKeyEvent(QEvent::KeyPress,Qt::Key_Down,Qt::NoModifier);
+
 }
 
 

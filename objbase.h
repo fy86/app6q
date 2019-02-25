@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTextCodec>
+#include <QtGui/QKeyEvent>
 
 class objBase : public QObject
 {

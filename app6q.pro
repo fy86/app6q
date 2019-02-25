@@ -6,7 +6,7 @@
 
 QT       += core network
 
-QT       -= gui
+#QT       -= gui
 
 TARGET = app6q
 CONFIG   += console
@@ -22,7 +22,10 @@ SOURCES += main.cpp \
     objoled.cpp \
     objfb.cpp \
     threadkey.cpp \
-    objpage.cpp
+    objpage.cpp \
+    objui.cpp \
+    keytransition.cpp \
+    kt0000.cpp
 
 HEADERS += \
     threadspi.h \
@@ -31,4 +34,7 @@ HEADERS += \
     objoled.h \
     objfb.h \
     threadkey.h \
-    objpage.h
+    objpage.h \
+    objui.h \
+    keytransition.h \
+    kt0000.h

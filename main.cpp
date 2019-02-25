@@ -6,6 +6,8 @@
 #include <threadspi.h>
 #include <threadkey.h>
 
+#include "objui.h"
+
 void testGBK()
 {
     QString stra="啊a";
@@ -28,7 +30,9 @@ int main(int argc, char *argv[])
     threadSPI threadspi;
     threadkey key0;
     threadkey key1;
-    objFB fb;
+    //objFB fb;
+
+    objui fb;
 
     QObject::connect(&fb,SIGNAL(sigFlush()),&threadspi,SLOT(slotSend()));
     QObject::connect(&fb,SIGNAL(sigQ2(char,char)),&threadspi,SLOT(slotSend2(char,char)));
@@ -52,7 +56,8 @@ int main(int argc, char *argv[])
     //fb.testbase();
     //fb.strXY(QString("啊在上面的搜索框"),20,20);
 
-    fb.show0001();
+    //fb.show0001();
+    fb.buildMachine();
 
     return a.exec();
 }

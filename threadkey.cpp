@@ -25,7 +25,7 @@ void threadkey::run()
         ret = read(m_fd,&ev,len);
         if(ret!=len)continue;
         if(ev.type==EV_KEY && ev.value==1){   // value.1.press   value.0.release  value.2.repeat
-#if 0
+#if 1
             switch(ev.code){
             case KEY_LEFT:
                 qDebug("key left : %d",ev.code);
