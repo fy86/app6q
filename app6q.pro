@@ -20,11 +20,15 @@ SOURCES += main.cpp \
     threadspioled.cpp \
     objbase.cpp \
     objoled.cpp \
-    objfb.cpp
+    objfb.cpp \
+    threadkey.cpp \
+    objpage.cpp
 
 HEADERS += \
     threadspi.h \
     threadspioled.h \
     objbase.h \
     objoled.h \
-    objfb.h
+    objfb.h \
+    threadkey.h \
+    objpage.h

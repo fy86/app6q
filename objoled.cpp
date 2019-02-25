@@ -319,4 +319,6 @@ void objOled::OLED_Init()
 
         Set_Display_On_Off(0xAF);		// Display On (0xAE/0xAF)
 
+        emit sigFlush();
+
 }
