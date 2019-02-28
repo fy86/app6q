@@ -44,7 +44,8 @@ protected:
             return key == Qt::Key_Down
                     || key==Qt::Key_Right
                     || key == Qt::Key_Up
-                    || key == Qt::Key_Left;
+                    || key == Qt::Key_Left
+                    || key == Qt::Key_Enter;
         }
         return false;
     }
@@ -64,6 +65,9 @@ protected:
             case Qt::Key_Down:
                 //qDebug("   ket00 down");
                 m_pui->slotStateTransitionDown();
+                break;
+            case Qt::Key_Enter:
+                m_pui->slotStateTransitionEnter();
                 break;
             default:
                 break;
@@ -235,6 +239,84 @@ private:
     objui *m_pui;
 
 };
+
+///////////// menu login    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+class ketMenu10 : public QEventTransition
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketMenu10(objui *obj):QEventTransition(obj,QEvent::KeyPress){
+        m_pui = obj;
+
+    }
+
+protected:
+    bool eventTest(QEvent *event) {
+        //qDebug("  ketMenu00 event all %d",event->type());
+        if (event->type() == QEvent::StateMachineWrapped &&
+            static_cast<QStateMachine::WrappedEvent *>(event)->event()->type() == QEvent::KeyPress) {
+            QEvent *wrappedEvent = static_cast<QStateMachine::WrappedEvent *>(event)->event();
+
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(wrappedEvent);
+            int key = keyEvent->key();
+
+            //qDebug(" ketMenu00 keypress");
+            return key == Qt::Key_Down
+                    || key==Qt::Key_Right
+                    || key == Qt::Key_Up
+                    || key == Qt::Key_Left
+                    || key == Qt::Key_Enter
+                    || key == Qt::Key_Backspace;
+        }
+        else if (event->type() == QEvent::KeyPress) {
+
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+            int key = keyEvent->key();
+
+            //qDebug(" ketMenu00 keypress  2222  key:%d",key);
+            //return true;
+            return key == Qt::Key_Down
+                    || key==Qt::Key_Right
+                    || key == Qt::Key_Up
+                    || key == Qt::Key_Left
+                    || key == Qt::Key_Enter
+                    || key == Qt::Key_Backspace;
+        }
+        return false;
+    }
+
+    void onTransition(QEvent *event) {
+        //QKeyEvent *keyEvent = static_cast<QKeyEvent *>(
+            //static_cast<QStateMachine::WrappedEvent *>(event)->event());
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+
+        int key = keyEvent->key();
+        switch (key) {
+        case Qt::Key_Backspace:
+            m_pui->slotStateTransitionBackspace(); break;
+        case Qt::Key_Enter:
+            m_pui->doMenu10();break;
+        case Qt::Key_Up:
+            m_pui->changeSelectMenu10(-1);break;
+        case Qt::Key_Down:
+            m_pui->changeSelectMenu10(-1);break;
+        default: break;
+        }
+    }
+
+
+signals:
+
+public slots:
+
+private:
+    objui *m_pui;
+
+};
+
 
 
 #endif // KETMENU00_H

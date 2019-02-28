@@ -27,12 +27,17 @@ public:
     QState *m_pStateMenu00;
     QState *m_pStateMenu01;
     QState *m_pStateMenu02;
+
     QState *m_pStateMenu10;
     QState *m_pStateMenu11;
 
     void buildMachine();
     void initMachine();
 
+    void getColorMenu10(int n,int *pc,int *pbg);
+
+    void doMenu10();
+    void changeSelectMenu10(int step);
 signals:
 
     void sigStateTransitionUp();
@@ -41,6 +46,8 @@ signals:
     void sigStateTransitionRight();
     void sigStateTransitionEnter();
     void sigStateTransitionBackspace();
+    //void sigStateTransitionUp();
+    //void sigStateTransitionUp();
 
     void sig0000();
     void sigKeyEnter();
@@ -72,6 +79,7 @@ public slots:
     void slotShowMenu10();
     void slotShowMenu11();
     void slotShowMenu12();
+
 };
 
 #endif // OBJUI_H

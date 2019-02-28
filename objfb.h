@@ -33,12 +33,12 @@ public:
     void demo16();
     void zeroFB(char f);
     void showHZdemo();
-    void showHZ16(char *p,int x,int y,int color=0x0f);
-    void show8x12(char ch,int x,int y,int color=0x0f);
-    void show8x16(char ch,int x,int y,int color=0x0f);
+    void showHZ16(char *p,int x,int y,int color=0x0f,int bg=0);
+    void show8x12(char ch,int x,int y,int color=0x0f,int bg=0);
+    void show8x16(char ch,int x,int y,int color=0x0f,int bg=0);
 
-    void centerXY(QString str,int left,int top,int w,int h,int hc,int vc,int color=0x0f);
-    void strXY(QString str,int x,int y,int color=0x0f);
+    void centerXY(QString str,int left,int top,int w,int h,int hc,int vc,int color=0x0f,int bg=0);
+    void strXY(QString str,int x,int y,int color=0x0f,int bg=0);
     void show0000();
     void show0001();
 

@@ -16,16 +16,22 @@ void objui::initMachine()
     m_pStateMenu01 = new QState(m_pMachine);
     m_pStateMenu02 = new QState(m_pMachine);
 
+    m_pStateMenu10 = new QState(m_pMachine);// p2p and central
+    m_pStateMenu11 = new QState(m_pMachine);//
+
     m_pMachine->setInitialState(m_pStateMenu00);
 
     connect(m_pStateMenu00,SIGNAL(entered()),this,SLOT(slotShowMenu00()));
     connect(m_pStateMenu01,SIGNAL(entered()),this,SLOT(slotShowMenu01()));
     connect(m_pStateMenu02,SIGNAL(entered()),this,SLOT(slotShowMenu02()));
 
+    connect(m_pStateMenu10,SIGNAL(entered()),this,SLOT(slotShowMenu10()));
+
     ketMenu00 *pKetMenu00 = new ketMenu00(this);
     m_pStateMenu00->addTransition(pKetMenu00);
     m_pStateMenu00->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenu01);
     m_pStateMenu00->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenu02);
+    m_pStateMenu00->addTransition(this,SIGNAL(sigStateTransitionEnter()),m_pStateMenu10);
     ketMenu01 *pKetMenu01 = new ketMenu01(this);
     m_pStateMenu01->addTransition(pKetMenu01);
     m_pStateMenu01->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenu02);
@@ -34,6 +40,9 @@ void objui::initMachine()
     m_pStateMenu02->addTransition(pKetMenu02);
     m_pStateMenu02->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenu00);
     m_pStateMenu02->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenu01);
+    ketMenu10 *pKetMenu10 = new ketMenu10(this);
+    m_pStateMenu10->addTransition(pKetMenu10);
+    m_pStateMenu10->addTransition(this,SIGNAL(sigStateTransitionBackspace()),m_pStateMenu00);
 
     m_pMachine->start();
 }
@@ -207,20 +216,92 @@ void objui::slot0000()
 {
     emit sig0000();
 }
-// p2p connect
+void objui::getColorMenu10(int n, int *pc, int *pbg)
+{
+    if(n==m_nSelectMenu10){
+        *pc=0;*pbg=0x0f;
+    }
+    else{
+        if(m_bEnableMenu10[n]){
+            *pc=0x0f,*pbg=0;
+        }
+        else{
+            *pc=1,*pbg=0;
+        }
+    }
+}
+
 void objui::slotShowMenu10()
 {
+    int c=0x0f,bg=0;
     zeroFB(0);
 
-    //centerXY(QString("hujiao/guaduan   挂断    呼叫"),0,0,256,16,1,1);
-    centerXY(QString("呼    叫"),0,0,256,64,1,1);
-    //centerXY(QString("挂    断"),0,0,256,64,1,1);
+    switch(m_workMode){
+    case work_mode_central:
+        getColorMenu10(0,&c,&bg);
+        centerXY(QString("呼    叫"),0,0,256,16,1,1,c,bg);
+
+        getColorMenu10(1,&c,&bg);
+        centerXY(QString("挂    断"),0,16,256,16,1,1,c,bg);
+
+        getColorMenu10(2,&c,&bg);
+        centerXY(QString("入    网"),0,32,256,16,1,1,c,bg);
+
+        getColorMenu10(3,&c,&bg);
+        centerXY(QString("退    网"),0,48,256,16,1,1,c,bg);
+
+        break;
+    case work_mode_p2p:
+        if(m_bStatConnect){
+            centerXY(QString("呼    叫"),0,8,256,16,1,1,1);
+            centerXY(QString("挂    断"),0,32,256,16,1,1,0,0x0f);
+        }
+        else{
+            centerXY(QString("呼    叫"),0,8,256,16,1,1,0,0x0f);
+            centerXY(QString("挂    断"),0,32,256,16,1,1,1);
+        }
+        break;
+    default:
+        break;
+    }
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
     emit sigFlush();
 
 }
+void objui::changeSelectMenu10(int step)
+{
+    if(m_nSelectMenu10<0 || m_nSelectMenu10>3)m_nSelectMenu10=0;
+    for(;;){
+        m_nSelectMenu10 = (m_nSelectMenu10+step) & 0x3;
+        if(m_bEnableMenu10[m_nSelectMenu10]) break;
+    }
+    slotShowMenu10();
+}
+
+void objui::doMenu10()
+{
+    if(work_mode_central == m_workMode){
+    switch(m_nSelectMenu10){
+    case 0:
+        m_bStatConnect=true;
+        break;
+    case 1:
+        m_bStatConnect = false;
+        break;
+    case 2:
+        m_bStatLogin=true;break;
+    case 3:
+        m_bStatLogin=false;break;
+    default:
+        break;
+    }
+    setSelectMenu10();
+    slotShowMenu10();
+    }
+}
+
 //
 void objui::slotShowMenu11()
 {

@@ -321,24 +321,24 @@ void objFB::demo16()
     showHZdemo();
 
 }
-void objFB::show8x16(char ch, int x, int y,int color)
+void objFB::show8x16(char ch, int x, int y,int color,int bg)
 {
     int i,j;
 
     for(i=0;i<2;i++){
         for(j=0;j<8;j++){
-            draw1(x+j,y+i,~color);
+            draw1(x+j,y+i,bg);
         }
     }
     for(i=14;i<16;i++){
         for(j=0;j<8;j++){
-            draw1(x+j,y+i,~color);
+            draw1(x+j,y+i,bg);
         }
     }
-    show8x12(ch,x,y+2,color);
+    show8x12(ch,x,y+2,color,bg);
 
 }
-void objFB::show8x12(char ch, int x, int y,int color)
+void objFB::show8x12(char ch, int x, int y,int color,int bg)
 {
     int offset;
     offset =(0x0ff & ch) * 12;
@@ -353,12 +353,12 @@ void objFB::show8x12(char ch, int x, int y,int color)
         for(j=0;j<8;j++){
             m=1<<j;
             if(ch1 & m) draw1(x+j,y+i,color);
-            else draw1(x+j,y+i,~color);
+            else draw1(x+j,y+i,bg);
         }
     }
 }
 
-void objFB::showHZ16(char *p, int x, int y,int color)
+void objFB::showHZ16(char *p, int x, int y,int color,int bg)
 {
     char ch;
     int c1;
@@ -375,7 +375,7 @@ void objFB::showHZ16(char *p, int x, int y,int color)
                 if(c1)
                    draw1(x+(j<<3)+k,y+i,color);
                 else
-                   draw1(x+(j<<3)+k,y+i,~color);
+                   draw1(x+(j<<3)+k,y+i,bg);
             }
         }
     }
@@ -458,7 +458,7 @@ void objFB::draw1(int x, int y, int c)
 
 }
 // 0:left 1:center 2:left
-void objFB::centerXY(QString str, int left, int top, int w, int h, int hc, int vc,int color)
+void objFB::centerXY(QString str, int left, int top, int w, int h, int hc, int vc,int color,int bg)
 {
     QByteArray ba;
     int len;
@@ -498,10 +498,10 @@ void objFB::centerXY(QString str, int left, int top, int w, int h, int hc, int v
         break;
     }
     //qDebug(" certer x:%d y:%d    len.pixel:%d",x,y,len);
-    strXY(str,x,y,color);
+    strXY(str,x,y,color,bg);
 }
 
-void objFB::strXY(QString str, int x, int y,int color)
+void objFB::strXY(QString str, int x, int y,int color,int bg)
 {
     if(x<0)return;
     if(y<0)return;
@@ -511,7 +511,6 @@ void objFB::strXY(QString str, int x, int y,int color)
     int i,len;
     int qu,wei;
     int n=0;
-    char ch;
     int offset,x16=x;
     str2GBK(str,ba);
     len = ba.size();
@@ -529,13 +528,13 @@ void objFB::strXY(QString str, int x, int y,int color)
             else{
                 wei = (0x0ff & ba.at(i)) - 0x0a0;
                 offset = ((qu-1)*94+wei-1)<<5;
-                showHZ16(m_ba16.data()+offset,x16,y,color);
+                showHZ16(m_ba16.data()+offset,x16,y,color,bg);
                 x16+=16;
                 n=0;
             }
         }
         else{
-            show8x16(ba.at(i),x16,y,color);
+            show8x16(ba.at(i),x16,y,color,bg);
             n=0;
             x16+=8;
         }
@@ -661,7 +660,7 @@ void objFB::slotShowMenu00()
     //qDebug(" func slotShow.menu.00");
     zeroFB(0);
 
-    centerXY(QString("通  信  控  制"),0,0,256,16,1,1,0);
+    centerXY(QString("通  信  控  制"),0,0,256,16,1,1,0,0x0f);
     centerXY(QString("通  信  参  数"),0,24,256,16,1,1);
     centerXY(QString("工  作  模  式"),0,48,256,16,1,1);
 
@@ -676,7 +675,7 @@ void objFB::slotShowMenu01()
     zeroFB(0);
 
     centerXY(QString("通  信  控  制"),0,0,256,16,1,1);
-    centerXY(QString("通  信  参  数"),0,24,256,16,1,1,0);
+    centerXY(QString("通  信  参  数"),0,24,256,16,1,1,0,0x0f);
     centerXY(QString("工  作  模  式"),0,48,256,16,1,1);
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
@@ -691,7 +690,7 @@ void objFB::slotShowMenu02()
 
     centerXY(QString("通  信  控  制"),0,0,256,16,1,1);
     centerXY(QString("通  信  参  数"),0,24,256,16,1,1);
-    centerXY(QString("工  作  模  式"),0,48,256,16,1,1,0);
+    centerXY(QString("工  作  模  式"),0,48,256,16,1,1,0,0x0f);
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
