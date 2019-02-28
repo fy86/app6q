@@ -649,6 +649,12 @@ void objFB::slotKey(int)
     //QKeyEvent *ev=new QKeyEvent(QEvent::KeyPress,Qt::Key_Down,Qt::NoModifier);
 
 }
+void objFB::fillFlush()
+{
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+}
 
 void objFB::slotShowMenu00()
 {

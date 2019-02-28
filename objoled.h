@@ -59,6 +59,7 @@ signals:
     void sigFlush();
 
 public slots:
+    void slotFlush();// public sigFlush
 
 };
 

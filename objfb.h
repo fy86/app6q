@@ -42,6 +42,8 @@ public:
     void show0000();
     void show0001();
 
+    void fillFlush();
+
 signals:
 
 public slots:

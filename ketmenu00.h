@@ -29,9 +29,10 @@ protected:
             int key = keyEvent->key();
 
             //qDebug(" ketMenu00 keypress");
-            return key == Qt::Key_2 || key == Qt::Key_8 || key == Qt::Key_6 ||
-                   key == Qt::Key_4 || key == Qt::Key_Down || key == Qt::Key_Up ||
-                   key == Qt::Key_Right || key == Qt::Key_Left;
+            return key == Qt::Key_Down
+                    || key==Qt::Key_Right
+                    || key == Qt::Key_Up
+                    || key == Qt::Key_Left;
         }
         else if (event->type() == QEvent::KeyPress) {
 
@@ -57,11 +58,12 @@ protected:
         switch (key) {
             case Qt::Key_Left:
             case Qt::Key_Up:
-                m_pui->keMenu00to02();
+                m_pui->slotStateTransitionUp();
                 break;
             case Qt::Key_Right:
             case Qt::Key_Down:
-                m_pui->keMenu00to01();
+                //qDebug("   ket00 down");
+                m_pui->slotStateTransitionDown();
                 break;
             default:
                 break;
@@ -105,9 +107,10 @@ protected:
             int key = keyEvent->key();
 
             //qDebug(" ketMenu00 keypress");
-            return key == Qt::Key_2 || key == Qt::Key_8 || key == Qt::Key_6 ||
-                   key == Qt::Key_4 || key == Qt::Key_Down || key == Qt::Key_Up ||
-                   key == Qt::Key_Right || key == Qt::Key_Left;
+            return key == Qt::Key_Down
+                    || key==Qt::Key_Right
+                    || key == Qt::Key_Up
+                    || key == Qt::Key_Left;
         }
         else if (event->type() == QEvent::KeyPress) {
 
@@ -133,11 +136,12 @@ protected:
         switch (key) {
             case Qt::Key_Left:
             case Qt::Key_Up:
-                m_pui->keMenu01to00();
+                m_pui->slotStateTransitionUp();
                 break;
             case Qt::Key_Right:
             case Qt::Key_Down:
-                m_pui->keMenu01to02();
+                //qDebug(" ket01 down");
+                m_pui->slotStateTransitionDown();
                 break;
             default:
                 break;
@@ -181,9 +185,10 @@ protected:
             int key = keyEvent->key();
 
             //qDebug(" ketMenu00 keypress");
-            return key == Qt::Key_2 || key == Qt::Key_8 || key == Qt::Key_6 ||
-                   key == Qt::Key_4 || key == Qt::Key_Down || key == Qt::Key_Up ||
-                   key == Qt::Key_Right || key == Qt::Key_Left;
+            return key == Qt::Key_Down
+                    || key==Qt::Key_Right
+                    || key == Qt::Key_Up
+                    || key == Qt::Key_Left;
         }
         else if (event->type() == QEvent::KeyPress) {
 
@@ -209,11 +214,12 @@ protected:
         switch (key) {
             case Qt::Key_Left:
             case Qt::Key_Up:
-                m_pui->keMenu02to01();
+                m_pui->slotStateTransitionUp();
                 break;
             case Qt::Key_Right:
             case Qt::Key_Down:
-                m_pui->keMenu02to00();
+                //qDebug(" ket02 down");
+                m_pui->slotStateTransitionDown();
                 break;
             default:
                 break;

@@ -24,47 +24,44 @@ void objui::initMachine()
 
     ketMenu00 *pKetMenu00 = new ketMenu00(this);
     m_pStateMenu00->addTransition(pKetMenu00);
-    m_pStateMenu00->addTransition(this,SIGNAL(sigMenu00to01()),m_pStateMenu01);
-    m_pStateMenu00->addTransition(this,SIGNAL(sigMenu00to02()),m_pStateMenu02);
+    m_pStateMenu00->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenu01);
+    m_pStateMenu00->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenu02);
     ketMenu01 *pKetMenu01 = new ketMenu01(this);
     m_pStateMenu01->addTransition(pKetMenu01);
-    m_pStateMenu01->addTransition(this,SIGNAL(sigMenu01to00()),m_pStateMenu00);
-    m_pStateMenu01->addTransition(this,SIGNAL(sigMenu01to02()),m_pStateMenu02);
+    m_pStateMenu01->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenu02);
+    m_pStateMenu01->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenu00);
     ketMenu02 *pKetMenu02 = new ketMenu02(this);
     m_pStateMenu02->addTransition(pKetMenu02);
-    m_pStateMenu02->addTransition(this,SIGNAL(sigMenu02to00()),m_pStateMenu00);
-    m_pStateMenu02->addTransition(this,SIGNAL(sigMenu02to01()),m_pStateMenu01);
+    m_pStateMenu02->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenu00);
+    m_pStateMenu02->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenu01);
 
     m_pMachine->start();
 }
 
-void objui::keMenu00to01()
+void objui::slotStateTransitionUp()
 {
-    emit sigMenu00to01();
+    emit sigStateTransitionUp();
 }
-void objui::keMenu00to02()
+void objui::slotStateTransitionDown()
 {
-    emit sigMenu00to02();
+    emit sigStateTransitionDown();
 }
-
-void objui::keMenu01to00()
+void objui::slotStateTransitionLeft()
 {
-    emit sigMenu01to00();
+    emit sigStateTransitionLeft();
 }
-void objui::keMenu01to02()
+void objui::slotStateTransitionRight()
 {
-    emit sigMenu01to02();
+    emit sigStateTransitionRight();
 }
-
-void objui::keMenu02to01()
+void objui::slotStateTransitionEnter()
 {
-    emit sigMenu02to01();
+    emit sigStateTransitionEnter();
 }
-void objui::keMenu02to00()
+void objui::slotStateTransitionBackspace()
 {
-    emit sigMenu02to00();
+    emit sigStateTransitionBackspace();
 }
-
 
 
 void objui::buildMachine()
@@ -158,28 +155,33 @@ void objui::slotKey(int key)
     QKeyEvent *ev;// = new QKeyEvent(QEvent::KeyPress,Qt::Key_4,Qt::NoModifier);
     switch (key) {
     case KEY_DOWN:
+        //qDebug(" slotKey(............ func.objui");
         ev = new QKeyEvent(QEvent::KeyPress,Qt::Key_Down,Qt::NoModifier);
+        m_pMachine->postEvent(ev);
         break;
     case KEY_UP:
         ev = new QKeyEvent(QEvent::KeyPress,Qt::Key_Up,Qt::NoModifier);
+        m_pMachine->postEvent(ev);
         break;
     case KEY_LEFT:
         ev = new QKeyEvent(QEvent::KeyPress,Qt::Key_Left,Qt::NoModifier);
+        m_pMachine->postEvent(ev);
         break;
     case KEY_RIGHT:
         ev = new QKeyEvent(QEvent::KeyPress,Qt::Key_Right,Qt::NoModifier);
+        m_pMachine->postEvent(ev);
         break;
     case KEY_ENTER:
         ev = new QKeyEvent(QEvent::KeyPress,Qt::Key_Enter,Qt::NoModifier);
+        m_pMachine->postEvent(ev);
         break;
     case KEY_BACKSPACE:
         ev = new QKeyEvent(QEvent::KeyPress,Qt::Key_Backspace,Qt::NoModifier);
+        m_pMachine->postEvent(ev);
         break;
     default:
         break;
     }
-
-    m_pMachine->postEvent(ev);
 
 }
 

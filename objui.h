@@ -34,6 +34,14 @@ public:
     void initMachine();
 
 signals:
+
+    void sigStateTransitionUp();
+    void sigStateTransitionDown();
+    void sigStateTransitionLeft();
+    void sigStateTransitionRight();
+    void sigStateTransitionEnter();
+    void sigStateTransitionBackspace();
+
     void sig0000();
     void sigKeyEnter();
     void sigKeyBack();
@@ -41,13 +49,6 @@ signals:
     void sigKeyDown();
     void sigKeyLeft();
     void sigKeyRight();
-
-    void sigMenu00to01();
-    void sigMenu00to02();
-    void sigMenu01to02();
-    void sigMenu01to00();
-    void sigMenu02to00();
-    void sigMenu02to01();
 
 public slots:
     void slotTest();
@@ -61,12 +62,12 @@ public slots:
 
     virtual void slotKey(int);
 
-    void keMenu00to01();
-    void keMenu00to02();
-    void keMenu01to02();
-    void keMenu01to00();
-    void keMenu02to00();
-    void keMenu02to01();
+    void slotStateTransitionUp();
+    void slotStateTransitionDown();
+    void slotStateTransitionLeft();
+    void slotStateTransitionRight();
+    void slotStateTransitionEnter();
+    void slotStateTransitionBackspace();
 
     void slotShowMenu10();
     void slotShowMenu11();

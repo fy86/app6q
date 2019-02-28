@@ -4,6 +4,10 @@ objOled::objOled(QObject *parent) :
     objBase(parent)
 {
 }
+void objOled::slotFlush()
+{
+    emit sigFlush();
+}
 
 void objOled::Fill_BlockP(unsigned char *p, unsigned char a, unsigned char b, unsigned char c, unsigned char d)
 {
