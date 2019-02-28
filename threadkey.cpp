@@ -11,7 +11,7 @@ threadkey::threadkey(QObject *parent) :
 void threadkey::openDev(char *p)
 {
     m_fd = open(p, O_RDWR);
-    qDebug(" open input dev");
+    //qDebug(" open input dev");
 }
 
 void threadkey::run()
@@ -25,7 +25,7 @@ void threadkey::run()
         ret = read(m_fd,&ev,len);
         if(ret!=len)continue;
         if(ev.type==EV_KEY && ev.value==1){   // value.1.press   value.0.release  value.2.repeat
-#if 1
+#if 0
             switch(ev.code){
             case KEY_LEFT:
                 qDebug("key left : %d",ev.code);

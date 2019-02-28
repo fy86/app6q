@@ -24,8 +24,14 @@ public:
     explicit objui(QObject *parent = 0);
 
     QStateMachine *m_pMachine;
+    QState *m_pStateMenu00;
+    QState *m_pStateMenu01;
+    QState *m_pStateMenu02;
+    QState *m_pStateMenu10;
+    QState *m_pStateMenu11;
 
     void buildMachine();
+    void initMachine();
 
 signals:
     void sig0000();
@@ -35,6 +41,13 @@ signals:
     void sigKeyDown();
     void sigKeyLeft();
     void sigKeyRight();
+
+    void sigMenu00to01();
+    void sigMenu00to02();
+    void sigMenu01to02();
+    void sigMenu01to00();
+    void sigMenu02to00();
+    void sigMenu02to01();
 
 public slots:
     void slotTest();
@@ -48,6 +61,16 @@ public slots:
 
     virtual void slotKey(int);
 
+    void keMenu00to01();
+    void keMenu00to02();
+    void keMenu01to02();
+    void keMenu01to00();
+    void keMenu02to00();
+    void keMenu02to01();
+
+    void slotShowMenu10();
+    void slotShowMenu11();
+    void slotShowMenu12();
 };
 
 #endif // OBJUI_H

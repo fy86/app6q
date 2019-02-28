@@ -11,6 +11,11 @@ class objBase : public QObject
 public:
     explicit objBase(QObject *parent = 0);
 
+    enum myEnum{
+        enumP2Pmode,
+
+    };
+
 
     QTextCodec *m_pUTF8;
     QTextCodec *m_pGBK;

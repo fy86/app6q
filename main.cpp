@@ -57,7 +57,10 @@ int main(int argc, char *argv[])
     //fb.strXY(QString("啊在上面的搜索框"),20,20);
 
     //fb.show0001();
-    fb.buildMachine();
+    //fb.buildMachine();
+
+
+    fb.initMachine();
 
     return a.exec();
 }

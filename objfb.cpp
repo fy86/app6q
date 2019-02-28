@@ -321,24 +321,24 @@ void objFB::demo16()
     showHZdemo();
 
 }
-void objFB::show8x16(char ch, int x, int y)
+void objFB::show8x16(char ch, int x, int y,int color)
 {
     int i,j;
 
     for(i=0;i<2;i++){
         for(j=0;j<8;j++){
-            draw1(x+j,y+i,0);
+            draw1(x+j,y+i,~color);
         }
     }
     for(i=14;i<16;i++){
         for(j=0;j<8;j++){
-            draw1(x+j,y+i,0);
+            draw1(x+j,y+i,~color);
         }
     }
-    show8x12(ch,x,y+2);
+    show8x12(ch,x,y+2,color);
 
 }
-void objFB::show8x12(char ch, int x, int y)
+void objFB::show8x12(char ch, int x, int y,int color)
 {
     int offset;
     offset =(0x0ff & ch) * 12;
@@ -352,13 +352,13 @@ void objFB::show8x12(char ch, int x, int y)
         ch1 = *p++;
         for(j=0;j<8;j++){
             m=1<<j;
-            if(ch1 & m) draw1(x+j,y+i,0x0f);
-            else draw1(x+j,y+i,0);
+            if(ch1 & m) draw1(x+j,y+i,color);
+            else draw1(x+j,y+i,~color);
         }
     }
 }
 
-void objFB::showHZ16(char *p, int x, int y)
+void objFB::showHZ16(char *p, int x, int y,int color)
 {
     char ch;
     int c1;
@@ -373,9 +373,9 @@ void objFB::showHZ16(char *p, int x, int y)
                 m = 7-k;
                 c1 = (1<<m)&ch;
                 if(c1)
-                   draw1(x+(j<<3)+k,y+i,0x0f);
+                   draw1(x+(j<<3)+k,y+i,color);
                 else
-                   draw1(x+(j<<3)+k,y+i,0x0);
+                   draw1(x+(j<<3)+k,y+i,~color);
             }
         }
     }
@@ -458,7 +458,7 @@ void objFB::draw1(int x, int y, int c)
 
 }
 // 0:left 1:center 2:left
-void objFB::centerXY(QString str, int left, int top, int w, int h, int hc, int vc)
+void objFB::centerXY(QString str, int left, int top, int w, int h, int hc, int vc,int color)
 {
     QByteArray ba;
     int len;
@@ -474,7 +474,8 @@ void objFB::centerXY(QString str, int left, int top, int w, int h, int hc, int v
         x=left;
         break;
     case 1:
-        x=left+((w-len)>1);
+        x=left+((w-len)>>1);
+        //qDebug("x:%d   left:%d w:%d len:%d",x,left,w,len);
         break;
     case 2:
         x=left+w-len;
@@ -487,18 +488,20 @@ void objFB::centerXY(QString str, int left, int top, int w, int h, int hc, int v
         y=top;
         break;
     case 1:
-        y=top+((h-16)>1);
+        y=top+((h-16)>>1);
+        //qDebug(" y: %d",y);
         break;
     case 2:
-        y=top-16;
+        y=top+h-16;
         break;
     default:
         break;
     }
-    strXY(str,x,y);
+    //qDebug(" certer x:%d y:%d    len.pixel:%d",x,y,len);
+    strXY(str,x,y,color);
 }
 
-void objFB::strXY(QString str, int x, int y)
+void objFB::strXY(QString str, int x, int y,int color)
 {
     if(x<0)return;
     if(y<0)return;
@@ -526,13 +529,13 @@ void objFB::strXY(QString str, int x, int y)
             else{
                 wei = (0x0ff & ba.at(i)) - 0x0a0;
                 offset = ((qu-1)*94+wei-1)<<5;
-                showHZ16(m_ba16.data()+offset,x16,y);
+                showHZ16(m_ba16.data()+offset,x16,y,color);
                 x16+=16;
                 n=0;
             }
         }
         else{
-            show8x16(ba.at(i),x16,y);
+            show8x16(ba.at(i),x16,y,color);
             n=0;
             x16+=8;
         }
@@ -646,6 +649,50 @@ void objFB::slotKey(int)
     //QKeyEvent *ev=new QKeyEvent(QEvent::KeyPress,Qt::Key_Down,Qt::NoModifier);
 
 }
+
+void objFB::slotShowMenu00()
+{
+    //qDebug(" func slotShow.menu.00");
+    zeroFB(0);
+
+    centerXY(QString("通  信  控  制"),0,0,256,16,1,1,0);
+    centerXY(QString("通  信  参  数"),0,24,256,16,1,1);
+    centerXY(QString("工  作  模  式"),0,48,256,16,1,1);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objFB::slotShowMenu01()
+{
+    //qDebug(" func slotShow.menu.01");
+    zeroFB(0);
+
+    centerXY(QString("通  信  控  制"),0,0,256,16,1,1);
+    centerXY(QString("通  信  参  数"),0,24,256,16,1,1,0);
+    centerXY(QString("工  作  模  式"),0,48,256,16,1,1);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objFB::slotShowMenu02()
+{
+    //qDebug(" func slotShow.menu.02");
+    zeroFB(0);
+
+    centerXY(QString("通  信  控  制"),0,0,256,16,1,1);
+    centerXY(QString("通  信  参  数"),0,24,256,16,1,1);
+    centerXY(QString("工  作  模  式"),0,48,256,16,1,1,0);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+
 
 
 

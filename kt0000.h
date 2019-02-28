@@ -21,7 +21,7 @@ public:
 
 protected:
     bool eventTest(QEvent *event) {
-        //qDebug("  kt0000 event all %d",event->type());
+        qDebug("  kt0000 event all %d",event->type());
         if (event->type() == QEvent::StateMachineWrapped &&
             static_cast<QStateMachine::WrappedEvent *>(event)->event()->type() == QEvent::KeyPress) {
             QEvent *wrappedEvent = static_cast<QStateMachine::WrappedEvent *>(event)->event();

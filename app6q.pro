@@ -25,7 +25,8 @@ SOURCES += main.cpp \
     objpage.cpp \
     objui.cpp \
     keytransition.cpp \
-    kt0000.cpp
+    kt0000.cpp \
+    ketmenu00.cpp
 
 HEADERS += \
     threadspi.h \
@@ -37,4 +38,5 @@ HEADERS += \
     objpage.h \
     objui.h \
     keytransition.h \
-    kt0000.h
+    kt0000.h \
+    ketmenu00.h
