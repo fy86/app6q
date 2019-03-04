@@ -7,44 +7,196 @@
 objui::objui(QObject *parent) :
     objPage(parent)
 {
+    m_pTcp = new QTcpSocket(this);
+    connect(m_pTcp,SIGNAL(readyRead()),this,SLOT(slotReadTCP()));
+    connect(m_pTcp,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(slotErrTCP()));
+
+    initTcp();
+
+    connect(m_cu.getRecvNotifyObject(),SIGNAL(sigCUState(QByteArray)),this,SLOT(slotCUState(QByteArray)));
 }
+void objui::initTcp()
+{
+    m_pTcp->abort();
+    m_pTcp->connectToHost("192.168.0.199",6790);
+}
+void objui::slotErrTCP()
+{
+    qDebug(" tcp error");
+    m_cu.reset();
+}
+void objui::slotReadTCP()
+{
+    QByteArray ba=m_pTcp->readAll();
+    //QByteArray ba1,ba2;
+    //ba1=ba.mid(0,ba.size()>>1);
+    //ba2=ba.mid(ba.size()>>1);
+    //m_cu.recv(QString(ba1).toStdString());
+    m_cu.recv(QString(ba).toStdString());
+    //qDebug("%s",ba.data());
+}
+
 void objui::initMachine()
 {
     m_pMachine = new QStateMachine;
 
-    m_pStateMenu00 = new QState(m_pMachine);
-    m_pStateMenu01 = new QState(m_pMachine);
-    m_pStateMenu02 = new QState(m_pMachine);
+    m_pStateMenuCtrl = new QState(m_pMachine);//
+    m_pStateMenuPara = new QState(m_pMachine);
+    m_pStateMenuWorkMode = new QState(m_pMachine);
 
     m_pStateMenu10 = new QState(m_pMachine);// p2p and central
     m_pStateMenu11 = new QState(m_pMachine);//
 
-    m_pMachine->setInitialState(m_pStateMenu00);
+    m_pStateEditorTxFreq = new QState(m_pMachine);
+    m_pStateEditorRxFreq = new QState(m_pMachine);
 
-    connect(m_pStateMenu00,SIGNAL(entered()),this,SLOT(slotShowMenu00()));
-    connect(m_pStateMenu01,SIGNAL(entered()),this,SLOT(slotShowMenu01()));
-    connect(m_pStateMenu02,SIGNAL(entered()),this,SLOT(slotShowMenu02()));
+    m_pStateParaPage1 = new QState(m_pMachine);
+    m_pStateParaPage11 = new QState(m_pMachine);
+    m_pStateParaPage12 = new QState(m_pMachine);
+    m_pStateParaPage13 = new QState(m_pMachine);
+    m_pStateParaPage2 = new QState(m_pMachine);
+    m_pStateParaPage21 = new QState(m_pMachine);
+    m_pStateParaPage22 = new QState(m_pMachine);
+    m_pStateParaPage1p2p = new QState(m_pMachine);
+    m_pStateParaPage2p2p = new QState(m_pMachine);
+
+    m_pMachine->setInitialState(m_pStateMenuCtrl);
+
+    connect(m_pStateMenuCtrl,SIGNAL(entered()),this,SLOT(slotShowMenu00()));
+    connect(m_pStateMenuPara,SIGNAL(entered()),this,SLOT(slotShowMenu01()));
+    connect(m_pStateMenuWorkMode,SIGNAL(entered()),this,SLOT(slotShowMenu02()));
 
     connect(m_pStateMenu10,SIGNAL(entered()),this,SLOT(slotShowMenu10()));
 
+    connect(m_pStateParaPage1,SIGNAL(entered()),this,SLOT(slotShowParaPage1()));
+    connect(m_pStateParaPage11,SIGNAL(entered()),this,SLOT(slotShowParaPage11()));
+    connect(m_pStateParaPage12,SIGNAL(entered()),this,SLOT(slotShowParaPage12()));
+    connect(m_pStateParaPage13,SIGNAL(entered()),this,SLOT(slotShowParaPage13()));
+    connect(m_pStateParaPage2,SIGNAL(entered()),this,SLOT(slotShowParaPage2()));
+    connect(m_pStateParaPage21,SIGNAL(entered()),this,SLOT(slotShowParaPage21()));
+    connect(m_pStateParaPage22,SIGNAL(entered()),this,SLOT(slotShowParaPage22()));
+
+    connect(m_pStateEditorTxFreq,SIGNAL(entered()),this,SLOT(slotShowEditTxFreq()));
+    connect(m_pStateEditorRxFreq,SIGNAL(entered()),this,SLOT(slotShowEditRxFreq()));
+
+    connect(m_pStateParaPage1p2p,SIGNAL(entered()),this,SLOT(slotShowParaPage1p2p()));
+    connect(m_pStateParaPage2p2p,SIGNAL(entered()),this,SLOT(slotShowParaPage2p2p()));
+
     ketMenu00 *pKetMenu00 = new ketMenu00(this);
-    m_pStateMenu00->addTransition(pKetMenu00);
-    m_pStateMenu00->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenu01);
-    m_pStateMenu00->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenu02);
-    m_pStateMenu00->addTransition(this,SIGNAL(sigStateTransitionEnter()),m_pStateMenu10);
-    ketMenu01 *pKetMenu01 = new ketMenu01(this);
-    m_pStateMenu01->addTransition(pKetMenu01);
-    m_pStateMenu01->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenu02);
-    m_pStateMenu01->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenu00);
+    m_pStateMenuCtrl->addTransition(pKetMenu00);
+    m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuPara);
+    m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuWorkMode);
+    m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionEnter()),m_pStateMenu10);
+    ketMenuPara *pKetMenuPara = new ketMenuPara(this);
+    m_pStateMenuPara->addTransition(pKetMenuPara);
+    m_pStateMenuPara->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuWorkMode);
+    m_pStateMenuPara->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuCtrl);
+    m_pStateMenuPara->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateParaPage1);
+    //m_pStateMenuPara->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateNumEditor);
+
+    ketParaPage1 *pKetParaPage1 = new ketParaPage1(this);
+    m_pStateParaPage1->addTransition(pKetParaPage1);
+    m_pStateParaPage1->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage11);
+    m_pStateParaPage1->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage2);
+    m_pStateParaPage1->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage2);
+    m_pStateParaPage1->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage2);
+    m_pStateParaPage1->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
+    m_pStateParaPage1->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuPara);
+
+    ketParaPage1 *pKetParaPage11 = new ketParaPage1(this);
+    m_pStateParaPage11->addTransition(pKetParaPage11);
+    m_pStateParaPage11->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage12);
+    m_pStateParaPage11->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage1);
+    m_pStateParaPage11->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage2);
+    m_pStateParaPage11->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage2);
+    m_pStateParaPage11->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorRxFreq);
+    m_pStateParaPage11->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuPara);
+
+    ketParaPage1 *pKetParaPage12 = new ketParaPage1(this);
+    m_pStateParaPage12->addTransition(pKetParaPage12);
+    m_pStateParaPage12->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage13);
+    m_pStateParaPage12->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage11);
+    m_pStateParaPage12->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage2);
+    m_pStateParaPage12->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage2);
+    m_pStateParaPage12->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
+    m_pStateParaPage12->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuPara);
+
+    ketParaPage1 *pKetParaPage13 = new ketParaPage1(this);
+    m_pStateParaPage13->addTransition(pKetParaPage13);
+    m_pStateParaPage13->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage2);
+    m_pStateParaPage13->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage12);
+    m_pStateParaPage13->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage2);
+    m_pStateParaPage13->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage2);
+    m_pStateParaPage13->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
+    m_pStateParaPage13->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuPara);
+
+    ketParaPage1 *pKetParaPage2 = new ketParaPage1(this);
+    m_pStateParaPage2->addTransition(pKetParaPage2);
+    m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage21);
+    m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage1);
+    m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage1);
+    m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage1);
+    m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
+    m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuPara);
+
+    ketParaPage1 *pKetParaPage21 = new ketParaPage1(this);
+    m_pStateParaPage21->addTransition(pKetParaPage21);
+    m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage22);
+    m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage2);
+    m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage1);
+    m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage1);
+    m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
+    m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuPara);
+
+    ketParaPage1 *pKetParaPage22 = new ketParaPage1(this);
+    m_pStateParaPage22->addTransition(pKetParaPage22);
+    m_pStateParaPage22->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage1);
+    m_pStateParaPage22->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage21);
+    m_pStateParaPage22->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage1);
+    m_pStateParaPage22->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage1);
+    m_pStateParaPage22->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
+    m_pStateParaPage22->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuPara);
+
+    ketTxFreqEditor *pKetTxFreqEditor = new ketTxFreqEditor(this);
+    m_pStateEditorTxFreq->addTransition(pKetTxFreqEditor);
+    //m_pStateEditorTxFreq->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage1);
+    //m_pStateEditorTxFreq->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage21);
+    //m_pStateEditorTxFreq->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage1);
+    //m_pStateEditorTxFreq->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage1);
+    //m_pStateEditorTxFreq->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
+    m_pStateEditorTxFreq->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateParaPage1);
+
+
+
+
+
+
+
     ketMenu02 *pKetMenu02 = new ketMenu02(this);
-    m_pStateMenu02->addTransition(pKetMenu02);
-    m_pStateMenu02->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenu00);
-    m_pStateMenu02->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenu01);
+    m_pStateMenuWorkMode->addTransition(pKetMenu02);
+    m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuCtrl);
+    m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuPara);
     ketMenu10 *pKetMenu10 = new ketMenu10(this);
     m_pStateMenu10->addTransition(pKetMenu10);
-    m_pStateMenu10->addTransition(this,SIGNAL(sigStateTransitionBackspace()),m_pStateMenu00);
+    m_pStateMenu10->addTransition(this,SIGNAL(sigStateTransitionBackspace()),m_pStateMenuCtrl);
+
+
+
 
     m_pMachine->start();
+}
+void objui::doMenuPara()
+{
+    emit sigStateTransitionNext();
+}
+
+void objui::slotStateTransitionNext()
+{
+    emit sigStateTransitionNext();
+}
+void objui::slotStateTransitionBack()
+{
+    emit sigStateTransitionBack();
 }
 
 void objui::slotStateTransitionUp()
@@ -233,6 +385,11 @@ void objui::getColorMenu10(int n, int *pc, int *pbg)
 
 void objui::slotShowMenu10()
 {
+    qint64 freq;
+    const QLocale & locale = QLocale::c();
+    freq=14000000000;
+    QString s=locale.toString(freq);
+
     int c=0x0f,bg=0;
     zeroFB(0);
 
@@ -249,6 +406,16 @@ void objui::slotShowMenu10()
 
         getColorMenu10(3,&c,&bg);
         centerXY(QString("退    网"),0,48,256,16,1,1,c,bg);
+
+        ////////////////////  test qint64
+        strXY(s.replace(',',' ').toLatin1().data(),0,32);
+        underLine(0,32,4);
+        strXY(s.replace(',',' ').toLatin1().data(),0,48);
+        strXY("14 0",128,32);
+        strXY("0",128+32,32,0,0x0f);
+        strXY("0 000",128+32+8,32);
+        underLine(0,32,17);
+
 
         break;
     case work_mode_p2p:
@@ -280,8 +447,27 @@ void objui::changeSelectMenu10(int step)
     slotShowMenu10();
 }
 
+void objui::slotCUState(QByteArray ba)
+{
+    //qDebug("%s",ba.data());
+
+#if 1
+    struct CUState *p,cu;
+    p = (struct CUState*)ba.data();
+    //memcpy(&cu,ba.data(),ba.size());
+    //p = &cu;
+    qDebug() << QString::fromStdString(p->mode);
+    qDebug("--------------- %s",QString::fromStdString(p->isdn).toLatin1().data());
+    qDebug("-------------- %s",QString::fromStdString(p->name).toLatin1().data());
+    qDebug("----------- %s",QString::fromStdString(p->state).toLatin1().data());
+#endif
+
+}
+
 void objui::doMenu10()
 {
+    std::string stdstr;
+
     if(work_mode_central == m_workMode){
     switch(m_nSelectMenu10){
     case 0:
@@ -291,9 +477,21 @@ void objui::doMenu10()
         m_bStatConnect = false;
         break;
     case 2:
-        m_bStatLogin=true;break;
+        if(!m_bStatLogin){
+            qDebug(" do login");
+            stdstr=m_cu.loginNet();
+            m_pTcp->write(QString::fromStdString(stdstr).toUtf8());
+            m_bStatLogin=true;break;
+        }
     case 3:
-        m_bStatLogin=false;break;
+        if(m_bStatLogin){
+            qDebug(" do logout");
+            stdstr=m_cu.logoutNet();
+            m_pTcp->write(QString::fromStdString(stdstr).toUtf8());
+            m_bStatLogin=false;
+            m_bStatConnect=false;
+        }
+        break;
     default:
         break;
     }
@@ -328,6 +526,184 @@ void objui::slotShowMenu12()
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
     emit sigFlush();
+
+}
+
+
+void objui::slotShowParaPage1()
+{
+    zeroFB(0);
+
+    m_numEditor.setNum64(m_para.m_TxFreq,m_para.m_maxTxFreq,m_para.m_minTxFreq,-1,0,-1);
+
+    strXY("发送频点",0,0,0,0x0f);// fasong pindian 发送频率  频率。频点
+    strXY("接收频点",0,16,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
+    strXY("发送速率",0,32,0x0f,0);// fasong sulv 发送频率  频率。频点  速率
+    strXY("接收速率",0,48,0x0f,0);// jieshou sulv 发送频率  频率。频点
+
+    centerXY("14 000 000 000 Hz",16*4,0,256-16*4,16,1,1,0x0f,0);
+    centerXY("14 000 000 000 Hz",16*4,16,256-16*4,16,1,1,0x0f,0);
+    centerXY("1 024 kHz",16*4,32,256-16*4,16,1,1,0x0f,0);
+    centerXY("1 024 kHz",16*4,48,256-16*4,16,1,1,0x0f,0);
+
+    strXY("1/2",256-8*3,48,0x0f,0);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objui::slotShowParaPage11()
+{
+    zeroFB(0);
+
+    m_numEditor.setNum64(m_para.m_RxFreq,m_para.m_maxRxFreq,m_para.m_minRxFreq,-1,0,-1);
+
+    strXY("发送频点",0,0,0x0f,0);// fasong pindian 发送频率  频率。频点
+    strXY("接收频点",0,16,0,0x0f);// jieshou pindian 发送频率  频率。频点 接收
+    strXY("发送速率",0,32,0x0f,0);// fasong sulv 发送频率  频率。频点  速率
+    strXY("接收速率",0,48,0x0f,0);// jieshou sulv 发送频率  频率。频点
+
+    centerXY("14 000 000 000 Hz",16*4,0,256-16*4,16,1,1,0x0f,0);
+    centerXY("14 000 000 000 Hz",16*4,16,256-16*4,16,1,1,0x0f,0);
+    centerXY("1 024 kHz",16*4,32,256-16*4,16,1,1,0x0f,0);
+    centerXY("1 024 kHz",16*4,48,256-16*4,16,1,1,0x0f,0);
+
+    strXY("1/2",256-8*3,48,0x0f,0);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objui::slotShowParaPage12()
+{
+    zeroFB(0);
+
+    strXY("发送频点",0,0,0x0f,0);// fasong pindian 发送频率  频率。频点
+    strXY("接收频点",0,16,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
+    strXY("发送速率",0,32,0,0x0f);// fasong sulv 发送频率  频率。频点  速率
+    strXY("接收速率",0,48,0x0f,0);// jieshou sulv 发送频率  频率。频点
+
+    centerXY("14 000 000 000 Hz",16*4,0,256-16*4,16,1,1,0x0f,0);
+    centerXY("14 000 000 000 Hz",16*4,16,256-16*4,16,1,1,0x0f,0);
+    centerXY("1 024 kHz",16*4,32,256-16*4,16,1,1,0x0f,0);
+    centerXY("1 024 kHz",16*4,48,256-16*4,16,1,1,0x0f,0);
+
+    strXY("1/2",256-8*3,48,0x0f,0);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objui::slotShowParaPage13()
+{
+    zeroFB(0);
+
+    strXY("发送频点",0,0,0x0f,0);// fasong pindian 发送频率  频率。频点
+    strXY("接收频点",0,16,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
+    strXY("发送速率",0,32,0x0f,0);// fasong sulv 发送频率  频率。频点  速率
+    strXY("接收速率",0,48,0,0x0f);// jieshou sulv 发送频率  频率。频点
+
+    centerXY("14 000 000 000 Hz",16*4,0,256-16*4,16,1,1,0x0f,0);
+    centerXY("14 000 000 000 Hz",16*4,16,256-16*4,16,1,1,0x0f,0);
+    centerXY("1 024 kHz",16*4,32,256-16*4,16,1,1,0x0f,0);
+    centerXY("1 024 kHz",16*4,48,256-16*4,16,1,1,0x0f,0);
+
+    strXY("1/2",256-8*3,48,0x0f,0);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objui::slotShowParaPage2()
+{
+    zeroFB(0);
+
+    strXY("发送功率",0,0,0,0x0f);// fasong gonglv 发送 功率
+    strXY("业务类型",0,16,0x0f,0);// yewu leixing 业务类型
+    strXY("编码方式",0,32,0x0f,0);// bianma fangshi 编码方式
+
+    centerXY("-37.25 dbm",4*16,0,256-16*4,16,1,1,0x0f,0);
+    centerXY("网桥",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
+    centerXY("QPSK1/2",4*16,32,256-16*4,16,1,1,0x0f,0);
+
+    strXY("2/2",256-8*3,48,0x0f,0);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objui::slotShowParaPage21()
+{
+    zeroFB(0);
+
+    strXY("发送功率",0,0,0x0f,0);// fasong gonglv 发送 功率
+    strXY("业务类型",0,16,0,0x0f);// yewu leixing 业务类型
+    strXY("编码方式",0,32,0x0f,0);// bianma fangshi 编码方式
+
+    centerXY("-37.25 dbm",4*16,0,256-16*4,16,1,1,0x0f,0);
+    centerXY("网桥",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
+    centerXY("QPSK1/2",4*16,32,256-16*4,16,1,1,0x0f,0);
+
+    strXY("2/2",256-8*3,48,0x0f,0);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objui::slotShowParaPage22()
+{
+    zeroFB(0);
+
+    strXY("发送功率",0,0,0x0f,0);// fasong gonglv 发送 功率
+    strXY("业务类型",0,16,0x0f,0);// yewu leixing 业务类型
+    strXY("编码方式",0,32,0,0x0f);// bianma fangshi 编码方式
+
+    centerXY("-37.25 dbm",4*16,0,256-16*4,16,1,1,0x0f,0);
+    centerXY("网桥",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
+    centerXY("QPSK1/2",4*16,32,256-16*4,16,1,1,0x0f,0);
+
+    strXY("2/2",256-8*3,48,0x0f,0);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+
+void objui::slotShowEditTxFreq()
+{
+    zeroFB(0);
+
+    const QLocale & locale = QLocale::c();
+    QString s=locale.toString(m_numEditor.m_i64);
+
+    centerXY("发 送 频 点",0,10,256,16,1,1,0x0f,0);
+    centerXY(s.replace(',',' ').toLatin1().data(),0,64-12-16,(7+14)<<3,16,2,1,0x0f,0);
+    strXY("  Hz",(14+7)<<3,64-12-16,0x0f,0);
+    underLine(0,64-12-16,14+7-1-m_numEditor.getCursor(),0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objui::slotShowEditRxFreq()
+{
+
+}
+
+void objui::slotShowParaPage1p2p()
+{
+
+}
+void objui::slotShowParaPage2p2p()
+{
 
 }
 

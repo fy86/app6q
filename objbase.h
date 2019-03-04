@@ -4,7 +4,13 @@
 #include <QObject>
 #include <QTextCodec>
 #include <QtGui/QKeyEvent>
+#if 0
+struct st_numEditor{
+    bool fInt;
+    int type;
 
+};
+#endif
 class objBase : public QObject
 {
     Q_OBJECT
@@ -28,5 +34,6 @@ signals:
 public slots:
 
 };
+
 
 #endif // OBJBASE_H

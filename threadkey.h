@@ -4,10 +4,13 @@
 #include <QObject>
 #include <QThread>
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
+#include <unistd.h>
 
 
 class threadkey : public QThread

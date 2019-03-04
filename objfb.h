@@ -8,6 +8,7 @@
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
+#include <unistd.h>
 
 #include <objoled.h>
 
@@ -29,6 +30,7 @@ public:
 
     void loaddot();
     void draw1(int x,int y,int c);
+    void underLine(int left,int top,int n=0,int c=0x0f);
 
     void demo16();
     void zeroFB(char f);

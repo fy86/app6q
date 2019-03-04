@@ -7,7 +7,6 @@ threadkey::threadkey(QObject *parent) :
 {
     m_fd=-1;
 }
-
 void threadkey::openDev(char *p)
 {
     m_fd = open(p, O_RDWR);
