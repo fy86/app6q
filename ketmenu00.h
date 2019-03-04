@@ -550,23 +550,24 @@ protected:
             m_pui->slotStateTransitionBack();
             break;
         case Qt::Key_Enter:
-            //m_pui->doMenu10();
+            m_pui->m_para.m_RxFreq=m_pui->m_numEditor.m_i64;
+            m_pui->slotStateTransitionBack();
             break;
         case Qt::Key_Up:
             m_pui->m_numEditor.inc();
-            m_pui->slotShowEditTxFreq();
+            m_pui->slotShowEditRxFreq();
             break;
         case Qt::Key_Down:
             m_pui->m_numEditor.dec();
-            m_pui->slotShowEditTxFreq();
+            m_pui->slotShowEditRxFreq();
             break;
         case Qt::Key_Right:
             m_pui->m_numEditor.moveCursor(-1);
-            m_pui->slotShowEditTxFreq();
+            m_pui->slotShowEditRxFreq();
             break;
         case Qt::Key_Left:
             m_pui->m_numEditor.moveCursor(1);
-            m_pui->slotShowEditTxFreq();
+            m_pui->slotShowEditRxFreq();
             break;
         default:
             break;
@@ -583,7 +584,274 @@ private:
 
 };
 
+class ketTxRateEditor : public QEventTransition
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketTxRateEditor(objui *obj):QEventTransition(obj,QEvent::KeyPress){
+        m_pui = obj;
 
+    }
+
+protected:
+    bool eventTest(QEvent *event) {
+        //qDebug("  ketMenu00 event all %d",event->type());
+        if (event->type() == QEvent::StateMachineWrapped &&
+            static_cast<QStateMachine::WrappedEvent *>(event)->event()->type() == QEvent::KeyPress) {
+            QEvent *wrappedEvent = static_cast<QStateMachine::WrappedEvent *>(event)->event();
+
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(wrappedEvent);
+            int key = keyEvent->key();
+
+            //qDebug(" ketMenu00 keypress");
+            return key == Qt::Key_Down
+                    || key==Qt::Key_Right
+                    || key == Qt::Key_Up
+                    || key == Qt::Key_Left
+                    || key == Qt::Key_Enter
+                    || key == Qt::Key_Backspace;
+        }
+        else if (event->type() == QEvent::KeyPress) {
+
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+            int key = keyEvent->key();
+
+            //qDebug(" ketMenu00 keypress  2222  key:%d",key);
+            //return true;
+            return key == Qt::Key_Down
+                    || key==Qt::Key_Right
+                    || key == Qt::Key_Up
+                    || key == Qt::Key_Left
+                    || key == Qt::Key_Enter
+                    || key == Qt::Key_Backspace;
+        }
+        return false;
+    }
+
+    void onTransition(QEvent *event) {
+        //QKeyEvent *keyEvent = static_cast<QKeyEvent *>(
+            //static_cast<QStateMachine::WrappedEvent *>(event)->event());
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+
+        int key = keyEvent->key();
+        switch (key) {
+        case Qt::Key_Backspace:
+            m_pui->slotStateTransitionBack();
+            break;
+        case Qt::Key_Enter:
+            m_pui->m_para.m_TxRate=m_pui->m_numEditor.m_i64;
+            m_pui->slotStateTransitionBack();
+            break;
+        case Qt::Key_Up:
+            m_pui->m_numEditor.inc();
+            m_pui->slotShowEditTxRate();
+            break;
+        case Qt::Key_Down:
+            m_pui->m_numEditor.dec();
+            m_pui->slotShowEditTxRate();
+            break;
+        case Qt::Key_Right:
+            m_pui->m_numEditor.moveCursor(-1);
+            m_pui->slotShowEditTxRate();
+            break;
+        case Qt::Key_Left:
+            m_pui->m_numEditor.moveCursor(1);
+            m_pui->slotShowEditTxRate();
+            break;
+        default:
+            break;
+        }
+    }
+
+
+signals:
+
+public slots:
+
+private:
+    objui *m_pui;
+
+};
+class ketRxRateEditor : public QEventTransition
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketRxRateEditor(objui *obj):QEventTransition(obj,QEvent::KeyPress){
+        m_pui = obj;
+
+    }
+
+protected:
+    bool eventTest(QEvent *event) {
+        //qDebug("  ketMenu00 event all %d",event->type());
+        if (event->type() == QEvent::StateMachineWrapped &&
+            static_cast<QStateMachine::WrappedEvent *>(event)->event()->type() == QEvent::KeyPress) {
+            QEvent *wrappedEvent = static_cast<QStateMachine::WrappedEvent *>(event)->event();
+
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(wrappedEvent);
+            int key = keyEvent->key();
+
+            //qDebug(" ketMenu00 keypress");
+            return key == Qt::Key_Down
+                    || key==Qt::Key_Right
+                    || key == Qt::Key_Up
+                    || key == Qt::Key_Left
+                    || key == Qt::Key_Enter
+                    || key == Qt::Key_Backspace;
+        }
+        else if (event->type() == QEvent::KeyPress) {
+
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+            int key = keyEvent->key();
+
+            //qDebug(" ketMenu00 keypress  2222  key:%d",key);
+            //return true;
+            return key == Qt::Key_Down
+                    || key==Qt::Key_Right
+                    || key == Qt::Key_Up
+                    || key == Qt::Key_Left
+                    || key == Qt::Key_Enter
+                    || key == Qt::Key_Backspace;
+        }
+        return false;
+    }
+
+    void onTransition(QEvent *event) {
+        //QKeyEvent *keyEvent = static_cast<QKeyEvent *>(
+            //static_cast<QStateMachine::WrappedEvent *>(event)->event());
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+
+        int key = keyEvent->key();
+        switch (key) {
+        case Qt::Key_Backspace:
+            m_pui->slotStateTransitionBack();
+            break;
+        case Qt::Key_Enter:
+            m_pui->m_para.m_RxRate=m_pui->m_numEditor.m_i64;
+            m_pui->slotStateTransitionBack();
+            break;
+        case Qt::Key_Up:
+            m_pui->m_numEditor.inc();
+            m_pui->slotShowEditRxRate();
+            break;
+        case Qt::Key_Down:
+            m_pui->m_numEditor.dec();
+            m_pui->slotShowEditRxRate();
+            break;
+        case Qt::Key_Right:
+            m_pui->m_numEditor.moveCursor(-1);
+            m_pui->slotShowEditRxRate();
+            break;
+        case Qt::Key_Left:
+            m_pui->m_numEditor.moveCursor(1);
+            m_pui->slotShowEditRxRate();
+            break;
+        default:
+            break;
+        }
+    }
+
+
+signals:
+
+public slots:
+
+private:
+    objui *m_pui;
+
+};
+
+class ketPowerEditor : public QEventTransition
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketPowerEditor(objui *obj):QEventTransition(obj,QEvent::KeyPress){
+        m_pui = obj;
+
+    }
+
+protected:
+    bool eventTest(QEvent *event) {
+        //qDebug("  ketMenu00 event all %d",event->type());
+        if (event->type() == QEvent::StateMachineWrapped &&
+            static_cast<QStateMachine::WrappedEvent *>(event)->event()->type() == QEvent::KeyPress) {
+            QEvent *wrappedEvent = static_cast<QStateMachine::WrappedEvent *>(event)->event();
+
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(wrappedEvent);
+            int key = keyEvent->key();
+
+            //qDebug(" ketMenu00 keypress");
+            return key == Qt::Key_Down
+                    || key==Qt::Key_Right
+                    || key == Qt::Key_Up
+                    || key == Qt::Key_Left
+                    || key == Qt::Key_Enter
+                    || key == Qt::Key_Backspace;
+        }
+        else if (event->type() == QEvent::KeyPress) {
+
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+            int key = keyEvent->key();
+
+            //qDebug(" ketMenu00 keypress  2222  key:%d",key);
+            //return true;
+            return key == Qt::Key_Down
+                    || key==Qt::Key_Right
+                    || key == Qt::Key_Up
+                    || key == Qt::Key_Left
+                    || key == Qt::Key_Enter
+                    || key == Qt::Key_Backspace;
+        }
+        return false;
+    }
+
+    void onTransition(QEvent *event) {
+        //QKeyEvent *keyEvent = static_cast<QKeyEvent *>(
+            //static_cast<QStateMachine::WrappedEvent *>(event)->event());
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+
+        int key = keyEvent->key();
+        switch (key) {
+        case Qt::Key_Backspace:
+            m_pui->slotStateTransitionBack();
+            break;
+        case Qt::Key_Enter:
+            m_pui->m_para.m_power100=m_pui->m_numEditor.m_i64;
+            m_pui->slotStateTransitionBack();
+            break;
+        case Qt::Key_Up:
+            m_pui->m_numEditor.inc();
+            m_pui->slotShowEditPower();
+            break;
+        case Qt::Key_Down:
+            m_pui->m_numEditor.dec();
+            m_pui->slotShowEditPower();
+            break;
+        case Qt::Key_Right:
+            m_pui->m_numEditor.moveCursor(-1);
+            m_pui->slotShowEditPower();
+            break;
+        case Qt::Key_Left:
+            m_pui->m_numEditor.moveCursor(1);
+            m_pui->slotShowEditPower();
+            break;
+        default:
+            break;
+        }
+    }
+
+
+signals:
+
+public slots:
+
+private:
+    objui *m_pui;
+
+};
 
 
 

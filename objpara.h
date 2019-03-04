@@ -19,6 +19,15 @@ public:
     qint64 m_maxRxFreq;
     qint64 m_minRxFreq;
 
+    qint64 m_maxTxRate;
+    qint64 m_minTxRate;
+    qint64 m_maxRxRate;
+    qint64 m_minRxRate;
+
+    qint64 m_power100;
+    qint64 m_maxPower;
+    qint64 m_minPower;
+
 signals:
 
 public slots:

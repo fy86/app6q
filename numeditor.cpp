@@ -18,7 +18,7 @@ numEditor::numEditor(QObject *parent) :
 }
 void numEditor::checkCursor()
 {
-    m_nLenInt = QString("%1").arg(m_i64).size();
+    setLen();
     if(m_maxPos>=m_nLenInt) m_maxPos = m_nLenInt-1;
     if(m_minPos>=m_nLenInt) m_minPos = m_nLenInt-1;
     if(m_posCursor>m_maxPos) m_posCursor=m_maxPos;
@@ -76,11 +76,23 @@ int numEditor::getCursor()
     int ret;
     const QLocale & locale = QLocale::c();
     QString s=locale.toString(m_step64);
-    ret=s.size()-1;
+
+    if(m_i64>0){
+        ret = s.size()-1;
+    }
+    else{
+        ret = m_posCursor;
+        if(ret>1)ret++;
+    }
 
     //qDebug(" getCursor: %d",ret);
     return ret;
 
+}
+void numEditor::setLen()
+{
+    m_nLenInt = QString("%1").arg(m_i64).size();
+    if(m_i64<0) m_nLenInt--;
 }
 
 void numEditor::setNum64(qint64 i64, qint64 max64, qint64 min64, int posMax, int posMin, int pos)
@@ -93,7 +105,8 @@ void numEditor::setNum64(qint64 i64, qint64 max64, qint64 min64, int posMax, int
     m_i64 = i64;
 
     //QString str=QString("%1").arg(m_i64);
-    m_nLenInt = QString("%1").arg(m_i64).size();
+    //m_nLenInt = QString("%1").arg(m_i64).size();
+    setLen();
 
     m_posCursor = modn(pos,m_nLenInt);
 

@@ -49,6 +49,9 @@ void objui::initMachine()
 
     m_pStateEditorTxFreq = new QState(m_pMachine);
     m_pStateEditorRxFreq = new QState(m_pMachine);
+    m_pStateEditorTxRate = new QState(m_pMachine);
+    m_pStateEditorRxRate = new QState(m_pMachine);
+    m_pStateEditorPower = new QState(m_pMachine);
 
     m_pStateParaPage1 = new QState(m_pMachine);
     m_pStateParaPage11 = new QState(m_pMachine);
@@ -78,6 +81,9 @@ void objui::initMachine()
 
     connect(m_pStateEditorTxFreq,SIGNAL(entered()),this,SLOT(slotShowEditTxFreq()));
     connect(m_pStateEditorRxFreq,SIGNAL(entered()),this,SLOT(slotShowEditRxFreq()));
+    connect(m_pStateEditorTxRate,SIGNAL(entered()),this,SLOT(slotShowEditTxRate()));
+    connect(m_pStateEditorRxRate,SIGNAL(entered()),this,SLOT(slotShowEditRxRate()));
+    connect(m_pStateEditorPower,SIGNAL(entered()),this,SLOT(slotShowEditPower()));
 
     connect(m_pStateParaPage1p2p,SIGNAL(entered()),this,SLOT(slotShowParaPage1p2p()));
     connect(m_pStateParaPage2p2p,SIGNAL(entered()),this,SLOT(slotShowParaPage2p2p()));
@@ -118,7 +124,7 @@ void objui::initMachine()
     m_pStateParaPage12->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage11);
     m_pStateParaPage12->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage2);
     m_pStateParaPage12->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage2);
-    m_pStateParaPage12->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
+    m_pStateParaPage12->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxRate);
     m_pStateParaPage12->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuPara);
 
     ketParaPage1 *pKetParaPage13 = new ketParaPage1(this);
@@ -127,7 +133,7 @@ void objui::initMachine()
     m_pStateParaPage13->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage12);
     m_pStateParaPage13->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage2);
     m_pStateParaPage13->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage2);
-    m_pStateParaPage13->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
+    m_pStateParaPage13->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorRxRate);
     m_pStateParaPage13->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuPara);
 
     ketParaPage1 *pKetParaPage2 = new ketParaPage1(this);
@@ -136,7 +142,7 @@ void objui::initMachine()
     m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage1);
     m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage1);
     m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage1);
-    m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
+    m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorPower);
     m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuPara);
 
     ketParaPage1 *pKetParaPage21 = new ketParaPage1(this);
@@ -159,13 +165,21 @@ void objui::initMachine()
 
     ketTxFreqEditor *pKetTxFreqEditor = new ketTxFreqEditor(this);
     m_pStateEditorTxFreq->addTransition(pKetTxFreqEditor);
-    //m_pStateEditorTxFreq->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage1);
-    //m_pStateEditorTxFreq->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage21);
-    //m_pStateEditorTxFreq->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage1);
-    //m_pStateEditorTxFreq->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage1);
-    //m_pStateEditorTxFreq->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
     m_pStateEditorTxFreq->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateParaPage1);
+    ketRxFreqEditor *pKetRxFreqEditor = new ketRxFreqEditor(this);
+    m_pStateEditorRxFreq->addTransition(pKetRxFreqEditor);
+    m_pStateEditorRxFreq->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateParaPage11);
 
+    ketTxRateEditor *pKetTxRateEditor = new ketTxRateEditor(this);
+    m_pStateEditorTxRate->addTransition(pKetTxRateEditor);
+    m_pStateEditorTxRate->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateParaPage12);
+    ketRxRateEditor *pKetRxRateEditor = new ketRxRateEditor(this);
+    m_pStateEditorRxRate->addTransition(pKetRxRateEditor);
+    m_pStateEditorRxRate->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateParaPage13);
+
+    ketPowerEditor *pKetPowerEditor = new ketPowerEditor(this);
+    m_pStateEditorPower->addTransition(pKetPowerEditor);
+    m_pStateEditorPower->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateParaPage2);
 
 
 
@@ -222,6 +236,14 @@ void objui::slotStateTransitionEnter()
 void objui::slotStateTransitionBackspace()
 {
     emit sigStateTransitionBackspace();
+}
+void objui::slotStateTransitionP2P()
+{
+    emit sigStateTransitionP2P();
+}
+void objui::slotStateTransitionCentral()
+{
+    emit sigStateTransitionCentral();
 }
 
 
@@ -532,6 +554,11 @@ void objui::slotShowMenu12()
 
 void objui::slotShowParaPage1()
 {
+    //qDebug("     show menu.page.1");
+
+    const QLocale & locale = QLocale::c();
+    QString s;//=locale.toString(m_numEditor.m_i64);
+
     zeroFB(0);
 
     m_numEditor.setNum64(m_para.m_TxFreq,m_para.m_maxTxFreq,m_para.m_minTxFreq,-1,0,-1);
@@ -541,10 +568,14 @@ void objui::slotShowParaPage1()
     strXY("发送速率",0,32,0x0f,0);// fasong sulv 发送频率  频率。频点  速率
     strXY("接收速率",0,48,0x0f,0);// jieshou sulv 发送频率  频率。频点
 
-    centerXY("14 000 000 000 Hz",16*4,0,256-16*4,16,1,1,0x0f,0);
-    centerXY("14 000 000 000 Hz",16*4,16,256-16*4,16,1,1,0x0f,0);
-    centerXY("1 024 kHz",16*4,32,256-16*4,16,1,1,0x0f,0);
-    centerXY("1 024 kHz",16*4,48,256-16*4,16,1,1,0x0f,0);
+    s=locale.toString(m_para.m_TxFreq).replace(',',' ') + " Hz";
+    centerXY(s.toLatin1().data(),16*4,0,256-16*4,16,1,1,0x0f,0);
+    s=locale.toString(m_para.m_RxFreq).replace(',',' ') + " Hz";
+    centerXY(s.toLatin1().data(),16*4,16,256-16*4,16,1,1,0x0f,0);
+    s=locale.toString(m_para.m_TxRate).replace(',',' ') + " kHz";
+    centerXY(s.toLatin1().data(),16*4,32,256-16*4,16,1,1,0x0f,0);
+    s=locale.toString(m_para.m_RxRate).replace(',',' ') + " kHz";
+    centerXY(s.toLatin1().data(),16*4,48,256-16*4,16,1,1,0x0f,0);
 
     strXY("1/2",256-8*3,48,0x0f,0);
 
@@ -555,6 +586,8 @@ void objui::slotShowParaPage1()
 }
 void objui::slotShowParaPage11()
 {
+    //qDebug("     show menu.page.11");
+
     zeroFB(0);
 
     m_numEditor.setNum64(m_para.m_RxFreq,m_para.m_maxRxFreq,m_para.m_minRxFreq,-1,0,-1);
@@ -564,10 +597,16 @@ void objui::slotShowParaPage11()
     strXY("发送速率",0,32,0x0f,0);// fasong sulv 发送频率  频率。频点  速率
     strXY("接收速率",0,48,0x0f,0);// jieshou sulv 发送频率  频率。频点
 
-    centerXY("14 000 000 000 Hz",16*4,0,256-16*4,16,1,1,0x0f,0);
-    centerXY("14 000 000 000 Hz",16*4,16,256-16*4,16,1,1,0x0f,0);
-    centerXY("1 024 kHz",16*4,32,256-16*4,16,1,1,0x0f,0);
-    centerXY("1 024 kHz",16*4,48,256-16*4,16,1,1,0x0f,0);
+    const QLocale & locale = QLocale::c();
+    QString s;//=locale.toString(m_numEditor.m_i64);
+    s=locale.toString(m_para.m_TxFreq).replace(',',' ') + " Hz";
+    centerXY(s.toLatin1().data(),16*4,0,256-16*4,16,1,1,0x0f,0);
+    s=locale.toString(m_para.m_RxFreq).replace(',',' ') + " Hz";
+    centerXY(s.toLatin1().data(),16*4,16,256-16*4,16,1,1,0x0f,0);
+    s=locale.toString(m_para.m_TxRate).replace(',',' ') + " kHz";
+    centerXY(s.toLatin1().data(),16*4,32,256-16*4,16,1,1,0x0f,0);
+    s=locale.toString(m_para.m_RxRate).replace(',',' ') + " kHz";
+    centerXY(s.toLatin1().data(),16*4,48,256-16*4,16,1,1,0x0f,0);
 
     strXY("1/2",256-8*3,48,0x0f,0);
 
@@ -578,17 +617,27 @@ void objui::slotShowParaPage11()
 }
 void objui::slotShowParaPage12()
 {
+    //qDebug("     show menu.page.12");
     zeroFB(0);
+
+    m_numEditor.setNum64(m_para.m_TxRate,m_para.m_maxTxRate,m_para.m_minTxRate,-1,0,0);
 
     strXY("发送频点",0,0,0x0f,0);// fasong pindian 发送频率  频率。频点
     strXY("接收频点",0,16,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
     strXY("发送速率",0,32,0,0x0f);// fasong sulv 发送频率  频率。频点  速率
     strXY("接收速率",0,48,0x0f,0);// jieshou sulv 发送频率  频率。频点
 
-    centerXY("14 000 000 000 Hz",16*4,0,256-16*4,16,1,1,0x0f,0);
-    centerXY("14 000 000 000 Hz",16*4,16,256-16*4,16,1,1,0x0f,0);
-    centerXY("1 024 kHz",16*4,32,256-16*4,16,1,1,0x0f,0);
-    centerXY("1 024 kHz",16*4,48,256-16*4,16,1,1,0x0f,0);
+    const QLocale & locale = QLocale::c();
+    QString s;//=locale.toString(m_numEditor.m_i64);
+    s=locale.toString(m_para.m_TxFreq).replace(',',' ') + " Hz";
+    centerXY(s.toLatin1().data(),16*4,0,256-16*4,16,1,1,0x0f,0);
+    s=locale.toString(m_para.m_RxFreq).replace(',',' ') + " Hz";
+    centerXY(s.toLatin1().data(),16*4,16,256-16*4,16,1,1,0x0f,0);
+
+    s=locale.toString(m_para.m_TxRate).replace(',',' ') + " kHz";
+    centerXY(s.toLatin1().data(),16*4,32,256-16*4,16,1,1,0x0f,0);
+    s=locale.toString(m_para.m_RxRate).replace(',',' ') + " kHz";
+    centerXY(s.toLatin1().data(),16*4,48,256-16*4,16,1,1,0x0f,0);
 
     strXY("1/2",256-8*3,48,0x0f,0);
 
@@ -599,17 +648,26 @@ void objui::slotShowParaPage12()
 }
 void objui::slotShowParaPage13()
 {
+    //qDebug("     show menu.page.13");
     zeroFB(0);
+
+    m_numEditor.setNum64(m_para.m_RxRate,m_para.m_maxRxRate,m_para.m_minRxRate,-1,0,0);
 
     strXY("发送频点",0,0,0x0f,0);// fasong pindian 发送频率  频率。频点
     strXY("接收频点",0,16,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
     strXY("发送速率",0,32,0x0f,0);// fasong sulv 发送频率  频率。频点  速率
     strXY("接收速率",0,48,0,0x0f);// jieshou sulv 发送频率  频率。频点
 
-    centerXY("14 000 000 000 Hz",16*4,0,256-16*4,16,1,1,0x0f,0);
-    centerXY("14 000 000 000 Hz",16*4,16,256-16*4,16,1,1,0x0f,0);
-    centerXY("1 024 kHz",16*4,32,256-16*4,16,1,1,0x0f,0);
-    centerXY("1 024 kHz",16*4,48,256-16*4,16,1,1,0x0f,0);
+    const QLocale & locale = QLocale::c();
+    QString s;//=locale.toString(m_numEditor.m_i64);
+    s=locale.toString(m_para.m_TxFreq).replace(',',' ') + " Hz";
+    centerXY(s.toLatin1().data(),16*4,0,256-16*4,16,1,1,0x0f,0);
+    s=locale.toString(m_para.m_RxFreq).replace(',',' ') + " Hz";
+    centerXY(s.toLatin1().data(),16*4,16,256-16*4,16,1,1,0x0f,0);
+    s=locale.toString(m_para.m_TxRate).replace(',',' ') + " kHz";
+    centerXY(s.toLatin1().data(),16*4,32,256-16*4,16,1,1,0x0f,0);
+    s=locale.toString(m_para.m_RxRate).replace(',',' ') + " kHz";
+    centerXY(s.toLatin1().data(),16*4,48,256-16*4,16,1,1,0x0f,0);
 
     strXY("1/2",256-8*3,48,0x0f,0);
 
@@ -620,13 +678,20 @@ void objui::slotShowParaPage13()
 }
 void objui::slotShowParaPage2()
 {
+    char buf[20];
     zeroFB(0);
+
+    m_numEditor.setNum64(m_para.m_power100,m_para.m_maxPower,m_para.m_minPower,-1,0,0);
 
     strXY("发送功率",0,0,0,0x0f);// fasong gonglv 发送 功率
     strXY("业务类型",0,16,0x0f,0);// yewu leixing 业务类型
     strXY("编码方式",0,32,0x0f,0);// bianma fangshi 编码方式
 
-    centerXY("-37.25 dbm",4*16,0,256-16*4,16,1,1,0x0f,0);
+    const QLocale & locale = QLocale::c();
+    QString s;//=locale.toString(m_numEditor.m_i64);
+    s=locale.toString(0.01*m_para.m_power100) + " dBm";
+    sprintf(buf,"%.2f dBm",0.01*m_para.m_power100);
+    centerXY(buf,4*16,0,256-16*4,16,1,1,0x0f,0);
     centerXY("网桥",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
     centerXY("QPSK1/2",4*16,32,256-16*4,16,1,1,0x0f,0);
 
@@ -695,6 +760,73 @@ void objui::slotShowEditTxFreq()
 }
 void objui::slotShowEditRxFreq()
 {
+    zeroFB(0);
+
+    const QLocale & locale = QLocale::c();
+    QString s=locale.toString(m_numEditor.m_i64);
+
+    centerXY("接 收 频 点",0,10,256,16,1,1,0x0f,0);
+    centerXY(s.replace(',',' ').toLatin1().data(),0,64-12-16,(7+14)<<3,16,2,1,0x0f,0);
+    strXY("  Hz",(14+7)<<3,64-12-16,0x0f,0);
+    underLine(0,64-12-16,14+7-1-m_numEditor.getCursor(),0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+
+void objui::slotShowEditTxRate()
+{
+    zeroFB(0);
+
+    const QLocale & locale = QLocale::c();
+    QString s=locale.toString(m_numEditor.m_i64);
+
+    centerXY("发 送 速 率",0,10,256,16,1,1,0x0f,0);
+    centerXY(s.replace(',',' ').toLatin1().data(),0,64-12-16,(11+5)<<3,16,2,1,0x0f,0);  // 32-8=24 -10 7    (8+7+6)
+    strXY("  kHz",(11+5)<<3,64-12-16,0x0f,0);
+    underLine(0,64-12-16,(11+5)-1-m_numEditor.getCursor(),0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objui::slotShowEditRxRate()
+{
+    zeroFB(0);
+
+    const QLocale & locale = QLocale::c();
+    QString s=locale.toString(m_numEditor.m_i64);
+
+    centerXY("接 收 速 率",0,10,256,16,1,1,0x0f,0);
+    centerXY(s.replace(',',' ').toLatin1().data(),0,64-12-16,(11+5)<<3,16,2,1,0x0f,0);
+    strXY("  kHz",(11+5)<<3,64-12-16,0x0f,0);
+    underLine(0,64-12-16,11+5-1-m_numEditor.getCursor(),0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objui::slotShowEditPower()
+{
+    zeroFB(0);
+    char buf[20];
+
+    const QLocale & locale = QLocale::c();
+    QString s=locale.toString(0.01 * m_numEditor.m_i64);
+    sprintf(buf,"%.2f",0.01*m_numEditor.m_i64);
+
+    centerXY("发 送 功 率",0,10,256,16,1,1,0x0f,0);
+    centerXY(buf,0,64-12-16,(11+6)<<3,16,2,1,0x0f,0);
+    strXY(" dBm",(11+6)<<3,64-12-16,0x0f,0);
+    underLine(0,64-12-16,11+6-1-m_numEditor.getCursor(),0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
 
 }
 

@@ -39,11 +39,16 @@ public:
     QState *m_pStateMenuPara;
     QState *m_pStateMenuWorkMode;
 
+    QState *m_pStateWorkMode;
+
     QState *m_pStateMenu10;
     QState *m_pStateMenu11;
 
     QState *m_pStateEditorTxFreq;
     QState *m_pStateEditorRxFreq;
+    QState *m_pStateEditorTxRate;
+    QState *m_pStateEditorRxRate;
+    QState *m_pStateEditorPower;
 
     QState *m_pStateParaPage1;// txFreq
     QState *m_pStateParaPage11;// rxFreq
@@ -73,6 +78,8 @@ signals:
     void sigStateTransitionBackspace();
     void sigStateTransitionNext();
     void sigStateTransitionBack();
+    void sigStateTransitionP2P();
+    void sigStateTransitionCentral();
 
     void sig0000();
     void sigKeyEnter();
@@ -106,6 +113,8 @@ public slots:
     void slotStateTransitionBackspace();
     void slotStateTransitionNext();
     void slotStateTransitionBack();
+    void slotStateTransitionP2P();
+    void slotStateTransitionCentral();
 
     void slotShowMenu10();
     void slotShowMenu11();
@@ -123,6 +132,9 @@ public slots:
 
     void slotShowEditTxFreq();
     void slotShowEditRxFreq();
+    void slotShowEditTxRate();
+    void slotShowEditRxRate();
+    void slotShowEditPower();
 };
 
 #endif // OBJUI_H

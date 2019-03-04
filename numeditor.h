@@ -47,6 +47,8 @@ public:
     int getCursor();
     void checkCursor();
 
+    void setLen();
+
 signals:
 
 public slots:

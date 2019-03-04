@@ -323,10 +323,10 @@ void objFB::demo16()
 }
 void objFB::underLine(int left, int top, int n, int c)
 {
-    int x,y,i;
+    int i;
     for(i=0;i<8;i++){
-        draw1(x+(n<<3)+i,top+14,c);
-        draw1(x+(n<<3)+i,top+15,c);
+        draw1(left+(n<<3)+i,top+14,c);
+        draw1(left+(n<<3)+i,top+15,c);
     }
 }
 
@@ -697,12 +697,10 @@ void objFB::slotShowMenu02()
     //qDebug(" func slotShow.menu.02");
     zeroFB(0);
 
-    centerXY(QString("通信控制  14 000 000 000 Hz"),0,0,256,16,0,0);
-#if 0
     centerXY(QString("通  信  控  制"),0,0,256,16,1,1);
     centerXY(QString("通  信  参  数"),0,24,256,16,1,1);
     centerXY(QString("工  作  模  式"),0,48,256,16,1,1,0,0x0f);
-#endif
+
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
     emit sigFlush();
