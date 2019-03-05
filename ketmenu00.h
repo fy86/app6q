@@ -7,6 +7,242 @@
 #include <QtGui/QKeyEvent>
 
 #include "objui.h"
+class ketBase : public QEventTransition
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketBase(objui *obj):QEventTransition(obj,QEvent::KeyPress){
+        m_pui = obj;
+    }
+
+    objui *m_pui;
+
+    virtual void doKeyUp(){}
+    virtual void doKeyDown(){}
+    virtual void doKeyRight(){}
+    virtual void doKeyLeft(){}
+    virtual void doKeyEnter(){}
+    virtual void doKeyBackspace(){}
+
+protected:
+    bool eventTest(QEvent *event) {
+        if (event->type() == QEvent::StateMachineWrapped &&
+            static_cast<QStateMachine::WrappedEvent *>(event)->event()->type() == QEvent::KeyPress) {
+            QEvent *wrappedEvent = static_cast<QStateMachine::WrappedEvent *>(event)->event();
+
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(wrappedEvent);
+            int key = keyEvent->key();
+
+            return key == Qt::Key_Down
+                    || key==Qt::Key_Right
+                    || key == Qt::Key_Up
+                    || key == Qt::Key_Left
+                    || key == Qt::Key_Enter
+                    || key == Qt::Key_Backspace;
+        }
+        else if (event->type() == QEvent::KeyPress) {
+
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+            int key = keyEvent->key();
+
+            return key == Qt::Key_Down
+                    || key==Qt::Key_Right
+                    || key == Qt::Key_Up
+                    || key == Qt::Key_Left
+                    || key == Qt::Key_Enter
+                    || key == Qt::Key_Backspace;
+        }
+        return false;
+    }
+
+    void onTransition(QEvent *event) {
+        //QKeyEvent *keyEvent = static_cast<QKeyEvent *>(
+            //static_cast<QStateMachine::WrappedEvent *>(event)->event());
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+
+        int key = keyEvent->key();
+        switch (key) {
+        case Qt::Key_Left: doKeyLeft(); break;
+        case Qt::Key_Up: doKeyUp(); break;
+        case Qt::Key_Right: doKeyRight(); break;
+        case Qt::Key_Down: doKeyDown(); break;
+        case Qt::Key_Enter: doKeyEnter(); break;
+        case Qt::Key_Backspace: doKeyBackspace(); break;
+        default:  break;
+        }
+    }
+
+
+signals:
+
+public slots:
+
+};
+#if 0
+#endif
+class ketTDMeditor : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketTDMeditor(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        m_pui->m_para.m_TDMfreq = m_pui->m_numEditor.m_i64;
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyUp(){
+        m_pui->m_numEditor.inc();
+        m_pui->slotShowEditTDM();
+    }
+    virtual void doKeyDown(){
+        m_pui->m_numEditor.dec();
+        m_pui->slotShowEditTDM();
+    }
+    virtual void doKeyLeft(){
+        m_pui->m_numEditor.moveCursor(1);
+        m_pui->slotShowEditTDM();
+    }
+    virtual void doKeyRight(){
+        m_pui->m_numEditor.moveCursor(-1);
+        m_pui->slotShowEditTDM();
+    }
+
+};
+class ketTxRateCentralEditor : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketTxRateCentralEditor(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        m_pui->m_para.m_TxRateCentral = m_pui->m_numEditor.m_i64;
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyUp(){
+        m_pui->m_numEditor.inc();
+        m_pui->slotShowEditTxRateCentral();
+    }
+    virtual void doKeyDown(){
+        m_pui->m_numEditor.dec();
+        m_pui->slotShowEditTxRateCentral();
+    }
+    virtual void doKeyLeft(){
+        m_pui->m_numEditor.moveCursor(1);
+        m_pui->slotShowEditTxRateCentral();
+    }
+    virtual void doKeyRight(){
+        m_pui->m_numEditor.moveCursor(-1);
+        m_pui->slotShowEditTxRateCentral();
+    }
+
+};
+class ketRxRateCentralEditor : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketRxRateCentralEditor(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        m_pui->m_para.m_RxRateCentral = m_pui->m_numEditor.m_i64;
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyUp(){
+        m_pui->m_numEditor.inc();
+        m_pui->slotShowEditRxRateCentral();
+    }
+    virtual void doKeyDown(){
+        m_pui->m_numEditor.dec();
+        m_pui->slotShowEditRxRateCentral();
+    }
+    virtual void doKeyLeft(){
+        m_pui->m_numEditor.moveCursor(1);
+        m_pui->slotShowEditRxRateCentral();
+    }
+    virtual void doKeyRight(){
+        m_pui->m_numEditor.moveCursor(-1);
+        m_pui->slotShowEditRxRateCentral();
+    }
+
+};
+class ketPowerCentralEditor : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketPowerCentralEditor(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        m_pui->m_para.m_power100Central = m_pui->m_numEditor.m_i64;
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyUp(){
+        m_pui->m_numEditor.inc();
+        m_pui->slotShowEditPowerCentral();
+    }
+    virtual void doKeyDown(){
+        m_pui->m_numEditor.dec();
+        m_pui->slotShowEditPowerCentral();
+    }
+    virtual void doKeyLeft(){
+        m_pui->m_numEditor.moveCursor(1);
+        m_pui->slotShowEditPowerCentral();
+    }
+    virtual void doKeyRight(){
+        m_pui->m_numEditor.moveCursor(-1);
+        m_pui->slotShowEditPowerCentral();
+    }
+
+};
+class ketNumberEditor : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketNumberEditor(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+
+        m_pui->m_para.m_number = m_pui->m_numEditor.m_i64;
+        sprintf(m_pui->m_para.m_pNumber,"%08lld",m_pui->m_para.m_number);
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyUp(){
+        m_pui->m_numEditor.strInc();
+        m_pui->slotShowEditNumber();
+    }
+    virtual void doKeyDown(){
+        m_pui->m_numEditor.strDec();
+        m_pui->slotShowEditNumber();
+    }
+    virtual void doKeyLeft(){
+        m_pui->m_numEditor.strMoveCursor(1);
+        m_pui->slotShowEditNumber();
+    }
+    virtual void doKeyRight(){
+        m_pui->m_numEditor.strMoveCursor(-1);
+        m_pui->slotShowEditNumber();
+    }
+
+};
 
 class ketMenu00 : public QEventTransition
 {
@@ -150,7 +386,8 @@ protected:
                 m_pui->slotStateTransitionDown();
                 break;
         case Qt::Key_Enter:
-            m_pui->slotStateTransitionNext();
+            if(m_pui->m_para.m_bModeP2P) m_pui->slotStateTransitionP2P();
+            else m_pui->slotStateTransitionCentral();
             break;
         default:
             break;
@@ -860,7 +1097,6 @@ class ketParaPage1 : public QEventTransition
 {
     Q_OBJECT
 public:
-    //explicit ketMenu00(QObject *parent = 0);
     ketParaPage1(objui *obj):QEventTransition(obj,QEvent::KeyPress){
         m_pui = obj;
 
