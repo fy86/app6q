@@ -50,6 +50,12 @@ public:
     QState *m_pStateEditorRxRate;
     QState *m_pStateEditorPower;
 
+    QState *m_pStateEditorTDM;
+    QState *m_pStateEditorNumber;
+    QState *m_pStateEditorTxRateCentral;
+    QState *m_pStateEditorRxRateCentral;
+    QState *m_pStateEditorPowerCentral;
+
     QState *m_pStateParaPage1;// txFreq
     QState *m_pStateParaPage11;// rxFreq
     QState *m_pStateParaPage12;//
@@ -57,8 +63,15 @@ public:
     QState *m_pStateParaPage2;
     QState *m_pStateParaPage21;
     QState *m_pStateParaPage22;
-    QState *m_pStateParaPage1p2p;
-    QState *m_pStateParaPage2p2p;
+
+    QState *m_pStateParaPage1c;// txFreq
+    QState *m_pStateParaPage11c;// rxFreq
+    QState *m_pStateParaPage12c;//
+    QState *m_pStateParaPage13c;
+    QState *m_pStateParaPage2c;
+    QState *m_pStateParaPage21c;
+    QState *m_pStateParaPage22c;
+
 
     void buildMachine();
     void initMachine();
@@ -68,6 +81,8 @@ public:
     void doMenu10();
     void doMenuPara();// enter paraPage1
     void changeSelectMenu10(int step);
+
+    void showDataParaPage1c();
 signals:
 
     void sigStateTransitionUp();
@@ -76,6 +91,7 @@ signals:
     void sigStateTransitionRight();
     void sigStateTransitionEnter();
     void sigStateTransitionBackspace();
+
     void sigStateTransitionNext();
     void sigStateTransitionBack();
     void sigStateTransitionP2P();
@@ -127,14 +143,27 @@ public slots:
     void slotShowParaPage2();
     void slotShowParaPage21();
     void slotShowParaPage22();
-    void slotShowParaPage1p2p();
-    void slotShowParaPage2p2p();
+
+    void slotShowParaPage1c();
+    void slotShowParaPage11c();
+    void slotShowParaPage12c();
+    void slotShowParaPage13c();
+    void slotShowParaPage2c();
+    void slotShowParaPage21c();
+    void slotShowParaPage22c();
+
 
     void slotShowEditTxFreq();
     void slotShowEditRxFreq();
     void slotShowEditTxRate();
     void slotShowEditRxRate();
     void slotShowEditPower();
+
+    void slotShowEditTDM();
+    void slotShowEditNumber();
+    void slotShowEditTxRateCentral();
+    void slotShowEditRxRateCentral();
+    void slotShowEditPowerCentral();
 };
 
 #endif // OBJUI_H

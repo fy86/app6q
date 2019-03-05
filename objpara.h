@@ -28,6 +28,29 @@ public:
     qint64 m_maxPower;
     qint64 m_minPower;
 
+    qint64 m_TDMfreq;
+    qint64 m_maxTDMfreq;
+    qint64 m_minTDMfreq;
+
+    char m_pNumber[20];
+    qint64 m_number;
+    int m_nLenNumber;
+
+    int m_TxRateCentral;
+    int m_RxRateCentral;
+    qint64 m_maxTxRateCentral;
+    qint64 m_minTxRateCentral;
+    qint64 m_maxRxRateCentral;
+    qint64 m_minRxRateCentral;
+
+    qint64 m_power100Central;
+    qint64 m_maxPowerCentral;
+    qint64 m_minPowerCentral;
+
+    bool m_bModeP2P;
+    bool m_bModeCentral;
+
+
 signals:
 
 public slots:

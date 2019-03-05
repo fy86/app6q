@@ -38,25 +38,37 @@ void numEditor::dec()
     checkCursor();
 
 }
+void numEditor::strInc()
+{
+    qint64 i,j;
+    i = m_i64/(10*m_step64) * (10*m_step64);
+    j = m_i64%(10*m_step64);
+    j = (j+m_step64)%(10*m_step64);
+    m_i64 = i+j;
+}
+void numEditor::strDec()
+{
+    qint64 i,j;
+    i = m_i64/(10*m_step64) * (10*m_step64);
+    j = m_i64%(10*m_step64);
+    j = (j-m_step64+10*m_step64)%(10*m_step64);
+    m_i64 = i+j;
+
+}
 
 void numEditor::setStep()
 {
-    const QLocale & locale = QLocale::c();
-    QString s;
-
     int i;
-    switch(paraType){
-    case myqt::paraTypeInt64:
-        m_step64 = 1;
-        for(i=0;i<m_posCursor;i++){
-            m_step64 *= 10;
-        }
-        s=locale.toString(m_step64);
-        //qDebug(" step64(%d): %s",m_posCursor,s.toLatin1().data());
-        break;
-    default:
-        break;
+    m_step64 = 1;
+    for(i=0;i<m_posCursor;i++){
+        m_step64 *= 10;
     }
+}
+void numEditor::strMoveCursor(int n)
+{
+
+    m_posCursor = modn(m_posCursor+n,m_nLenInt);
+    setStep();
 }
 void numEditor::moveCursor(int n)
 {
@@ -88,6 +100,11 @@ int numEditor::getCursor()
     //qDebug(" getCursor: %d",ret);
     return ret;
 
+}
+int numEditor::strGetCursor()
+{
+    if(m_posCursor>3)return 1+m_posCursor;
+    else return m_posCursor;
 }
 void numEditor::setLen()
 {
@@ -122,6 +139,21 @@ void numEditor::setNum64(qint64 i64, qint64 max64, qint64 min64, int posMax, int
            QString("%1").arg(m_min64).toLatin1().data(),
            m_maxPos,m_minPos,m_posCursor,getCursor());
 #endif
+}
+void numEditor::setNumStr(qint64 i64,qint64 max64,qint64 min64, int posMax, int posMin, int pos)
+{
+    m_i64 = i64 % 100000000;
+    m_i64old = m_i64;
+
+    m_nLenInt=8;
+
+    m_posCursor = modn(pos,m_nLenInt);
+
+    m_max64 = max64;
+    m_min64 = min64;
+    m_maxPos = modn(posMax,m_nLenInt);
+    m_minPos = modn(posMin,m_nLenInt);
+    setStep();
 }
 
 

@@ -38,6 +38,7 @@ public:
     double m_stepDouble;
 
     void setNum64(qint64 i64,qint64 max64,qint64 min64,int posMax,int posMin=0,int pos=0);
+    void setNumStr(qint64 i64,qint64 max64,qint64 min64,int posMax,int posMin=0,int pos=0);
     void setStep();
     void inc();
     void dec();
@@ -48,6 +49,12 @@ public:
     void checkCursor();
 
     void setLen();
+
+    void strInc();
+    void strDec();
+    void strMoveCursor(int n);
+    int strGetCursor();
+
 
 signals:
 
