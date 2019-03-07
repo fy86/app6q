@@ -47,6 +47,9 @@ public:
     qint64 m_maxPowerCentral;
     qint64 m_minPowerCentral;
 
+    bool m_bDevModeBridge;
+    bool m_bDevModeRouter;
+
     bool m_bModeP2P;
     bool m_bModeCentral;
 

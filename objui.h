@@ -7,6 +7,8 @@
 #include <QtGui/QKeyEventTransition>
 #include <QTcpSocket>
 #include <QLocale>
+#include <QTimer>
+#include <QDateTime>
 
 #include <iostream>
 #include <fcntl.h>
@@ -35,6 +37,12 @@ public:
     numEditor m_numEditor;
 
     QStateMachine *m_pMachine;
+
+    QState *m_pStateGroupTimeout;
+
+    QState *m_pStateStatusPage1;
+    QState *m_pStateStatusPage2;
+
     QState *m_pStateMenuCtrl;
     QState *m_pStateMenuPara;
     QState *m_pStateMenuWorkMode;
@@ -72,9 +80,10 @@ public:
     QState *m_pStateParaPage21c;
     QState *m_pStateParaPage22c;
 
+    QTimer *m_pTimer60;
+    QTimer *m_pTimer1s;
 
     void buildMachine();
-    void initMachine();
 
     void getColorMenu10(int n,int *pc,int *pbg);
 
@@ -92,6 +101,8 @@ signals:
     void sigStateTransitionEnter();
     void sigStateTransitionBackspace();
 
+    void sigStateTransition1s();
+    void sigStateTransitionTimeout();
     void sigStateTransitionNext();
     void sigStateTransitionBack();
     void sigStateTransitionP2P();
@@ -106,6 +117,8 @@ signals:
     void sigKeyRight();
 
 public slots:
+    void initMachine();
+
     void slotCUState(QByteArray ba);
     void slotReadTCP();
     void slotErrTCP();
@@ -131,6 +144,9 @@ public slots:
     void slotStateTransitionBack();
     void slotStateTransitionP2P();
     void slotStateTransitionCentral();
+
+    void slotShowStatusPage1();
+    void slotShowStatusPage2();
 
     void slotShowMenu10();
     void slotShowMenu11();

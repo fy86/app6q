@@ -325,4 +325,5 @@ void objOled::OLED_Init()
 
         emit sigFlush();
 
+        emit sigReadyOled();
 }

@@ -14,6 +14,18 @@ objui::objui(QObject *parent) :
     initTcp();
 
     connect(m_cu.getRecvNotifyObject(),SIGNAL(sigCUState(QByteArray)),this,SLOT(slotCUState(QByteArray)));
+
+    m_pTimer60=new QTimer(this);
+    m_pTimer60->setInterval(120000);
+    m_pTimer60->setSingleShot(true);
+    connect(m_pTimer60,SIGNAL(timeout()),this,SIGNAL(sigStateTransitionTimeout()));
+    m_pTimer1s=new QTimer(this);
+    m_pTimer1s->setInterval(1000);
+    connect(m_pTimer1s,SIGNAL(timeout()),this,SIGNAL(sigStateTransition1s()));
+
+    m_pMachine = new QStateMachine;
+    connect(this,SIGNAL(sigReadyOled()),this,SLOT(initMachine()));
+
 }
 void objui::initTcp()
 {
@@ -38,11 +50,17 @@ void objui::slotReadTCP()
 
 void objui::initMachine()
 {
-    m_pMachine = new QStateMachine;
+    if(m_pMachine->isRunning()) return;
+    //m_pMachine = new QStateMachine;
 
-    m_pStateMenuCtrl = new QState(m_pMachine);//
-    m_pStateMenuPara = new QState(m_pMachine);
-    m_pStateMenuWorkMode = new QState(m_pMachine);
+    m_pStateGroupTimeout = new QState(m_pMachine);
+
+    m_pStateStatusPage1 = new QState(m_pMachine);
+    m_pStateStatusPage2 = new QState(m_pStateGroupTimeout);
+
+    m_pStateMenuCtrl = new QState(m_pStateGroupTimeout);//
+    m_pStateMenuPara = new QState(m_pStateGroupTimeout);
+    m_pStateMenuWorkMode = new QState(m_pStateGroupTimeout);
 
     m_pStateMenu10 = new QState(m_pMachine);// p2p and central
     m_pStateMenu11 = new QState(m_pMachine);//
@@ -76,7 +94,11 @@ void objui::initMachine()
     m_pStateParaPage22c = new QState(m_pMachine);
 
 
-    m_pMachine->setInitialState(m_pStateMenuCtrl);
+    m_pStateGroupTimeout->setInitialState(m_pStateMenuCtrl);
+    m_pMachine->setInitialState(m_pStateStatusPage1);
+
+    connect(m_pStateStatusPage1,SIGNAL(entered()),this,SLOT(slotShowStatusPage1()));
+    connect(m_pStateStatusPage2,SIGNAL(entered()),this,SLOT(slotShowStatusPage2()));
 
     connect(m_pStateMenuCtrl,SIGNAL(entered()),this,SLOT(slotShowMenu00()));
     connect(m_pStateMenuPara,SIGNAL(entered()),this,SLOT(slotShowMenu01()));
@@ -112,19 +134,33 @@ void objui::initMachine()
     connect(m_pStateEditorRxRateCentral,SIGNAL(entered()),this,SLOT(slotShowEditRxRateCentral()));
     connect(m_pStateEditorPowerCentral,SIGNAL(entered()),this,SLOT(slotShowEditPowerCentral()));
 
+    m_pStateGroupTimeout->addTransition(this,SIGNAL(sigStateTransitionTimeout()),m_pStateStatusPage1);
 
-    ketMenu00 *pKetMenu00 = new ketMenu00(this);
-    m_pStateMenuCtrl->addTransition(pKetMenu00);
+    ketStatus1 *pKetStatus1 = new ketStatus1(this);
+    m_pStateStatusPage1->addTransition(pKetStatus1);
+    m_pStateStatusPage1->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateStatusPage2);
+    m_pStateStatusPage1->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuCtrl);
+    m_pStateStatusPage1->addTransition(this,SIGNAL(sigStateTransition1s()),m_pStateStatusPage1);
+    ketStatus2 *pKetStatus2 = new ketStatus2(this);
+    m_pStateStatusPage2->addTransition(pKetStatus2);
+    m_pStateStatusPage2->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
+    m_pStateStatusPage2->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuCtrl);
+
+
+
+    ketMenuCtrl *pKetMenuCtrl = new ketMenuCtrl(this);
+    m_pStateMenuCtrl->addTransition(pKetMenuCtrl);
     m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuPara);
     m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuWorkMode);
     m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionEnter()),m_pStateMenu10);
+    m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
     ketMenuPara *pKetMenuPara = new ketMenuPara(this);
     m_pStateMenuPara->addTransition(pKetMenuPara);
     m_pStateMenuPara->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuWorkMode);
     m_pStateMenuPara->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuCtrl);
     m_pStateMenuPara->addTransition(this,SIGNAL(sigStateTransitionP2P()),m_pStateParaPage1);
     m_pStateMenuPara->addTransition(this,SIGNAL(sigStateTransitionCentral()),m_pStateParaPage1c);
-    //m_pStateMenuPara->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateNumEditor);
+    m_pStateMenuPara->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
 
     ketParaPage1 *pKetParaPage1 = new ketParaPage1(this);
     m_pStateParaPage1->addTransition(pKetParaPage1);
@@ -292,10 +328,11 @@ void objui::initMachine()
 
 
 
-    ketMenu02 *pKetMenu02 = new ketMenu02(this);
-    m_pStateMenuWorkMode->addTransition(pKetMenu02);
+    ketMenuWorkMode *pKetMenuWorkMode = new ketMenuWorkMode(this);
+    m_pStateMenuWorkMode->addTransition(pKetMenuWorkMode);
     m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuCtrl);
     m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuPara);
+    m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
     ketMenu10 *pKetMenu10 = new ketMenu10(this);
     m_pStateMenu10->addTransition(pKetMenu10);
     m_pStateMenu10->addTransition(this,SIGNAL(sigStateTransitionBackspace()),m_pStateMenuCtrl);
@@ -304,6 +341,8 @@ void objui::initMachine()
 
 
     m_pMachine->start();
+
+    m_pTimer1s->start();
 }
 void objui::doMenuPara()
 {
@@ -446,26 +485,32 @@ void objui::slotKey(int key)
     case KEY_DOWN:
         //qDebug(" slotKey(............ func.objui");
         ev = new QKeyEvent(QEvent::KeyPress,Qt::Key_Down,Qt::NoModifier);
+        m_pTimer60->start();
         m_pMachine->postEvent(ev);
         break;
     case KEY_UP:
         ev = new QKeyEvent(QEvent::KeyPress,Qt::Key_Up,Qt::NoModifier);
+        m_pTimer60->start();
         m_pMachine->postEvent(ev);
         break;
     case KEY_LEFT:
         ev = new QKeyEvent(QEvent::KeyPress,Qt::Key_Left,Qt::NoModifier);
+        m_pTimer60->start();
         m_pMachine->postEvent(ev);
         break;
     case KEY_RIGHT:
         ev = new QKeyEvent(QEvent::KeyPress,Qt::Key_Right,Qt::NoModifier);
+        m_pTimer60->start();
         m_pMachine->postEvent(ev);
         break;
     case KEY_ENTER:
         ev = new QKeyEvent(QEvent::KeyPress,Qt::Key_Enter,Qt::NoModifier);
+        m_pTimer60->start();
         m_pMachine->postEvent(ev);
         break;
     case KEY_BACKSPACE:
         ev = new QKeyEvent(QEvent::KeyPress,Qt::Key_Backspace,Qt::NoModifier);
+        m_pTimer60->start();
         m_pMachine->postEvent(ev);
         break;
     default:
@@ -1193,6 +1238,39 @@ void objui::slotShowParaPage22c()
 
 }
 
+void objui::slotShowStatusPage1()
+{
+    QDateTime dt=QDateTime::currentDateTime();
+    zeroFB(0);
 
+    //strXY(QString("网桥"),0,0);
+    //strXY(QString("空    闲"),0,0);
+    strXY(dt.toString("hh:mm:ss").toLatin1().data(),0,0);
+    strXY(QString("点  对  点"),128+48,0);
+    strXY(QString("S/N: 12.34"),128+48,48);
+    strXY(QString("发 : 1024k"),128+48,16);
+    strXY(QString("收 : 1024k"),128+48,32);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objui::slotShowStatusPage2()
+{
+    zeroFB(0);
+
+    strXY(QString("aaaaaaaaaaaaa网桥"),0,0);
+    strXY(QString("空    闲"),0,0);
+    strXY(QString("点  对  点"),128+48,0);
+    strXY(QString("S/N: 12.34"),128+48,48);
+    strXY(QString("发 : 1024k"),128+48,16);
+    strXY(QString("收 : 1024k"),128+48,32);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
 
 

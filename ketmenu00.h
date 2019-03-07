@@ -79,8 +79,60 @@ signals:
 public slots:
 
 };
-#if 0
-#endif
+
+class ketStatus1 : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketStatus1(objui *obj):ketBase(obj){}
+
+    virtual void doKeyEnter(){
+        m_pui->slotStateTransitionNext();
+    }
+    virtual void doKeyUp(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyDown(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyLeft(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyRight(){
+        m_pui->slotStateTransitionDown();
+    }
+
+};
+class ketStatus2 : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketStatus2(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        m_pui->slotStateTransitionNext();
+    }
+    virtual void doKeyUp(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyDown(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyLeft(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyRight(){
+        m_pui->slotStateTransitionBack();
+    }
+
+};
+
+
 class ketTDMeditor : public ketBase
 {
     Q_OBJECT
@@ -244,243 +296,86 @@ public:
 
 };
 
-class ketMenu00 : public QEventTransition
+class ketMenuCtrl : public ketBase
 {
     Q_OBJECT
 public:
-    //explicit ketMenu00(QObject *parent = 0);
-    ketMenu00(objui *obj):QEventTransition(obj,QEvent::KeyPress){
-        m_pui = obj;
+    ketMenuCtrl(objui *obj):ketBase(obj){}
 
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
     }
-
-protected:
-    bool eventTest(QEvent *event) {
-        //qDebug("  ketMenu00 event all %d",event->type());
-        if (event->type() == QEvent::StateMachineWrapped &&
-            static_cast<QStateMachine::WrappedEvent *>(event)->event()->type() == QEvent::KeyPress) {
-            QEvent *wrappedEvent = static_cast<QStateMachine::WrappedEvent *>(event)->event();
-
-            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(wrappedEvent);
-            int key = keyEvent->key();
-
-            //qDebug(" ketMenu00 keypress");
-            return key == Qt::Key_Down
-                    || key==Qt::Key_Right
-                    || key == Qt::Key_Up
-                    || key == Qt::Key_Left;
-        }
-        else if (event->type() == QEvent::KeyPress) {
-
-            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-            int key = keyEvent->key();
-
-            //qDebug(" ketMenu00 keypress  2222  key:%d",key);
-            //return true;
-            return key == Qt::Key_Down
-                    || key==Qt::Key_Right
-                    || key == Qt::Key_Up
-                    || key == Qt::Key_Left
-                    || key == Qt::Key_Enter;
-        }
-        return false;
+    virtual void doKeyEnter(){
+        m_pui->slotStateTransitionEnter();
     }
-
-    void onTransition(QEvent *event) {
-        //QKeyEvent *keyEvent = static_cast<QKeyEvent *>(
-            //static_cast<QStateMachine::WrappedEvent *>(event)->event());
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-
-        int key = keyEvent->key();
-        switch (key) {
-            case Qt::Key_Left:
-            case Qt::Key_Up:
-                m_pui->slotStateTransitionUp();
-                break;
-            case Qt::Key_Right:
-            case Qt::Key_Down:
-                //qDebug("   ket00 down");
-                m_pui->slotStateTransitionDown();
-                break;
-            case Qt::Key_Enter:
-                m_pui->slotStateTransitionEnter();
-                break;
-            default:
-                break;
-        }
+    virtual void doKeyUp(){
+        m_pui->slotStateTransitionUp();
     }
-
-
-signals:
-
-public slots:
-
-private:
-    objui *m_pui;
+    virtual void doKeyDown(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyLeft(){
+        m_pui->slotStateTransitionUp();
+    }
+    virtual void doKeyRight(){
+        m_pui->slotStateTransitionDown();
+    }
 
 };
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \brief The ketMenu01 class
-///
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-class ketMenuPara : public QEventTransition
+class ketMenuPara : public ketBase
 {
     Q_OBJECT
 public:
-    //explicit ketMenu00(QObject *parent = 0);
-    ketMenuPara(objui *obj):QEventTransition(obj,QEvent::KeyPress){
-        m_pui = obj;
+    ketMenuPara(objui *obj):ketBase(obj){}
 
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
     }
-
-protected:
-    bool eventTest(QEvent *event) {
-        //qDebug("  ketMenu00 event all %d",event->type());
-        if (event->type() == QEvent::StateMachineWrapped &&
-            static_cast<QStateMachine::WrappedEvent *>(event)->event()->type() == QEvent::KeyPress) {
-            QEvent *wrappedEvent = static_cast<QStateMachine::WrappedEvent *>(event)->event();
-
-            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(wrappedEvent);
-            int key = keyEvent->key();
-
-            //qDebug(" ketMenu00 keypress");
-            return key == Qt::Key_Down
-                    || key==Qt::Key_Right
-                    || key == Qt::Key_Up
-                    || key == Qt::Key_Left
-                    || key == Qt::Key_Enter;
-        }
-        else if (event->type() == QEvent::KeyPress) {
-
-            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-            int key = keyEvent->key();
-
-            //qDebug(" ketMenu00 keypress  2222  key:%d",key);
-            //return true;
-            return key == Qt::Key_Down
-                    || key==Qt::Key_Right
-                    || key == Qt::Key_Up
-                    || key == Qt::Key_Left
-                    || key == Qt::Key_Enter;
-        }
-        return false;
+    virtual void doKeyEnter(){
+        if(m_pui->m_para.m_bModeP2P) m_pui->slotStateTransitionP2P();
+        else m_pui->slotStateTransitionCentral();
     }
-
-    void onTransition(QEvent *event) {
-        //QKeyEvent *keyEvent = static_cast<QKeyEvent *>(
-            //static_cast<QStateMachine::WrappedEvent *>(event)->event());
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-
-        int key = keyEvent->key();
-        switch (key) {
-            case Qt::Key_Left:
-            case Qt::Key_Up:
-                m_pui->slotStateTransitionUp();
-                break;
-            case Qt::Key_Right:
-            case Qt::Key_Down:
-                //qDebug(" ket01 down");
-                m_pui->slotStateTransitionDown();
-                break;
-        case Qt::Key_Enter:
-            if(m_pui->m_para.m_bModeP2P) m_pui->slotStateTransitionP2P();
-            else m_pui->slotStateTransitionCentral();
-            break;
-        default:
-            break;
-        }
+    virtual void doKeyUp(){
+        m_pui->slotStateTransitionUp();
     }
-
-
-signals:
-
-public slots:
-
-private:
-    objui *m_pui;
+    virtual void doKeyDown(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyLeft(){
+        m_pui->slotStateTransitionUp();
+    }
+    virtual void doKeyRight(){
+        m_pui->slotStateTransitionDown();
+    }
 
 };
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// \brief The ketMenu01 class
-///
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-class ketMenu02 : public QEventTransition
+class ketMenuWorkMode : public ketBase
 {
     Q_OBJECT
 public:
-    //explicit ketMenu00(QObject *parent = 0);
-    ketMenu02(objui *obj):QEventTransition(obj,QEvent::KeyPress){
-        m_pui = obj;
+    ketMenuWorkMode(objui *obj):ketBase(obj){}
 
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
     }
-
-protected:
-    bool eventTest(QEvent *event) {
-        //qDebug("  ketMenu00 event all %d",event->type());
-        if (event->type() == QEvent::StateMachineWrapped &&
-            static_cast<QStateMachine::WrappedEvent *>(event)->event()->type() == QEvent::KeyPress) {
-            QEvent *wrappedEvent = static_cast<QStateMachine::WrappedEvent *>(event)->event();
-
-            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(wrappedEvent);
-            int key = keyEvent->key();
-
-            //qDebug(" ketMenu00 keypress");
-            return key == Qt::Key_Down
-                    || key==Qt::Key_Right
-                    || key == Qt::Key_Up
-                    || key == Qt::Key_Left;
-        }
-        else if (event->type() == QEvent::KeyPress) {
-
-            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-            int key = keyEvent->key();
-
-            //qDebug(" ketMenu00 keypress  2222  key:%d",key);
-            //return true;
-            return key == Qt::Key_Down
-                    || key==Qt::Key_Right
-                    || key == Qt::Key_Up
-                    || key == Qt::Key_Left;
-        }
-        return false;
+    virtual void doKeyEnter(){
     }
-
-    void onTransition(QEvent *event) {
-        //QKeyEvent *keyEvent = static_cast<QKeyEvent *>(
-            //static_cast<QStateMachine::WrappedEvent *>(event)->event());
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-
-        int key = keyEvent->key();
-        switch (key) {
-            case Qt::Key_Left:
-            case Qt::Key_Up:
-                m_pui->slotStateTransitionUp();
-                break;
-            case Qt::Key_Right:
-            case Qt::Key_Down:
-                //qDebug(" ket02 down");
-                m_pui->slotStateTransitionDown();
-                break;
-            default:
-                break;
-        }
+    virtual void doKeyUp(){
+        m_pui->slotStateTransitionUp();
     }
-
-
-signals:
-
-public slots:
-
-private:
-    objui *m_pui;
+    virtual void doKeyDown(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyLeft(){
+        m_pui->slotStateTransitionUp();
+    }
+    virtual void doKeyRight(){
+        m_pui->slotStateTransitionDown();
+    }
 
 };
+
+
 
 ///////////// menu login    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

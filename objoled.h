@@ -21,7 +21,7 @@ class objOled : public objBase
 public:
     explicit objOled(QObject *parent = 0);
 
-    void OLED_Init();
+    //void OLED_Init();
     void setRES(int res);
     void Set_Command_Lock(unsigned char d);
     void Set_Display_On_Off(unsigned char d);
@@ -55,12 +55,15 @@ public:
 
 
 signals:
-    void sigQ1(char);
     void sigQ2(char,char);
     void sigFlush();
 
+    void sigReadyOled();
+
 public slots:
     void slotFlush();// public sigFlush
+
+    virtual void OLED_Init();
 
 };
 

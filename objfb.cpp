@@ -263,7 +263,6 @@ char objFB::font8x12[256][12]={
 objFB::objFB(QObject *parent) :
     objOled(parent)
 {
-    m_nPage = 0;
     m_baFB.resize(10000);
     loaddot();
 }
@@ -588,72 +587,9 @@ void objFB::strXY(QString str, int x, int y,int color,int bg)
 
 }
 
-void objFB::show0000()
-{
-    zeroFB(0);
-
-    //strXY(QString("网桥"),0,0);
-    strXY(QString("空    闲"),0,0);
-    strXY(QString("点  对  点"),128+48,0);
-    strXY(QString("S/N: 12.34"),128+48,48);
-    strXY(QString("发 : 1024k"),128+48,16);
-    strXY(QString("收 : 1024k"),128+48,32);
-
-    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
-
-    emit sigFlush();
-
-}
-#if 0
-void objFB::show0000()
-{
-    zeroFB(0);
-
-    //strXY(QString("网桥"),0,0);
-    strXY(QString("空    闲"),6*16,0);
-    strXY(QString("点对点"),0,24);
-    strXY(QString("S/N: 12.34"),8*16,24);
-    strXY(QString("发 : 1024k"),0,48);
-    strXY(QString("收 : 1024k"),8*16,48);
-
-    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
-
-    emit sigFlush();
-
-}
-#endif
-
-void objFB::show0001()
-{
-    //OLED_Init();
-
-    zeroFB(0);
-
-    strXY(QString("  发送功率: "),0,0);
-    strXY(QString("  发送频点: "),0,24);
-    strXY(QString("  接收频点: "),0,48);
-    strXY(QString(" -37.25 dbm"),96,0);
-    strXY(QString(" 14 000 000 000 Hz"),96,24);
-    strXY(QString(" 12 250 000 000 Hz"),96,48);
-
-    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
-
-    emit sigFlush();
-
-}
 
 void objFB::slotKey(int)
 {
-#if 0
-    if(0==m_nPage){
-        show0001();
-        m_nPage = 1;
-    }
-    else{
-        show0000();
-        m_nPage=0;
-    }
-#endif
     //QKeyEvent *ev=new QKeyEvent(QEvent::KeyPress,Qt::Key_Down,Qt::NoModifier);
 
 }

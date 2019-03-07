@@ -23,8 +23,6 @@ public:
 
     static char font8x12[256][12];
 
-    int m_nPage;
-
     QByteArray m_ba16;
     QByteArray m_baFB;
 
@@ -41,8 +39,6 @@ public:
 
     void centerXY(QString str,int left,int top,int w,int h,int hc,int vc,int color=0x0f,int bg=0);
     void strXY(QString str,int x,int y,int color=0x0f,int bg=0);
-    void show0000();
-    void show0001();
 
     void fillFlush();
 

@@ -22,7 +22,8 @@ void testGBK()
 
 }
 
-
+// init
+// 1 threadspi   openSPI
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
@@ -36,6 +37,7 @@ int main(int argc, char *argv[])
 
     QObject::connect(&fb,SIGNAL(sigFlush()),&threadspi,SLOT(slotSend()));
     QObject::connect(&fb,SIGNAL(sigQ2(char,char)),&threadspi,SLOT(slotSend2(char,char)));
+    QObject::connect(&threadspi,SIGNAL(sigReady()),&fb,SLOT(OLED_Init()));
 
     QObject::connect(&key1,SIGNAL(sigKey(int)),&fb,SLOT(slotKey(int)));
 
@@ -46,21 +48,10 @@ int main(int argc, char *argv[])
     key1.openDev("/dev/input/event1");
     key1.start();
 
-    QUdpSocket udp;
-
-    qDebug("hello");
-
-    fb.OLED_Init();
-
     //testGBK();
     //fb.testbase();
-    //fb.strXY(QString("啊在上面的搜索框"),20,20);
 
-    //fb.show0001();
-    //fb.buildMachine();
-
-
-    fb.initMachine();
+    //fb.initMachine();
 
     return a.exec();
 }

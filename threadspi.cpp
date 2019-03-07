@@ -13,12 +13,16 @@ threadSPI::threadSPI(QObject *parent) :
     m_baTx.resize(300);
     m_baRx.resize(300);
 
-    openSPI();
 }
 
 void threadSPI::run()
 {
     char ch;
+    int ret;
+
+    ret=openSPI();
+    if(ret<0) return;
+    emit sigReady();
 
     for(;;){
         if(m_q.size()>1){

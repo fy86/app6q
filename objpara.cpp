@@ -40,6 +40,9 @@ objPara::objPara(QObject *parent) :
     m_maxPowerCentral = -1500;
     m_minPowerCentral = -4000;
 
+    m_bDevModeBridge = true;
+    m_bDevModeRouter = false;
+
     m_bModeP2P = false;
     m_bModeCentral  = true;
 

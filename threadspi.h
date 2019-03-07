@@ -42,8 +42,8 @@ public:
 protected:
     virtual void run();
 
-
 signals:
+    void sigReady();
 
 public slots:
     void slotSend();// semaphore release
