@@ -22,6 +22,7 @@ void threadSPI::run()
 
     ret=openSPI();
     if(ret<0) return;
+    qDebug(" thread.spi emit sigReady");
     emit sigReady();
 
     for(;;){
@@ -36,8 +37,15 @@ void threadSPI::run()
                 }
                 m_baSend.clear();
             }
-
             continue;
+        }
+        else{
+            if(m_baSend.size()>0){
+                if(m_fdSPI>0){
+                    transfer(m_baSend);
+                }
+                m_baSend.clear();
+            }
         }
 
         m_sem.acquire();

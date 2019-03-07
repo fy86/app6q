@@ -7,6 +7,8 @@
 objui::objui(QObject *parent) :
     objPage(parent)
 {
+    m_nShowStatusPage1= 0;
+
     m_pTcp = new QTcpSocket(this);
     connect(m_pTcp,SIGNAL(readyRead()),this,SLOT(slotReadTCP()));
     connect(m_pTcp,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(slotErrTCP()));
@@ -52,6 +54,7 @@ void objui::initMachine()
 {
     if(m_pMachine->isRunning()) return;
     //m_pMachine = new QStateMachine;
+    qDebug("   objui.initMachine()");
 
     m_pStateGroupTimeout = new QState(m_pMachine);
 
@@ -343,6 +346,8 @@ void objui::initMachine()
     m_pMachine->start();
 
     m_pTimer1s->start();
+
+    qDebug("     end objui.initMachine");
 }
 void objui::doMenuPara()
 {
@@ -391,7 +396,7 @@ void objui::slotStateTransitionCentral()
     emit sigStateTransitionCentral();
 }
 
-
+#if 0
 void objui::buildMachine()
 {
     m_pMachine = new QStateMachine;
@@ -468,7 +473,7 @@ void objui::buildMachine()
     //}
     //m_pMachine->postDelayedEvent(ev,5000);
 }
-
+#endif
 void objui::slotTest()
 {
     qDebug(" machine start");
@@ -558,11 +563,12 @@ void objui::getColorMenu10(int n, int *pc, int *pbg)
 
 void objui::slotShowMenu10()
 {
+#if 0
     qint64 freq;
     const QLocale & locale = QLocale::c();
     freq=14000000000;
     QString s=locale.toString(freq);
-
+#endif
     int c=0x0f,bg=0;
     zeroFB(0);
 
@@ -580,6 +586,7 @@ void objui::slotShowMenu10()
         getColorMenu10(3,&c,&bg);
         centerXY(QString("退    网"),0,48,256,16,1,1,c,bg);
 
+#if 0
         ////////////////////  test qint64
         strXY(s.replace(',',' ').toLatin1().data(),0,32);
         underLine(0,32,4);
@@ -588,7 +595,7 @@ void objui::slotShowMenu10()
         strXY("0",128+32,32,0,0x0f);
         strXY("0 000",128+32+8,32);
         underLine(0,32,17);
-
+#endif
 
         break;
     case work_mode_p2p:
@@ -1237,35 +1244,75 @@ void objui::slotShowParaPage22c()
     emit sigFlush();
 
 }
+QString objui::getTimeSpan()
+{
+    qint64 secs=QDateTime::currentDateTime().toTime_t() - m_para.m_startSecs;
+    int days=secs/(24*60*60)+1;
+    QTime t=QTime(0,0).addSecs(secs%(24*60*60));
+    if(days>0) return QString("%1 天" ).arg(days) + t.toString(" hh : mm : ss");//.arg(t.hour()).arg((t.minute())).arg(t.second());
+    else return t.toString("hh : mm : ss");//QString("%1:%2:%3").arg(t.hour()).arg((t.minute())).arg(t.second());
+
+}
 
 void objui::slotShowStatusPage1()
 {
-    QDateTime dt=QDateTime::currentDateTime();
+    char buf[40];
     zeroFB(0);
 
-    //strXY(QString("网桥"),0,0);
-    //strXY(QString("空    闲"),0,0);
-    strXY(dt.toString("hh:mm:ss").toLatin1().data(),0,0);
-    strXY(QString("点  对  点"),128+48,0);
-    strXY(QString("S/N: 12.34"),128+48,48);
-    strXY(QString("发 : 1024k"),128+48,16);
-    strXY(QString("收 : 1024k"),128+48,32);
+    if(m_para.m_bModeP2P){
+        if(m_para.m_bDevModeBridge) strXY(QString("网桥"),0,0);
+        else strXY(QString("路由"),0,0);
+        if(m_para.m_bConnected){
+            centerXY("正在通信",32,0,256-32,16,1,1);
+            QString str=getTimeSpan();
+            centerXY(str.toLatin1().data(),32,16,256-32,16,1,1);
+        }
+        else {
+            centerXY("空    闲",32,0,256-32,32,1,1);
+        }
+        strXY(QString("点 对 点"),0,32);
+        sprintf(buf,"S/N: %.2f",m_para.m_power100*0.01);
+        strXY(buf,128,32);
+        strXY(QString("发送速率: %1k").arg(m_para.m_TxRate),0,48);
+        strXY(QString("接收速率: %1k").arg(m_para.m_RxRate),128,48);
+    }
+    else{
+
+    }
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
     emit sigFlush();
-
+    if(1>m_nShowStatusPage1++) qDebug("       end.objui.func.showStatusPage1");
 }
 void objui::slotShowStatusPage2()
 {
+    char buf[40];
     zeroFB(0);
 
-    strXY(QString("aaaaaaaaaaaaa网桥"),0,0);
-    strXY(QString("空    闲"),0,0);
-    strXY(QString("点  对  点"),128+48,0);
-    strXY(QString("S/N: 12.34"),128+48,48);
-    strXY(QString("发 : 1024k"),128+48,16);
-    strXY(QString("收 : 1024k"),128+48,32);
+    if(m_para.m_bModeP2P){
+        if(m_para.m_bDevModeBridge) strXY(QString("网桥"),0,0);
+        else strXY(QString("路由"),0,0);
+        if(!m_para.m_bConnected){
+            centerXY("正在通信",32,0,256-32,16,1,1);
+            QString str=getTimeSpan();
+            centerXY(str.toLatin1().data(),32,16,256-32,16,1,1);
+            //strXY("正在通信",32,0);
+            //strXY(str.toLatin1().data(),32,16);
+        }
+        else {
+            centerXY("空    闲",32,0,256-32,32,1,1);
+        }
+        strXY(QString("点 对 点"),0,32);
+        sprintf(buf,"S/N: %.2f",m_para.m_power100*0.01);
+        strXY(buf,128,32);
+        strXY(QString("发送速率: %1k").arg(m_para.m_TxRate),0,48);
+        strXY(QString("接收速率: %1k").arg(m_para.m_RxRate),128,48);
+    }
+    else{
+
+    }
+
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 

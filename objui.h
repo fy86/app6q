@@ -33,6 +33,8 @@ public:
     QTcpSocket *m_pTcp;
     void initTcp();
 
+    int m_nShowStatusPage1;
+
     objPara m_para;
     numEditor m_numEditor;
 
@@ -83,7 +85,7 @@ public:
     QTimer *m_pTimer60;
     QTimer *m_pTimer1s;
 
-    void buildMachine();
+    //void buildMachine();
 
     void getColorMenu10(int n,int *pc,int *pbg);
 
@@ -92,6 +94,8 @@ public:
     void changeSelectMenu10(int step);
 
     void showDataParaPage1c();
+
+    QString getTimeSpan();
 signals:
 
     void sigStateTransitionUp();

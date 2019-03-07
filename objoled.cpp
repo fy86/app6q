@@ -325,5 +325,7 @@ void objOled::OLED_Init()
 
         emit sigFlush();
 
-        emit sigReadyOled();
+        qDebug("  objoled OLED_init.done ,  emit sigReadyOled");
+
+        QTimer::singleShot(500,this,SIGNAL(sigReadyOled()));
 }

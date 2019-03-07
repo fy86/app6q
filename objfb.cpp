@@ -414,7 +414,7 @@ void objFB::draw1(int x, int y, int c)
     char *p;
     char ch;
 
-    offset=y*128;
+    offset=y*128;// 128 bytes/line
     offset+=(x/4)*2;
     switch(x%4){
 #if 0
@@ -453,11 +453,11 @@ void objFB::draw1(int x, int y, int c)
     switch(s){
         case 0:
           c=0x0f & c;
-          ch = (ch & 0x0ff)|c;
+          ch = (ch & 0x0f0)|c;
           break;
         case 4:
           c =(c<<4)&0x0f0;
-          ch = (ch & 0x0f0)| c;
+          ch = (ch & 0x0f)| c;
           break;
         default:
           break;

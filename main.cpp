@@ -45,7 +45,8 @@ int main(int argc, char *argv[])
 
     //fb.demo16();
 
-    key1.openDev("/dev/input/event1");
+    QString strDev("/dev/input/event1");
+    key1.openDev(strDev.toLatin1().data());
     key1.start();
 
     //testGBK();

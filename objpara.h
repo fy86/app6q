@@ -2,12 +2,16 @@
 #define OBJPARA_H
 
 #include <QObject>
+#include <QDateTime>
 
 class objPara : public QObject
 {
     Q_OBJECT
 public:
     explicit objPara(QObject *parent = 0);
+
+    bool m_bIdle;
+    bool m_bConnected;
 
     qint64 m_TxFreq;
     qint64 m_RxFreq;
@@ -54,6 +58,7 @@ public:
     bool m_bModeCentral;
 
 
+    qint64 m_startSecs;
 signals:
 
 public slots:

@@ -43,7 +43,12 @@ objPara::objPara(QObject *parent) :
     m_bDevModeBridge = true;
     m_bDevModeRouter = false;
 
-    m_bModeP2P = false;
-    m_bModeCentral  = true;
+    m_bModeP2P = true;
+    m_bModeCentral  = false;
+
+    m_bIdle = true;
+    m_bConnected = true;
+
+    m_startSecs = QDateTime::currentDateTime().toTime_t();
 
 }

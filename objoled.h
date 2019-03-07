@@ -2,6 +2,8 @@
 #define OBJOLED_H
 
 #include <QObject>
+#include <QTimer>
+
 #include <objbase.h>
 #include <unistd.h>
 
@@ -64,6 +66,7 @@ public slots:
     void slotFlush();// public sigFlush
 
     virtual void OLED_Init();
+
 
 };
 
