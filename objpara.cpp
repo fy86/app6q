@@ -40,14 +40,11 @@ objPara::objPara(QObject *parent) :
     m_maxPowerCentral = -1500;
     m_minPowerCentral = -4000;
 
-    m_bDevModeBridge = true;
-    m_bDevModeRouter = false;
+    m_devMode = DevMode_bridge;
 
-    m_bModeP2P = true;
-    m_bModeCentral  = false;
+    m_workMode = Mode_p2p;
 
-    m_bIdle = true;
-    m_bConnected = true;
+    m_status = Status_idle;
 
     m_startSecs = QDateTime::currentDateTime().toTime_t();
 

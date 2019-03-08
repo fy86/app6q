@@ -49,10 +49,14 @@ public:
     QState *m_pStateMenuPara;
     QState *m_pStateMenuWorkMode;
 
-    QState *m_pStateWorkMode;
+    QState *m_pStateWorkMode1;// p2p menu.1
+    QState *m_pStateWorkMode2;// central menu.2
 
-    QState *m_pStateMenu10;
-    QState *m_pStateMenu11;
+    QState *m_pStateDevMode1;// bridge
+    QState *m_pStateDevMode2;// router
+
+    QState *m_pStateMenuCall;
+    //QState *m_pStateMenu11;
 
     QState *m_pStateEditorTxFreq;
     QState *m_pStateEditorRxFreq;
@@ -87,13 +91,15 @@ public:
 
     //void buildMachine();
 
-    void getColorMenu10(int n,int *pc,int *pbg);
+    void getColorMenuCall(int n,int *pc,int *pbg);
 
-    void doMenu10();
+    void doMenuCall();
     void doMenuPara();// enter paraPage1
     void changeSelectMenu10(int step);
 
     void showDataParaPage1c();
+    void showDataParaPage2();
+    void showDataParaPage2c();
 
     QString getTimeSpan();
 signals:
@@ -152,9 +158,14 @@ public slots:
     void slotShowStatusPage1();
     void slotShowStatusPage2();
 
-    void slotShowMenu10();
+    void slotShowMenuCall();
     void slotShowMenu11();
     void slotShowMenu12();
+
+    void slotShowMode1();
+    void slotShowMode2();
+    void slotShowDevMode1();
+    void slotShowDevMode2();
 
     void slotShowParaPage1();
     void slotShowParaPage11();

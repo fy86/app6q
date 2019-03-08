@@ -332,8 +332,15 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
-        if(m_pui->m_para.m_bModeP2P) m_pui->slotStateTransitionP2P();
-        else m_pui->slotStateTransitionCentral();
+        switch(m_pui->m_para.m_workMode){
+        case objPara::Mode_p2p:
+            m_pui->slotStateTransitionP2P();
+            break;
+        case objPara::Mode_central:
+            m_pui->slotStateTransitionCentral();
+            break;
+        default: break;
+        }
     }
     virtual void doKeyUp(){
         m_pui->slotStateTransitionUp();
@@ -359,6 +366,7 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
+        m_pui->slotStateTransitionNext();
     }
     virtual void doKeyUp(){
         m_pui->slotStateTransitionUp();
@@ -368,6 +376,134 @@ public:
     }
     virtual void doKeyLeft(){
         m_pui->slotStateTransitionUp();
+    }
+    virtual void doKeyRight(){
+        m_pui->slotStateTransitionDown();
+    }
+
+};
+
+class ketWorkMode1 : public ketBase
+{
+    Q_OBJECT
+public:
+    ketWorkMode1(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        m_pui->m_para.m_workMode=objPara::Mode_p2p;
+        m_pui->slotStateTransitionEnter();
+    }
+    virtual void doKeyUp(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyDown(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyLeft(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyRight(){
+        m_pui->slotStateTransitionDown();
+    }
+
+};
+class ketWorkMode2 : public ketBase
+{
+    Q_OBJECT
+public:
+    ketWorkMode2(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        //m_pui->m_para.m_workMode=objPara::Mode_central;
+        m_pui->m_para.m_workMode=objPara::Mode_p2p;
+        m_pui->slotStateTransitionEnter();
+    }
+    virtual void doKeyUp(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyDown(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyLeft(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyRight(){
+        m_pui->slotStateTransitionDown();
+    }
+
+};
+class ketDevMode1 : public ketBase
+{
+    Q_OBJECT
+public:
+    ketDevMode1(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        switch(m_pui->m_para.m_workMode){
+        case objPara::Mode_p2p:
+            m_pui->slotStateTransitionP2P();
+            break;
+        case objPara::Mode_central:
+            m_pui->slotStateTransitionCentral();
+            break;
+        default:
+            break;
+        }
+    }
+    virtual void doKeyEnter(){
+        m_pui->m_para.m_devMode=objPara::DevMode_bridge;
+        m_pui->slotStateTransitionEnter();
+    }
+    virtual void doKeyUp(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyDown(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyLeft(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyRight(){
+        m_pui->slotStateTransitionDown();
+    }
+
+};
+class ketDevMode2 : public ketBase
+{
+    Q_OBJECT
+public:
+    ketDevMode2(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        switch(m_pui->m_para.m_workMode){
+        case objPara::Mode_p2p:
+            m_pui->slotStateTransitionP2P();
+            break;
+        case objPara::Mode_central:
+            m_pui->slotStateTransitionCentral();
+            break;
+        default:
+            break;
+        }
+    }
+    virtual void doKeyEnter(){
+        m_pui->m_para.m_devMode=objPara::DevMode_router;
+        m_pui->slotStateTransitionEnter();
+    }
+    virtual void doKeyUp(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyDown(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyLeft(){
+        m_pui->slotStateTransitionDown();
     }
     virtual void doKeyRight(){
         m_pui->slotStateTransitionDown();
@@ -435,7 +571,7 @@ protected:
         case Qt::Key_Backspace:
             m_pui->slotStateTransitionBackspace(); break;
         case Qt::Key_Enter:
-            m_pui->doMenu10();break;
+            m_pui->doMenuCall();break;
         case Qt::Key_Up:
             m_pui->changeSelectMenu10(-1);break;
         case Qt::Key_Down:
@@ -513,7 +649,7 @@ protected:
             m_pui->slotStateTransitionBackspace();
             break;
         case Qt::Key_Enter:
-            m_pui->doMenu10();
+            m_pui->doMenuCall();
             break;
         case Qt::Key_Up:
             m_pui->changeSelectMenu10(-1);

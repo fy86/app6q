@@ -65,36 +65,40 @@ void objui::initMachine()
     m_pStateMenuPara = new QState(m_pStateGroupTimeout);
     m_pStateMenuWorkMode = new QState(m_pStateGroupTimeout);
 
-    m_pStateMenu10 = new QState(m_pMachine);// p2p and central
-    m_pStateMenu11 = new QState(m_pMachine);//
+    m_pStateWorkMode1 = new QState(m_pStateGroupTimeout);
+    m_pStateWorkMode2 = new QState(m_pStateGroupTimeout);
+    m_pStateDevMode1 = new QState(m_pStateGroupTimeout);
+    m_pStateDevMode2 = new QState(m_pStateGroupTimeout);
 
-    m_pStateEditorTxFreq = new QState(m_pMachine);
-    m_pStateEditorRxFreq = new QState(m_pMachine);
-    m_pStateEditorTxRate = new QState(m_pMachine);
-    m_pStateEditorRxRate = new QState(m_pMachine);
-    m_pStateEditorPower = new QState(m_pMachine);
+    m_pStateMenuCall = new QState(m_pMachine);// p2p and central
 
-    m_pStateEditorTDM = new QState(m_pMachine);
-    m_pStateEditorNumber = new QState(m_pMachine);
-    m_pStateEditorTxRateCentral = new QState(m_pMachine);
-    m_pStateEditorRxRateCentral = new QState(m_pMachine);
-    m_pStateEditorPowerCentral = new QState(m_pMachine);
+    m_pStateEditorTxFreq = new QState(m_pStateGroupTimeout);
+    m_pStateEditorRxFreq = new QState(m_pStateGroupTimeout);
+    m_pStateEditorTxRate = new QState(m_pStateGroupTimeout);
+    m_pStateEditorRxRate = new QState(m_pStateGroupTimeout);
+    m_pStateEditorPower = new QState(m_pStateGroupTimeout);
 
-    m_pStateParaPage1 = new QState(m_pMachine);
-    m_pStateParaPage11 = new QState(m_pMachine);
-    m_pStateParaPage12 = new QState(m_pMachine);
-    m_pStateParaPage13 = new QState(m_pMachine);
-    m_pStateParaPage2 = new QState(m_pMachine);
-    m_pStateParaPage21 = new QState(m_pMachine);
-    m_pStateParaPage22 = new QState(m_pMachine);
+    m_pStateEditorTDM = new QState(m_pStateGroupTimeout);
+    m_pStateEditorNumber = new QState(m_pStateGroupTimeout);
+    m_pStateEditorTxRateCentral = new QState(m_pStateGroupTimeout);
+    m_pStateEditorRxRateCentral = new QState(m_pStateGroupTimeout);
+    m_pStateEditorPowerCentral = new QState(m_pStateGroupTimeout);
 
-    m_pStateParaPage1c = new QState(m_pMachine);
-    m_pStateParaPage11c = new QState(m_pMachine);
-    m_pStateParaPage12c = new QState(m_pMachine);
-    m_pStateParaPage13c = new QState(m_pMachine);
-    m_pStateParaPage2c = new QState(m_pMachine);
-    m_pStateParaPage21c = new QState(m_pMachine);
-    m_pStateParaPage22c = new QState(m_pMachine);
+    m_pStateParaPage1 = new QState(m_pStateGroupTimeout);
+    m_pStateParaPage11 = new QState(m_pStateGroupTimeout);
+    m_pStateParaPage12 = new QState(m_pStateGroupTimeout);
+    m_pStateParaPage13 = new QState(m_pStateGroupTimeout);
+    m_pStateParaPage2 = new QState(m_pStateGroupTimeout);
+    m_pStateParaPage21 = new QState(m_pStateGroupTimeout);
+    m_pStateParaPage22 = new QState(m_pStateGroupTimeout);
+
+    m_pStateParaPage1c = new QState(m_pStateGroupTimeout);
+    m_pStateParaPage11c = new QState(m_pStateGroupTimeout);
+    m_pStateParaPage12c = new QState(m_pStateGroupTimeout);
+    m_pStateParaPage13c = new QState(m_pStateGroupTimeout);
+    m_pStateParaPage2c = new QState(m_pStateGroupTimeout);
+    m_pStateParaPage21c = new QState(m_pStateGroupTimeout);
+    m_pStateParaPage22c = new QState(m_pStateGroupTimeout);
 
 
     m_pStateGroupTimeout->setInitialState(m_pStateMenuCtrl);
@@ -107,7 +111,13 @@ void objui::initMachine()
     connect(m_pStateMenuPara,SIGNAL(entered()),this,SLOT(slotShowMenu01()));
     connect(m_pStateMenuWorkMode,SIGNAL(entered()),this,SLOT(slotShowMenu02()));
 
-    connect(m_pStateMenu10,SIGNAL(entered()),this,SLOT(slotShowMenu10()));
+    connect(m_pStateWorkMode1,SIGNAL(entered()),this,SLOT(slotShowMode1()));
+    connect(m_pStateWorkMode2,SIGNAL(entered()),this,SLOT(slotShowMode2()));
+
+    connect(m_pStateDevMode1,SIGNAL(entered()),this,SLOT(slotShowDevMode1()));
+    connect(m_pStateDevMode2,SIGNAL(entered()),this,SLOT(slotShowDevMode2()));
+
+    connect(m_pStateMenuCall,SIGNAL(entered()),this,SLOT(slotShowMenuCall()));
 
     connect(m_pStateParaPage1,SIGNAL(entered()),this,SLOT(slotShowParaPage1()));
     connect(m_pStateParaPage11,SIGNAL(entered()),this,SLOT(slotShowParaPage11()));
@@ -155,7 +165,7 @@ void objui::initMachine()
     m_pStateMenuCtrl->addTransition(pKetMenuCtrl);
     m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuPara);
     m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuWorkMode);
-    m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionEnter()),m_pStateMenu10);
+    m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionEnter()),m_pStateMenuCall);
     m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
     ketMenuPara *pKetMenuPara = new ketMenuPara(this);
     m_pStateMenuPara->addTransition(pKetMenuPara);
@@ -204,7 +214,7 @@ void objui::initMachine()
     ketParaPage1 *pKetParaPage2 = new ketParaPage1(this);
     m_pStateParaPage2->addTransition(pKetParaPage2);
     m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage21);
-    m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage1);
+    m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage13);
     m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage1);
     m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage1);
     m_pStateParaPage2->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorPower);
@@ -212,11 +222,11 @@ void objui::initMachine()
 
     ketParaPage1 *pKetParaPage21 = new ketParaPage1(this);
     m_pStateParaPage21->addTransition(pKetParaPage21);
-    m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage22);
+    m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage2);
     m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage2);
     m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage1);
     m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage1);
-    m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
+    m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateDevMode1);
     m_pStateParaPage21->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuPara);
 
     ketParaPage1 *pKetParaPage22 = new ketParaPage1(this);
@@ -267,7 +277,7 @@ void objui::initMachine()
     ketParaPage1 *pKetParaPage2c = new ketParaPage1(this);
     m_pStateParaPage2c->addTransition(pKetParaPage2c);
     m_pStateParaPage2c->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage21c);
-    m_pStateParaPage2c->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage1c);
+    m_pStateParaPage2c->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage13c);
     m_pStateParaPage2c->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage1c);
     m_pStateParaPage2c->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage1c);
     m_pStateParaPage2c->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorPowerCentral);
@@ -275,11 +285,11 @@ void objui::initMachine()
 
     ketParaPage1 *pKetParaPage21c = new ketParaPage1(this);
     m_pStateParaPage21c->addTransition(pKetParaPage21c);
-    m_pStateParaPage21c->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage22c);
+    m_pStateParaPage21c->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage2c);
     m_pStateParaPage21c->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage2c);
     m_pStateParaPage21c->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage1c);
     m_pStateParaPage21c->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage1c);
-    m_pStateParaPage21c->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
+    m_pStateParaPage21c->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateDevMode1);
     m_pStateParaPage21c->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuPara);
 
     ketParaPage1 *pKetParaPage22c = new ketParaPage1(this);
@@ -288,7 +298,7 @@ void objui::initMachine()
     m_pStateParaPage22c->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage21c);
     m_pStateParaPage22c->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage1c);
     m_pStateParaPage22c->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage1c);
-    m_pStateParaPage22c->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTxFreq);
+    m_pStateParaPage22c->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateDevMode1);
     m_pStateParaPage22c->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuPara);
 
 
@@ -336,9 +346,34 @@ void objui::initMachine()
     m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuCtrl);
     m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuPara);
     m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
+    m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateWorkMode1);
+    ketWorkMode1 *pKetWorkMode1 = new ketWorkMode1(this);
+    m_pStateWorkMode1->addTransition(pKetWorkMode1);
+    m_pStateWorkMode1->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateWorkMode2);
+    m_pStateWorkMode1->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuWorkMode);
+    m_pStateWorkMode1->addTransition(this,SIGNAL(sigStateTransitionEnter()),m_pStateWorkMode1);
+    ketWorkMode2 *pKetWorkMode2 = new ketWorkMode2(this);
+    m_pStateWorkMode2->addTransition(pKetWorkMode2);
+    m_pStateWorkMode2->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateWorkMode1);
+    m_pStateWorkMode2->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuWorkMode);
+    m_pStateWorkMode2->addTransition(this,SIGNAL(sigStateTransitionEnter()),m_pStateWorkMode2);
+
+    ketDevMode1 *pKetDevMode1 = new ketDevMode1(this);
+    m_pStateDevMode1->addTransition(pKetDevMode1);
+    m_pStateDevMode1->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateDevMode2);
+    m_pStateDevMode1->addTransition(this,SIGNAL(sigStateTransitionP2P()),m_pStateParaPage21);
+    m_pStateDevMode1->addTransition(this,SIGNAL(sigStateTransitionCentral()),m_pStateParaPage21c);
+    m_pStateDevMode1->addTransition(this,SIGNAL(sigStateTransitionEnter()),m_pStateDevMode1);
+    ketDevMode2 *pKetDevMode2 = new ketDevMode2(this);
+    m_pStateDevMode2->addTransition(pKetDevMode2);
+    m_pStateDevMode2->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateDevMode1);
+    m_pStateDevMode2->addTransition(this,SIGNAL(sigStateTransitionP2P()),m_pStateParaPage21);
+    m_pStateDevMode2->addTransition(this,SIGNAL(sigStateTransitionCentral()),m_pStateParaPage21c);
+    m_pStateDevMode2->addTransition(this,SIGNAL(sigStateTransitionEnter()),m_pStateDevMode2);
+
     ketMenu10 *pKetMenu10 = new ketMenu10(this);
-    m_pStateMenu10->addTransition(pKetMenu10);
-    m_pStateMenu10->addTransition(this,SIGNAL(sigStateTransitionBackspace()),m_pStateMenuCtrl);
+    m_pStateMenuCall->addTransition(pKetMenu10);
+    m_pStateMenuCall->addTransition(this,SIGNAL(sigStateTransitionBackspace()),m_pStateMenuCtrl);
 
 
 
@@ -546,7 +581,7 @@ void objui::slot0000()
 {
     emit sig0000();
 }
-void objui::getColorMenu10(int n, int *pc, int *pbg)
+void objui::getColorMenuCall(int n, int *pc, int *pbg)
 {
     if(n==m_nSelectMenu10){
         *pc=0;*pbg=0x0f;
@@ -561,7 +596,7 @@ void objui::getColorMenu10(int n, int *pc, int *pbg)
     }
 }
 
-void objui::slotShowMenu10()
+void objui::slotShowMenuCall()
 {
 #if 0
     qint64 freq;
@@ -572,44 +607,34 @@ void objui::slotShowMenu10()
     int c=0x0f,bg=0;
     zeroFB(0);
 
-    switch(m_workMode){
-    case work_mode_central:
-        getColorMenu10(0,&c,&bg);
+    switch(m_para.m_workMode){
+    case objPara::Mode_central:
+        getColorMenuCall(0,&c,&bg);
         centerXY(QString("呼    叫"),0,0,256,16,1,1,c,bg);
 
-        getColorMenu10(1,&c,&bg);
+        getColorMenuCall(1,&c,&bg);
         centerXY(QString("挂    断"),0,16,256,16,1,1,c,bg);
 
-        getColorMenu10(2,&c,&bg);
+        getColorMenuCall(2,&c,&bg);
         centerXY(QString("入    网"),0,32,256,16,1,1,c,bg);
 
-        getColorMenu10(3,&c,&bg);
+        getColorMenuCall(3,&c,&bg);
         centerXY(QString("退    网"),0,48,256,16,1,1,c,bg);
-
-#if 0
-        ////////////////////  test qint64
-        strXY(s.replace(',',' ').toLatin1().data(),0,32);
-        underLine(0,32,4);
-        strXY(s.replace(',',' ').toLatin1().data(),0,48);
-        strXY("14 0",128,32);
-        strXY("0",128+32,32,0,0x0f);
-        strXY("0 000",128+32+8,32);
-        underLine(0,32,17);
-#endif
-
         break;
-    case work_mode_p2p:
-        if(m_bStatConnect){
-            centerXY(QString("呼    叫"),0,8,256,16,1,1,1);
-            centerXY(QString("挂    断"),0,32,256,16,1,1,0,0x0f);
-        }
-        else{
-            centerXY(QString("呼    叫"),0,8,256,16,1,1,0,0x0f);
-            centerXY(QString("挂    断"),0,32,256,16,1,1,1);
+    case objPara::Mode_p2p:
+        switch(m_para.m_status){
+        case objPara::Status_connected:
+            centerXY(QString("呼    叫"),0,12,256,16,1,1,1);// gray
+            centerXY(QString("挂    断"),0,48-10,256,16,1,1,0,0x0f);
+            break;
+        case objPara::Status_idle:
+            centerXY(QString("呼    叫"),0,12,256,16,1,1,0,0x0f);
+            centerXY(QString("挂    断"),0,48-10,256,16,1,1,1);// gray
+            break;
+        default: break;
         }
         break;
-    default:
-        break;
+    default: break;
     }
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
@@ -624,7 +649,7 @@ void objui::changeSelectMenu10(int step)
         m_nSelectMenu10 = (m_nSelectMenu10+step) & 0x3;
         if(m_bEnableMenu10[m_nSelectMenu10]) break;
     }
-    slotShowMenu10();
+    slotShowMenuCall();
 }
 
 void objui::slotCUState(QByteArray ba)
@@ -644,10 +669,32 @@ void objui::slotCUState(QByteArray ba)
 
 }
 
-void objui::doMenu10()
+void objui::doMenuCall()
 {
     std::string stdstr;
 
+    switch(m_para.m_workMode){
+    case objPara::Mode_p2p:
+        switch (m_para.m_status) {
+        case objPara::Status_connected:
+            m_para.m_status = objPara::Status_idle;
+            slotShowMenuCall();
+            break;
+        case objPara::Status_idle:
+            m_para.m_status = objPara::Status_connected;
+            m_para.m_startSecs = QDateTime::currentDateTime().toTime_t();
+            slotShowMenuCall();
+            break;
+        default:
+            break;
+        }
+        break;
+    case objPara::Mode_central:
+        break;
+    default:
+        break;
+    }
+#if 0
     if(work_mode_central == m_workMode){
     switch(m_nSelectMenu10){
     case 0:
@@ -676,8 +723,9 @@ void objui::doMenu10()
         break;
     }
     setSelectMenu10();
-    slotShowMenu10();
+    slotShowMenuCall();
     }
+#endif
 }
 
 //
@@ -834,9 +882,57 @@ void objui::slotShowParaPage13()
     emit sigFlush();
 
 }
-void objui::slotShowParaPage2()
+void objui::showDataParaPage2()
 {
     char buf[20];
+    //const QLocale & locale = QLocale::c();
+    //QString s;//=locale.toString(m_numEditor.m_i64);
+
+    //s=locale.toString(0.01*m_para.m_power100) + " dBm";
+    sprintf(buf,"%.2f dBm",0.01*m_para.m_power100);
+    centerXY(buf,4*16,0,256-16*4,16,1,1,0x0f,0);
+    switch(m_para.m_devMode){
+    case objPara::DevMode_bridge:
+        centerXY("网桥",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
+        break;
+    case objPara::DevMode_router:
+        centerXY("路由",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
+        break;
+    default:
+        break;
+    }
+    centerXY("QPSK1/2",4*16,32,256-16*4,16,1,1,0x0f,0);
+
+    strXY("2/2",256-8*3,48,0x0f,0);
+
+}
+void objui::showDataParaPage2c()
+{
+    char buf[20];
+    //const QLocale & locale = QLocale::c();
+    //QString s;//=locale.toString(m_numEditor.m_i64);
+
+    //s=locale.toString(0.01*m_para.m_power100Central) + " dBm";
+    sprintf(buf,"%.2f dBm",0.01*m_para.m_power100Central);
+    centerXY(buf,4*16,0,256-16*4,16,1,1,0x0f,0);
+    switch(m_para.m_devMode){
+    case objPara::DevMode_bridge:
+        centerXY("网桥",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
+        break;
+    case objPara::DevMode_router:
+        centerXY("路由",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
+        break;
+    default:
+        break;
+    }
+    centerXY("QPSK1/2",4*16,32,256-16*4,16,1,1,0x0f,0);
+
+    strXY("2/2",256-8*3,48,0x0f,0);
+
+}
+
+void objui::slotShowParaPage2()
+{
     zeroFB(0);
 
     m_numEditor.setNum64(m_para.m_power100,m_para.m_maxPower,m_para.m_minPower,-1,0,0);
@@ -845,15 +941,7 @@ void objui::slotShowParaPage2()
     strXY("业务类型",0,16,0x0f,0);// yewu leixing 业务类型
     strXY("编码方式",0,32,0x0f,0);// bianma fangshi 编码方式
 
-    const QLocale & locale = QLocale::c();
-    QString s;//=locale.toString(m_numEditor.m_i64);
-    s=locale.toString(0.01*m_para.m_power100) + " dBm";
-    sprintf(buf,"%.2f dBm",0.01*m_para.m_power100);
-    centerXY(buf,4*16,0,256-16*4,16,1,1,0x0f,0);
-    centerXY("网桥",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
-    centerXY("QPSK1/2",4*16,32,256-16*4,16,1,1,0x0f,0);
-
-    strXY("2/2",256-8*3,48,0x0f,0);
+    showDataParaPage2();
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -868,11 +956,7 @@ void objui::slotShowParaPage21()
     strXY("业务类型",0,16,0,0x0f);// yewu leixing 业务类型
     strXY("编码方式",0,32,0x0f,0);// bianma fangshi 编码方式
 
-    centerXY("-37.25 dbm",4*16,0,256-16*4,16,1,1,0x0f,0);
-    centerXY("网桥",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
-    centerXY("QPSK1/2",4*16,32,256-16*4,16,1,1,0x0f,0);
-
-    strXY("2/2",256-8*3,48,0x0f,0);
+    showDataParaPage2();
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -1182,7 +1266,6 @@ void objui::slotShowParaPage13c()
 }
 void objui::slotShowParaPage2c()
 {
-    char buf[20];
     zeroFB(0);
 
     m_numEditor.setNum64(m_para.m_power100Central,m_para.m_maxPowerCentral,m_para.m_minPowerCentral,-1,0,0);
@@ -1191,15 +1274,7 @@ void objui::slotShowParaPage2c()
     strXY("业务类型",0,16,0x0f,0);// yewu leixing 业务类型
     strXY("编码方式",0,32,0x0f,0);// bianma fangshi 编码方式
 
-    const QLocale & locale = QLocale::c();
-    QString s;//=locale.toString(m_numEditor.m_i64);
-    s=locale.toString(0.01*m_para.m_power100Central) + " dBm";
-    sprintf(buf,"%.2f dBm",0.01*m_para.m_power100Central);
-    centerXY(buf,4*16,0,256-16*4,16,1,1,0x0f,0);
-    centerXY("网桥",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
-    centerXY("QPSK1/2",4*16,32,256-16*4,16,1,1,0x0f,0);
-
-    strXY("2/2",256-8*3,48,0x0f,0);
+    showDataParaPage2c();
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -1214,11 +1289,7 @@ void objui::slotShowParaPage21c()
     strXY("业务类型",0,16,0,0x0f);// yewu leixing 业务类型
     strXY("编码方式",0,32,0x0f,0);// bianma fangshi 编码方式
 
-    centerXY("-37.25 dbm",4*16,0,256-16*4,16,1,1,0x0f,0);
-    centerXY("网桥",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
-    centerXY("QPSK1/2",4*16,32,256-16*4,16,1,1,0x0f,0);
-
-    strXY("2/2",256-8*3,48,0x0f,0);
+    showDataParaPage2c();
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -1233,11 +1304,7 @@ void objui::slotShowParaPage22c()
     strXY("业务类型",0,16,0x0f,0);// yewu leixing 业务类型
     strXY("编码方式",0,32,0,0x0f);// bianma fangshi 编码方式
 
-    centerXY("-37.25 dbm",4*16,0,256-16*4,16,1,1,0x0f,0);
-    centerXY("网桥",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
-    centerXY("QPSK1/2",4*16,32,256-16*4,16,1,1,0x0f,0);
-
-    strXY("2/2",256-8*3,48,0x0f,0);
+    showDataParaPage2c();
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -1247,7 +1314,7 @@ void objui::slotShowParaPage22c()
 QString objui::getTimeSpan()
 {
     qint64 secs=QDateTime::currentDateTime().toTime_t() - m_para.m_startSecs;
-    int days=secs/(24*60*60)+1;
+    int days=secs/(24*60*60);
     QTime t=QTime(0,0).addSecs(secs%(24*60*60));
     if(days>0) return QString("%1 天" ).arg(days) + t.toString(" hh : mm : ss");//.arg(t.hour()).arg((t.minute())).arg(t.second());
     else return t.toString("hh : mm : ss");//QString("%1:%2:%3").arg(t.hour()).arg((t.minute())).arg(t.second());
@@ -1256,28 +1323,44 @@ QString objui::getTimeSpan()
 
 void objui::slotShowStatusPage1()
 {
+    QString str;
     char buf[40];
     zeroFB(0);
 
-    if(m_para.m_bModeP2P){
-        if(m_para.m_bDevModeBridge) strXY(QString("网桥"),0,0);
-        else strXY(QString("路由"),0,0);
-        if(m_para.m_bConnected){
-            centerXY("正在通信",32,0,256-32,16,1,1);
-            QString str=getTimeSpan();
-            centerXY(str.toLatin1().data(),32,16,256-32,16,1,1);
+    switch(m_para.m_workMode){
+    case objPara::Mode_p2p:
+        switch(m_para.m_devMode){
+        case objPara::DevMode_bridge:
+            strXY(QString("网桥"),0,0);
+            break;
+        case objPara::DevMode_router:
+            strXY(QString("路由"),0,0);
+            break;
+        default: break;
         }
-        else {
-            centerXY("空    闲",32,0,256-32,32,1,1);
-        }
-        strXY(QString("点 对 点"),0,32);
-        sprintf(buf,"S/N: %.2f",m_para.m_power100*0.01);
-        strXY(buf,128,32);
-        strXY(QString("发送速率: %1k").arg(m_para.m_TxRate),0,48);
-        strXY(QString("接收速率: %1k").arg(m_para.m_RxRate),128,48);
-    }
-    else{
 
+        switch(m_para.m_status){
+        case objPara::Status_connected:
+            centerXY("正在通信",32,0,256-32,16,1,1);
+            str=getTimeSpan();
+            centerXY(str.toLatin1().data(),32,16,256-32,16,1,1);
+            break;
+        case objPara::Status_idle:
+            centerXY("空    闲",32,0,256-32,32,1,1);
+            break;
+        default: break;
+        }
+
+        strXY(QString("点对点"),0,32);
+        sprintf(buf,"S/N: %.2f",m_para.m_power100*0.01);
+        strXY(buf,0,48);
+        strXY(QString("发送速率: %1k").arg(m_para.m_TxRate),128,32);
+        strXY(QString("接收速率: %1k").arg(m_para.m_RxRate),128,48);
+        break;
+    case objPara::Mode_central:
+        centerXY("building....",0,0,256,64,1,1);
+        break;
+    default: break;
     }
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
@@ -1288,36 +1371,122 @@ void objui::slotShowStatusPage1()
 void objui::slotShowStatusPage2()
 {
     char buf[40];
+    const QLocale & locale = QLocale::c();
+    QString s;//=locale.toString(m_numEditor.m_i64);
     zeroFB(0);
 
-    if(m_para.m_bModeP2P){
-        if(m_para.m_bDevModeBridge) strXY(QString("网桥"),0,0);
-        else strXY(QString("路由"),0,0);
-        if(!m_para.m_bConnected){
-            centerXY("正在通信",32,0,256-32,16,1,1);
-            QString str=getTimeSpan();
-            centerXY(str.toLatin1().data(),32,16,256-32,16,1,1);
-            //strXY("正在通信",32,0);
-            //strXY(str.toLatin1().data(),32,16);
-        }
-        else {
-            centerXY("空    闲",32,0,256-32,32,1,1);
-        }
-        strXY(QString("点 对 点"),0,32);
-        sprintf(buf,"S/N: %.2f",m_para.m_power100*0.01);
-        strXY(buf,128,32);
-        strXY(QString("发送速率: %1k").arg(m_para.m_TxRate),0,48);
-        strXY(QString("接收速率: %1k").arg(m_para.m_RxRate),128,48);
-    }
-    else{
+    switch(m_para.m_workMode){
+    case objPara::Mode_p2p:
+        strXY("发送功率:",0,6,0x0f,0);// fasong gonglv 发送 功率
+        strXY("发送频点:",0,6+16+2,0x0f,0);// fasong pindian 发送频率  频率。频点
+        strXY("接收频点:",0,48-6,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
 
+        s=locale.toString(0.01*m_para.m_power100) + " dBm";
+        sprintf(buf,"%.2f dBm",0.01*m_para.m_power100);
+        centerXY(buf,9*8, 6, 256-9*8,16,1,1,0x0f,0);
+
+        s=locale.toString(m_para.m_TxFreq).replace(',',' ') + " Hz";
+        centerXY(s.toLatin1().data(),9*8, 6+16+2, 256-9*8,16,1,1,0x0f,0);
+
+        s=locale.toString(m_para.m_RxFreq).replace(',',' ') + " Hz";
+        centerXY(s.toLatin1().data(),9*8, 48-6, 256-9*8,16,1,1,0x0f,0);
+        break;
+    case objPara::Mode_central:
+        break;
+    default: break;
     }
 
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+
+
+
+}
+
+
+void objui::slotShowMode1()
+{
+    zeroFB(0);
+
+    switch(m_para.m_workMode){
+    case objPara::Mode_p2p:
+        centerXY("[*] 点 对 点",0,12,256,16,1,1,0,0x0f);
+        centerXY("[ ] 集中控制",0,48-10,256,16,1,1);
+        break;
+    case objPara::Mode_central:
+        centerXY("[ ] 点 对 点",0,12,256,16,1,1,0,0x0f);
+        centerXY("[*] 集中控制",0,48-10,256,16,1,1);
+        break;
+    default: break;
+    }
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
     emit sigFlush();
 
 }
+void objui::slotShowMode2()
+{
+    zeroFB(0);
 
+    switch(m_para.m_workMode){
+    case objPara::Mode_p2p:
+        centerXY("[*] 点 对 点",0,12,256,16,1,1);
+        centerXY("[ ] 集中控制",0,48-10,256,16,1,1,0,0x0f);
+        break;
+    case objPara::Mode_central:
+        centerXY("[ ] 点 对 点",0,12,256,16,1,1);
+        centerXY("[*] 集中控制",0,48-10,256,16,1,1,0,0x0f);
+        break;
+    default: break;
+    }
 
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objui::slotShowDevMode1()
+{
+    zeroFB(0);
+
+    switch(m_para.m_devMode){
+    case objPara::DevMode_bridge:
+        centerXY("[*] 网  桥",0,12,256,16,1,1,0,0x0f);
+        centerXY("[ ] 路  由",0,48-10,256,16,1,1);
+        break;
+    case objPara::DevMode_router:
+        centerXY("[ ] 网  桥",0,12,256,16,1,1,0,0x0f);
+        centerXY("[*] 路  由",0,48-10,256,16,1,1);
+        break;
+    default: break;
+    }
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}
+void objui::slotShowDevMode2()
+{
+    zeroFB(0);
+
+    switch(m_para.m_devMode){
+    case objPara::DevMode_bridge:
+        centerXY("[*] 网  桥",0,12,256,16,1,1);
+        centerXY("[ ] 路  由",0,48-10,256,16,1,1,0,0x0f);
+        break;
+    case objPara::DevMode_router:
+        centerXY("[ ] 网  桥",0,12,256,16,1,1);
+        centerXY("[*] 路  由",0,48-10,256,16,1,1,0,0x0f);
+        break;
+    default: break;
+    }
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+}

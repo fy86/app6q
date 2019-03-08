@@ -10,8 +10,21 @@ class objPara : public QObject
 public:
     explicit objPara(QObject *parent = 0);
 
-    bool m_bIdle;
-    bool m_bConnected;
+    enum enumPara{
+        Status_idle,
+        Status_connecting,
+        Status_connected,
+
+        Mode_p2p,
+        Mode_central,
+
+        DevMode_bridge,
+        DevMode_router
+    };
+
+    enumPara m_status;// idle , connecting , connected
+    enumPara m_devMode;// bridge, router
+    enumPara m_workMode;// p2p , central
 
     qint64 m_TxFreq;
     qint64 m_RxFreq;
@@ -51,14 +64,17 @@ public:
     qint64 m_maxPowerCentral;
     qint64 m_minPowerCentral;
 
-    bool m_bDevModeBridge;
-    bool m_bDevModeRouter;
+    //bool m_bDevModeBridge;
+    //bool m_bDevModeRouter;
 
-    bool m_bModeP2P;
-    bool m_bModeCentral;
+    //bool m_bModeP2P;
+    //bool m_bModeCentral;
 
 
     qint64 m_startSecs;
+
+    bool m_bEnableMenuCtrl[4];// central
+    bool m_bEnableMenuCtrlP2P[2];
 signals:
 
 public slots:
