@@ -327,6 +327,34 @@ void objOled::OLED_Init()
 
         qDebug("  objoled OLED_init.done ,  emit sigReadyOled");
 
+        //testGray();
+        //logo();
         QTimer::singleShot(500,this,SIGNAL(sigReadyOled()));
         //emit sigReadyOled();
+}
+void objOled::logo()
+{
+    QFile f("/root/qt/logo16.dat");
+    if(f.open(QIODevice::ReadOnly)){
+        QByteArray ba=f.readAll();
+        Fill_BlockP((unsigned char*)ba.data(),0,63,0,63);
+        emit sigFlush();
+        f.close();
+    }
+}
+
+void objOled::testGray()
+{
+    QByteArray ba;
+    int i,j,g=0;
+    char c;
+    for(i=0;i<128;i++){
+        for(j=0;j<64;j++){
+            c=(g<<4)+(g+1);
+            ba.append(c);
+            g=(g+2)& 0x0f;
+        }
+    }
+    Fill_BlockP((unsigned char*)ba.data(),0,63,0,63);
+    emit sigFlush();
 }

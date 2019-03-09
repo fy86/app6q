@@ -55,6 +55,8 @@ public:
     void Fill_BlockP(unsigned char *p, unsigned char a, unsigned char b, unsigned char c, unsigned char d);
 
 
+    void testGray();
+    void logo();
 
 signals:
     void sigQ2(char,char);

@@ -24,22 +24,6 @@ signals:
 
 public slots:
 
-};
-
-struct st_numEditor {
-    enum myqt::appConst paraName;
-    enum myqt::appConst paraType;
-    qint64 i64;
-    int num;
-    float f;
-    double d;
-    int left;
-    int top;
-    int right;
-    int bottom;
-    int posCursor;
-    int stepInt;
-    double stepDouble;
 
 };
 

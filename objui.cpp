@@ -1331,27 +1331,31 @@ void objui::slotShowStatusPage1()
     case objPara::Mode_p2p:
         switch(m_para.m_devMode){
         case objPara::DevMode_bridge:
-            strXY(QString("网桥"),0,0);
+            strXY(QString("(网桥)"),48,32);
             break;
         case objPara::DevMode_router:
-            strXY(QString("路由"),0,0);
+            strXY(QString("(路由)"),48,32);
             break;
         default: break;
         }
 
         switch(m_para.m_status){
         case objPara::Status_connected:
-            centerXY("正在通信",32,0,256-32,16,1,1);
+            centerXY("正在通信",0,0,256,16,1,1);
+            //centerXY("正在通信",32,0,256-32,16,1,1);
             str=getTimeSpan();
-            centerXY(str.toLatin1().data(),32,16,256-32,16,1,1);
+            centerXY(str.toLatin1().data(),0,16,256,16,1,1);
+            //centerXY(str.toLatin1().data(),32,16,256-32,16,1,1);
             break;
         case objPara::Status_idle:
-            centerXY("空    闲",32,0,256-32,32,1,1);
+            centerXY("空    闲",0,0,256,32,1,1);
+            //centerXY("空    闲",32,0,256-32,32,1,1);
             break;
         default: break;
         }
 
         strXY(QString("点对点"),0,32);
+        //strXY(QString("集中控制"),0,32);
         sprintf(buf,"S/N: %.2f",m_para.m_power100*0.01);
         strXY(buf,0,48);
         strXY(QString("发送速率: %1k").arg(m_para.m_TxRate),128,32);
