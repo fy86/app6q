@@ -9,6 +9,8 @@
 #include <QLocale>
 #include <QTimer>
 #include <QDateTime>
+#include <QHostAddress>
+#include <QNetworkInterface>
 
 #include <iostream>
 #include <fcntl.h>
@@ -18,6 +20,7 @@
 #include <linux/spi/spidev.h>
 
 #include "objpara.h"
+#include "objstatus.h"
 #include "numeditor.h"
 #include "objpage.h"
 //#include "kt0000.h"
@@ -33,15 +36,22 @@ public:
     QTcpSocket *m_pTcp;
     void initTcp();
 
+    bool m_bErrChangeWorkMode;
+
     int m_nShowStatusPage1;
+    bool m_bEnableKeyboard;
+    bool m_bEnable1s;
 
     objPara m_para;
+    objstatus m_status;
     numEditor m_numEditor;
 
     QStateMachine *m_pMachine;
 
     QState *m_pStateGroupTimeout;
 
+    QState *m_pStateLogo;
+    QState *m_pStateAbout;
     QState *m_pStateStatusPage1;
     QState *m_pStateStatusPage2;
 
@@ -57,6 +67,16 @@ public:
 
     QState *m_pStateMenuCall;
     //QState *m_pStateMenu11;
+    QState *m_pStateMsgZZHJ;// zheng.zai.hu.jiao
+    QState *m_pStateMsgHJCG;//
+    QState *m_pStateMsgZZGD;//
+    QState *m_pStateMsgGDCG;//
+
+    QState *m_pStateMsgZZRW;// ru.wang
+    QState *m_pStateMsgZZTW;// tui.wang
+
+    QState *m_pStateEditorBUCfreq;
+    QState *m_pStateEditorLNBfreq;
 
     QState *m_pStateEditorTxFreq;
     QState *m_pStateEditorRxFreq;
@@ -65,7 +85,8 @@ public:
     QState *m_pStateEditorPower;
 
     QState *m_pStateEditorTDM;
-    QState *m_pStateEditorNumber;
+    QState *m_pStateEditorTDM2;
+    //QState *m_pStateEditorNumber;
     QState *m_pStateEditorTxRateCentral;
     QState *m_pStateEditorRxRateCentral;
     QState *m_pStateEditorPowerCentral;
@@ -77,6 +98,7 @@ public:
     QState *m_pStateParaPage2;
     QState *m_pStateParaPage21;
     QState *m_pStateParaPage22;
+    QState *m_pStateParaPage23;
 
     QState *m_pStateParaPage1c;// txFreq
     QState *m_pStateParaPage11c;// rxFreq
@@ -88,20 +110,33 @@ public:
 
     QTimer *m_pTimer60;
     QTimer *m_pTimer1s;
+    QTimer *m_pTimer2s;
+    QTimer *m_pTimerKey;// 200ms
 
     //void buildMachine();
 
     void getColorMenuCall(int n,int *pc,int *pbg);
 
     void doMenuCall();
+    void doCallP2P();
+    void doCallP2Pagain();
+    void doDisconnectP2P();
     void doMenuPara();// enter paraPage1
     void changeSelectMenu10(int step);
+
+    void doLogin();
+    void doLogout();
 
     void showDataParaPage1c();
     void showDataParaPage2();
     void showDataParaPage2c();
 
+    void showDataParaPage1();
+
     QString getTimeSpan();
+
+    void showStatusPage1c();
+
 signals:
 
     void sigStateTransitionUp();
@@ -127,9 +162,13 @@ signals:
     void sigKeyRight();
 
 public slots:
+    void slotKeyEnable();
+    void slotGetCUstate();
     void initMachine();
 
+    void slotP2PmodeParam(QByteArray ba);
     void slotCUState(QByteArray ba);
+    void slotRadioLinkState(QByteArray ba);
     void slotReadTCP();
     void slotErrTCP();
 
@@ -158,6 +197,8 @@ public slots:
     void slotShowStatusPage1();
     void slotShowStatusPage2();
 
+    void slotShowAbout();
+
     void slotShowMenuCall();
     void slotShowMenu11();
     void slotShowMenu12();
@@ -174,6 +215,7 @@ public slots:
     void slotShowParaPage2();
     void slotShowParaPage21();
     void slotShowParaPage22();
+    void slotShowParaPage23();
 
     void slotShowParaPage1c();
     void slotShowParaPage11c();
@@ -183,6 +225,8 @@ public slots:
     void slotShowParaPage21c();
     void slotShowParaPage22c();
 
+    void slotShowEditBUCfreq();
+    void slotShowEditLNBfreq();
 
     void slotShowEditTxFreq();
     void slotShowEditRxFreq();
@@ -191,10 +235,30 @@ public slots:
     void slotShowEditPower();
 
     void slotShowEditTDM();
+    void slotShowEditTDM2();
     void slotShowEditNumber();
     void slotShowEditTxRateCentral();
     void slotShowEditRxRateCentral();
     void slotShowEditPowerCentral();
+
+    void slotShowMenu00();
+    void slotShowMenu01();
+    void slotShowMenu02();
+
+    void slotShowMsgZZHJ();
+    void slotShowMsgHJCG();
+    void slotShowMsgZZGD();
+    void slotShowMsgGDCG();
+
+    void slotShowMsgZZRW();
+    void slotShowMsgZZTW();
+
+    void slotShowLogo();
+
+    void slotGetP2Pstatus();
+    void slotKey1s();
+    void slotKey2s();
+
 };
 
 #endif // OBJUI_H

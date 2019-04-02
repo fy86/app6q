@@ -3,20 +3,35 @@
 
 #include <QObject>
 #include <QDateTime>
+#include <QLocale>
+#include <QFile>
+#include <QTextStream>
+#include <QStringList>
 
 class objPara : public QObject
 {
     Q_OBJECT
 public:
     explicit objPara(QObject *parent = 0);
+    virtual void load();
+    virtual void save();
 
     enum enumPara{
         Status_idle,
         Status_connecting,
+        Status_callSuccess,
         Status_connected,
+        Status_disconnecting,
+        Status_waiting_tdm,
+        Status_logining,
+        Status_logouting,
+        Status_online_idle,
+        Status_online_p2p_call,
+        Status_online_ncc_plan,
 
         Mode_p2p,
         Mode_central,
+        Mode_unknown,
 
         DevMode_bridge,
         DevMode_router
@@ -26,8 +41,16 @@ public:
     enumPara m_devMode;// bridge, router
     enumPara m_workMode;// p2p , central
 
+    qint64 m_localFreq;
+    qint64 m_maxLocalFreq;
+    qint64 m_minLocalFreq;
+
     qint64 m_TxFreq;
     qint64 m_RxFreq;
+
+    qint64 m_BUCfreq;
+    qint64 m_LNBfreq;
+
     int m_TxRate;
     int m_RxRate;
 
@@ -45,7 +68,8 @@ public:
     qint64 m_maxPower;
     qint64 m_minPower;
 
-    qint64 m_TDMfreq;
+    qint64 m_TDMfreq1;
+    qint64 m_TDMfreq2;
     qint64 m_maxTDMfreq;
     qint64 m_minTDMfreq;
 
@@ -75,6 +99,21 @@ public:
 
     bool m_bEnableMenuCtrl[4];// central
     bool m_bEnableMenuCtrlP2P[2];
+
+    float m_fSNR;
+#if 0
+    QString strTxFreq(qint64 lfreq);
+    QString strRxFreq(qint64 lfreq);
+#endif
+    QString strTxRate();
+    QString strRxRate();
+
+    QString strTxFreq(qint64 lfreq);
+    QString strRxFreq(qint64 lfreq);
+
+    QString strTxFreq();
+    QString strRxFreq();
+
 signals:
 
 public slots:

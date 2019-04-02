@@ -6,7 +6,7 @@ threadSPI::threadSPI(QObject *parent) :
     m_baDev.append("/dev/spidev2.0");
     m_fdSPI = -1;
     m_SPIbits = 9;
-    m_SPIspeed = 16000000;
+    m_SPIspeed = 4000000;
     m_SPImode = 0;
     m_SPIdelay = 0;
 
