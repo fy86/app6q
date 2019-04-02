@@ -47,10 +47,6 @@ signals:
 public slots:
     virtual void slotKey(int);
 
-    void slotShowMenu00();
-    void slotShowMenu01();
-    void slotShowMenu02();
-
 };
 
 #endif // OBJFB_H

@@ -1,6 +1,9 @@
 #include <QCoreApplication>
 #include <QUdpSocket>
 #include <QTextCodec>
+#include <QNetworkInterface>
+#include <QHostAddress>
+#include <QAbstractSocket>
 
 #include <objfb.h>
 #include <threadspi.h>
@@ -21,12 +24,23 @@ void testGBK()
     for(i=0;i<len;i++)qDebug("%02x",0x0ff & baGBK.at(i));
 
 }
+void getIP()
+{
+    const QHostAddress &localaddress = QHostAddress::LocalHost;
+    foreach(const QHostAddress &addr, QNetworkInterface::allAddresses()){
+        if(addr.protocol()==QAbstractSocket::IPv4Protocol && addr!=localaddress)
+            qDebug(" ======================= ipaddress : %s",addr.toString().toLatin1().data());
+    }
+
+}
 
 // init
 // 1 threadspi   openSPI
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+
+    //getIP();
 
     threadSPI threadspi;
     threadkey key0;

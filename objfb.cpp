@@ -600,49 +600,6 @@ void objFB::fillFlush()
     emit sigFlush();
 }
 
-void objFB::slotShowMenu00()
-{
-    //qDebug(" func slotShow.menu.00");
-    zeroFB(0);
-
-    centerXY(QString("通  信  控  制"),0,0,256,16,1,1,0,0x0f);
-    centerXY(QString("通  信  参  数"),0,24,256,16,1,1);
-    centerXY(QString("工  作  模  式"),0,48,256,16,1,1);
-
-    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
-
-    emit sigFlush();
-
-}
-void objFB::slotShowMenu01()
-{
-    //qDebug(" func slotShow.menu.01");
-    zeroFB(0);
-
-    centerXY(QString("通  信  控  制"),0,0,256,16,1,1);
-    centerXY(QString("通  信  参  数"),0,24,256,16,1,1,0,0x0f);
-    centerXY(QString("工  作  模  式"),0,48,256,16,1,1);
-
-    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
-
-    emit sigFlush();
-
-}
-void objFB::slotShowMenu02()
-{
-    //qDebug(" func slotShow.menu.02");
-    zeroFB(0);
-
-    centerXY(QString("通  信  控  制"),0,0,256,16,1,1);
-    centerXY(QString("通  信  参  数"),0,24,256,16,1,1);
-    centerXY(QString("工  作  模  式"),0,48,256,16,1,1,0,0x0f);
-
-    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
-
-    emit sigFlush();
-
-}
-
 
 
 

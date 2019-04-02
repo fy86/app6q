@@ -23,6 +23,8 @@ class objOled : public objBase
 public:
     explicit objOled(QObject *parent = 0);
 
+    QByteArray m_ba;
+
     //void OLED_Init();
     void setRES(int res);
     void Set_Command_Lock(unsigned char d);

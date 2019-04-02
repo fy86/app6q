@@ -15,7 +15,23 @@ numEditor::numEditor(QObject *parent) :
 
     m_maxPos = 10;
     m_minPos = 0;
+
+    for(int i=0;i<20;i++) m_ArrayRate[i]=1<<i;
+    m_maxIdxRate = 12;
+    m_minIdxRate = 4;
+    m_nIdxRate = 10;
 }
+void numEditor::setIdxRate(int rate)
+{
+    int i;
+    for(i=m_minIdxRate;i<=m_maxIdxRate;i++){
+        if(m_ArrayRate[i]>=rate){
+            m_nIdxRate = i;
+            break;
+        }
+    }
+}
+
 void numEditor::checkCursor()
 {
     setLen();
@@ -23,6 +39,16 @@ void numEditor::checkCursor()
     if(m_minPos>=m_nLenInt) m_minPos = m_nLenInt-1;
     if(m_posCursor>m_maxPos) m_posCursor=m_maxPos;
     setStep();
+}
+void numEditor::incIdx()
+{
+    m_nIdxRate++;
+    if(m_nIdxRate>m_maxIdxRate) m_nIdxRate = m_minIdxRate;
+}
+void numEditor::decIdx()
+{
+    m_nIdxRate--;
+    if(m_nIdxRate<m_minIdxRate) m_nIdxRate = m_maxIdxRate;
 }
 
 void numEditor::inc()
@@ -36,7 +62,6 @@ void numEditor::dec()
     m_i64 -= m_step64;
     if(m_i64<m_min64) m_i64 = m_min64;
     checkCursor();
-
 }
 void numEditor::strInc()
 {
@@ -63,6 +88,7 @@ void numEditor::setStep()
     for(i=0;i<m_posCursor;i++){
         m_step64 *= 10;
     }
+    qDebug(" step: %lld",m_step64);
 }
 void numEditor::strMoveCursor(int n)
 {
@@ -70,10 +96,19 @@ void numEditor::strMoveCursor(int n)
     m_posCursor = modn(m_posCursor+n,m_nLenInt);
     setStep();
 }
+// freq MHz
 void numEditor::moveCursor(int n)
 {
+    if(n>0){// +1
+        m_posCursor++;
+        if(m_posCursor>m_maxPos) m_posCursor = m_minPos;
+    }
+    else if(n<0){ // -1
+        m_posCursor--;
+        if(m_posCursor<m_minPos) m_posCursor = m_maxPos;
+    }
 
-    m_posCursor = modn(m_posCursor+n,m_nLenInt);
+
     setStep();
 }
 int numEditor::modn(int n, int nmax)
@@ -89,15 +124,32 @@ int numEditor::getCursor()
     const QLocale & locale = QLocale::c();
     QString s=locale.toString(m_step64);
 
-    if(m_i64>0){
+    if(m_min64>0){
         ret = s.size()-1;
     }
-    else{
+    else{//
         ret = m_posCursor;
         if(ret>1)ret++;
     }
 
     //qDebug(" getCursor: %d",ret);
+    return ret;
+
+}
+// xxxx.xxxx MHz
+// m_i64 Hz
+int numEditor::getCursorMHz()
+{
+    int ret=0;
+    //const QLocale & locale = QLocale::c();
+    //QString s=locale.toString(m_step64);
+    QString s=QString("%1").arg(m_step64);
+
+    if(m_i64>=0){
+        ret = s.size()-3;
+        if(ret<0)ret=0;
+        if(ret>3)ret++;
+    }
     return ret;
 
 }
@@ -108,7 +160,7 @@ int numEditor::strGetCursor()
 }
 void numEditor::setLen()
 {
-    m_nLenInt = QString("%1").arg(m_i64).size();
+    m_nLenInt = QString("%1").arg(m_max64).size();
     if(m_i64<0) m_nLenInt--;
 }
 
@@ -120,25 +172,17 @@ void numEditor::setNum64(qint64 i64, qint64 max64, qint64 min64, int posMax, int
 
     m_i64old = i64;
     m_i64 = i64;
-
-    //QString str=QString("%1").arg(m_i64);
-    //m_nLenInt = QString("%1").arg(m_i64).size();
-    setLen();
-
-    m_posCursor = modn(pos,m_nLenInt);
-
     m_max64 = max64;
     m_min64 = min64;
+
+    setLen();
+
     m_maxPos = modn(posMax,m_nLenInt);
     m_minPos = modn(posMin,m_nLenInt);
+    m_posCursor = modn(pos,m_nLenInt);
+    qDebug("cursor:%d max:%d min:%d",m_posCursor,m_maxPos,m_minPos);
+
     setStep();
-#if 0
-    qDebug(" set64 i64:%s %s %s - posMax:%d posMin:%d pos:%d - cursor:%d",
-           QString("%1").arg(m_i64).toLatin1().data(),
-           QString("%1").arg(m_max64).toLatin1().data(),
-           QString("%1").arg(m_min64).toLatin1().data(),
-           m_maxPos,m_minPos,m_posCursor,getCursor());
-#endif
 }
 void numEditor::setNumStr(qint64 i64,qint64 max64,qint64 min64, int posMax, int posMin, int pos)
 {
@@ -157,3 +201,35 @@ void numEditor::setNumStr(qint64 i64,qint64 max64,qint64 min64, int posMax, int 
 }
 
 
+QString numEditor::getStr643()
+{
+    QString s=QString("%1").arg(m_i64);
+    for(;;){
+        if(s.size()>m_posCursor)break;
+        s.insert(0,'0');
+    }
+
+    int n=(s.size()-1)/3;
+    int i;
+    for(i=0;i<n;i++){
+        s.insert(0,' ');
+    }
+    return s;
+}
+void numEditor::getStrFreq(char *p)
+{
+    double d=0.000001 * m_i64;
+    sprintf(p,"%09.4f",d);
+}
+void numEditor::getStrTDM(char *p)
+{
+    double d=0.000001 * m_i64;
+    sprintf(p,"%010.4f",d);
+}
+
+void numEditor::add(int n)
+{
+    m_i64 +=n;
+    if(m_i64>m_max64) m_i64 = m_max64;
+    if(m_i64<m_min64) m_i64 = m_min64;
+}

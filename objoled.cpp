@@ -3,6 +3,7 @@
 objOled::objOled(QObject *parent) :
     objBase(parent)
 {
+    m_ba.resize(10000);
 }
 void objOled::slotFlush()
 {
@@ -12,7 +13,45 @@ void objOled::slotFlush()
 void objOled::Fill_BlockP(unsigned char *p, unsigned char a, unsigned char b, unsigned char c, unsigned char d)
 {
     unsigned char i,j;
+    unsigned char *p1;
+    unsigned char b1,b2,c1,c2;
+    unsigned char z=0;
 
+    p1 = (unsigned char*)m_ba.data();
+
+    for(i=0;i<(d-c+1);i++)
+    {
+#if 1
+        Set_Column_Address(OLED_Shift+a,OLED_Shift+b);
+        //Set_Row_Address(c,d);
+        Set_Row_Address(c+i,c+i);
+        Set_Write_RAM();
+#endif
+        for(j=0;j<(b-a+1);j++)
+        {
+            b1=*p1++;
+            b2=*p1++;
+            c1=*p++;
+            c2=*p++;
+            //if(b1==c1 && b2==c2 && c1!=z && c2!=z)continue;/////////////////////
+
+#if 0
+            Set_Column_Address(OLED_Shift+a+j,OLED_Shift+a+j);
+            //Set_Row_Address(c,d);
+            Set_Row_Address(c+i,c+i);
+            Set_Write_RAM();
+#endif
+#if 0
+            Write_Data(*p++);
+            Write_Data(*p++);
+#endif
+            Write_Data(c1);
+            Write_Data(c2);
+        }
+    }
+    memcpy(m_ba.data(),p,8192);
+
+#if 0
         Set_Column_Address(OLED_Shift+a,OLED_Shift+b);
         Set_Row_Address(c,d);
         Set_Write_RAM();
@@ -25,7 +64,7 @@ void objOled::Fill_BlockP(unsigned char *p, unsigned char a, unsigned char b, un
                 Write_Data(*p++);
             }
         }
-
+#endif
 }
 
 void objOled::Write_Command(unsigned char Data)
@@ -329,7 +368,7 @@ void objOled::OLED_Init()
 
         //testGray();
         //logo();
-        QTimer::singleShot(500,this,SIGNAL(sigReadyOled()));
+        QTimer::singleShot(1000,this,SIGNAL(sigReadyOled()));
         //emit sigReadyOled();
 }
 void objOled::logo()

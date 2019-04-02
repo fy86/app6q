@@ -46,6 +46,7 @@ public:
 
     int modn(int n,int nmax);
     int getCursor();
+    int getCursorMHz();
     void checkCursor();
 
     void setLen();
@@ -55,6 +56,20 @@ public:
     void strMoveCursor(int n);
     int strGetCursor();
 
+    QString getStr643();
+    void getStrFreq(char *p);
+    void getStrTDM(char *p);
+
+    int m_ArrayRate[20];
+    int m_maxIdxRate;
+    int m_minIdxRate;
+    int m_nIdxRate;
+
+    void setIdxRate(int rate);
+    void incIdx();
+    void decIdx();
+
+    void add(int n);
 
 signals:
 

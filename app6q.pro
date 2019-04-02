@@ -39,7 +39,8 @@ SOURCES += main.cpp \
     jsonrpc/tcp_client.cpp \
     myqt.cpp \
     numeditor.cpp \
-    objpara.cpp
+    objpara.cpp \
+    objstatus.cpp
 
 HEADERS += \
     threadspi.h \
@@ -76,4 +77,5 @@ HEADERS += \
     jsonrpc/tcp_client.h \
     myqt.h \
     numeditor.h \
-    objpara.h
+    objpara.h \
+    objstatus.h
