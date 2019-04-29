@@ -11,6 +11,9 @@
 #include <QDateTime>
 #include <QHostAddress>
 #include <QNetworkInterface>
+#include <QAbstractSocket>
+#include <QUdpSocket>
+#include <QHostAddress>
 
 #include <iostream>
 #include <fcntl.h>
@@ -18,6 +21,7 @@
 #include <linux/input.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
+#include <arpa/inet.h>
 
 #include "objpara.h"
 #include "objstatus.h"
@@ -32,14 +36,18 @@ class objui : public objPage
 public:
     explicit objui(QObject *parent = 0);
     CuRpcControl m_cu;
+    struct TDMStruct m_stTDM;
 
     QTcpSocket *m_pTcp;
-    void initTcp();
+    void writeTcp(QByteArray ba);
 
     bool m_bErrChangeWorkMode;
 
+    QUdpSocket *m_pUDPkey;
+    void initUDPkey();
+
     int m_nShowStatusPage1;
-    bool m_bEnableKeyboard;
+    //bool m_bEnableKeyboard;
     bool m_bEnable1s;
 
     objPara m_para;
@@ -93,12 +101,24 @@ public:
 
     QState *m_pStateParaPage1;// txFreq
     QState *m_pStateParaPage11;// rxFreq
-    QState *m_pStateParaPage12;//
-    QState *m_pStateParaPage13;
+    //QState *m_pStateParaPage12;//
+    //QState *m_pStateParaPage13;
     QState *m_pStateParaPage2;
     QState *m_pStateParaPage21;
     QState *m_pStateParaPage22;
     QState *m_pStateParaPage23;
+
+    QState *m_pStateParaPage30;// txRate
+    QState *m_pStateParaPage31;
+    //QState *m_pStateParaPage32;
+    QState *m_pStateParaPage40;// rxRate
+    QState *m_pStateParaPage41;
+    //QState *m_pStateParaPage42;
+
+    QState *m_pStateEditRxPSK;
+    QState *m_pStateEditTxPSK;
+
+
 
     QState *m_pStateParaPage1c;// txFreq
     QState *m_pStateParaPage11c;// rxFreq
@@ -133,9 +153,20 @@ public:
 
     void showDataParaPage1();
 
+    void showP3();
+    void showP4();
+
     QString getTimeSpan();
+    QString getTimeRunning();
 
     void showStatusPage1c();
+
+    void getPara();// tdm.freq , power
+    void setTDM();
+    void setPower100c();
+
+    void showPSK(int psk);
+
 
 signals:
 
@@ -162,10 +193,17 @@ signals:
     void sigKeyRight();
 
 public slots:
+    void slotUDPkey();
+    void slotTcpOn();
+    void slotTcpOff();
+    void slotInitTcp();
+
     void slotKeyEnable();
     void slotGetCUstate();
     void initMachine();
 
+    void slotTDMConfig(QByteArray ba);
+    void slotPowerConfig(QByteArray ba);
     void slotP2PmodeParam(QByteArray ba);
     void slotCUState(QByteArray ba);
     void slotRadioLinkState(QByteArray ba);
@@ -217,6 +255,13 @@ public slots:
     void slotShowParaPage22();
     void slotShowParaPage23();
 
+    void slotShowP30();
+    void slotShowP31();
+    void slotShowP32();
+    void slotShowP40();
+    void slotShowP41();
+    void slotShowP42();
+
     void slotShowParaPage1c();
     void slotShowParaPage11c();
     void slotShowParaPage12c();
@@ -258,6 +303,9 @@ public slots:
     void slotGetP2Pstatus();
     void slotKey1s();
     void slotKey2s();
+
+    void slotShowEditRxPSK();
+    void slotShowEditTxPSK();
 
 };
 

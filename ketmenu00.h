@@ -175,6 +175,7 @@ public:
     }
     virtual void doKeyEnter(){
         m_pui->m_para.m_TDMfreq1 = m_pui->m_numEditor.m_i64;
+        m_pui->setTDM();
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyUp(){
@@ -209,6 +210,7 @@ public:
     }
     virtual void doKeyEnter(){
         m_pui->m_para.m_TDMfreq2 = m_pui->m_numEditor.m_i64;
+        m_pui->setTDM();
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyUp(){
@@ -307,6 +309,7 @@ public:
     }
     virtual void doKeyEnter(){
         m_pui->m_para.m_power100Central = m_pui->m_numEditor.m_i64;
+        m_pui->setPower100c();
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyUp(){
@@ -398,6 +401,7 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
+        if(m_pui->m_para.m_status==objPara::Status_idle){
         switch(m_pui->m_para.m_workMode){
         case objPara::Mode_p2p:
             m_pui->slotStateTransitionP2P();
@@ -406,6 +410,18 @@ public:
             m_pui->slotStateTransitionCentral();
             break;
         default: break;
+        }
+        }
+        else{// connected
+            switch(m_pui->m_status.m_workMode){
+            case objPara::Mode_p2p:
+                m_pui->slotStateTransitionP2P();
+                break;
+            case objPara::Mode_central:
+                m_pui->slotStateTransitionCentral();
+                break;
+            default: break;
+            }
         }
     }
     virtual void doKeyUp(){
@@ -943,6 +959,75 @@ public:
 
 };
 
+// page40 enter
+class ketTxPSKeditor : public ketBase
+{
+    Q_OBJECT
+public:
+    ketTxPSKeditor(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        if(m_pui->m_para.m_txPSK!=m_pui->m_numEditor.m_nPSK){
+            m_pui->m_para.m_txPSK = m_pui->m_numEditor.m_nPSK;
+            // save
+        }
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyUp(){
+        m_pui->m_numEditor.pskInc(-1);
+        m_pui->slotShowEditTxPSK();
+    }
+    virtual void doKeyDown(){
+        m_pui->m_numEditor.pskInc();
+        m_pui->slotShowEditTxPSK();
+    }
+    virtual void doKeyLeft(){
+        m_pui->m_numEditor.pskInc(-1);
+        m_pui->slotShowEditTxPSK();
+    }
+    virtual void doKeyRight(){
+        m_pui->m_numEditor.pskInc();
+        m_pui->slotShowEditTxPSK();
+    }
+
+};
+class ketRxPSKeditor : public ketBase
+{
+    Q_OBJECT
+public:
+    ketRxPSKeditor(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        if(m_pui->m_para.m_rxPSK!=m_pui->m_numEditor.m_nPSK){
+            m_pui->m_para.m_rxPSK = m_pui->m_numEditor.m_nPSK;
+            // save
+        }
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyUp(){
+        m_pui->m_numEditor.pskInc(-1);
+        m_pui->slotShowEditRxPSK();
+    }
+    virtual void doKeyDown(){
+        m_pui->m_numEditor.pskInc();
+        m_pui->slotShowEditRxPSK();
+    }
+    virtual void doKeyLeft(){
+        m_pui->m_numEditor.pskInc(-1);
+        m_pui->slotShowEditRxPSK();
+    }
+    virtual void doKeyRight(){
+        m_pui->m_numEditor.pskInc();
+        m_pui->slotShowEditRxPSK();
+    }
+
+};
 
 
 class ketTxRateEditor : public ketBase

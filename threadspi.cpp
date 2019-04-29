@@ -19,6 +19,7 @@ void threadSPI::run()
 {
     char ch;
     int ret;
+    int len32;
 
     ret=openSPI();
     if(ret<0) return;
@@ -26,12 +27,17 @@ void threadSPI::run()
     emit sigReady();
 
     for(;;){
-        if(m_q.size()>1){
+        if(m_q.size()>3){
             ch = m_q.dequeue();
             m_baSend.append(ch);
             ch = m_q.dequeue();
             m_baSend.append(ch);
-            if(m_baSend.size()>250){
+            ch = m_q.dequeue();
+            m_baSend.append(ch);
+            ch = m_q.dequeue();
+            m_baSend.append(ch);
+            len32 = m_baSend.size();
+            if( (len32>=240) && (len32==((len32>>2)<<2)) ){
                 if(m_fdSPI>0){
                     transfer(m_baSend);
                 }
@@ -56,10 +62,13 @@ void threadSPI::slotSend()
 {
     m_sem.release();
 }
-void threadSPI::slotSend2(char ch0,char ch1)
+void threadSPI::slotSend2(char ch0,char cd)
 {
+    char z=0;
     m_q.enqueue(ch0);
-    m_q.enqueue(ch1);
+    m_q.enqueue(cd);
+    m_q.enqueue(z);
+    m_q.enqueue(z);
     //m_sem.release();
 }
 
@@ -118,6 +127,7 @@ int threadSPI::openSPI()
 void threadSPI::transfer(QByteArray baSend)
 {
     int ret;
+    qint64 buf64[64];
 #if 0
     uint8_t tx[] = {
          0xFF, 0x00, 0xFF, 0x00, 0xFF,
@@ -147,8 +157,9 @@ void threadSPI::transfer(QByteArray baSend)
 #endif
     m_baTx.clear();
     m_baTx.append(baSend);
+    memcpy((void*)buf64,baSend.data(),baSend.size());
 
-    m_tr.tx_buf=(unsigned long)m_baTx.data();
+    m_tr.tx_buf=(unsigned long)buf64;
     m_tr.rx_buf=(unsigned long)m_baRx.data();
     m_tr.len = baSend.size();
     m_tr.delay_usecs = m_SPIdelay;

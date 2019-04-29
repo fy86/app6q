@@ -3,6 +3,8 @@
 numEditor::numEditor(QObject *parent) :
     QObject(parent)
 {
+    m_nPSK = objPara::Mod_8psk34;
+
     paraType=myqt::paraTypeInt64;
     paraName = myqt::paraNameRxFreq;
 
@@ -21,6 +23,46 @@ numEditor::numEditor(QObject *parent) :
     m_minIdxRate = 4;
     m_nIdxRate = 10;
 }
+void numEditor::setPSK(objPara::enumPara psk)
+{
+    m_nPSK = psk;
+}
+void numEditor::pskInc(int one)
+{
+    if(one>0){
+    switch (m_nPSK) {
+    case objPara::Mod_qpsk12:
+        m_nPSK = objPara::Mod_8psk12;
+        break;
+    case objPara::Mod_8psk12:
+        m_nPSK = objPara::Mod_qpsk34;
+        break;
+    case objPara::Mod_qpsk34:
+        m_nPSK = objPara::Mod_8psk34;
+        break;
+    default:
+        m_nPSK = objPara::Mod_qpsk12;
+        break;
+    }
+    }
+    else{
+        switch (m_nPSK) {
+        case objPara::Mod_qpsk12:
+            m_nPSK = objPara::Mod_8psk34;
+            break;
+        case objPara::Mod_8psk12:
+            m_nPSK = objPara::Mod_qpsk12;
+            break;
+        case objPara::Mod_qpsk34:
+            m_nPSK = objPara::Mod_8psk12;
+            break;
+        default:
+            m_nPSK = objPara::Mod_qpsk34;
+            break;
+        }
+    }
+}
+
 void numEditor::setIdxRate(int rate)
 {
     int i;

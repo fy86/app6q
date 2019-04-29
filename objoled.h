@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QUdpSocket>
+#include <QHostAddress>
 
 #include <objbase.h>
 #include <unistd.h>
@@ -23,6 +25,8 @@ class objOled : public objBase
 public:
     explicit objOled(QObject *parent = 0);
 
+    QHostAddress m_hostVOLED;
+    QUdpSocket m_udp;
     QByteArray m_ba;
 
     //void OLED_Init();

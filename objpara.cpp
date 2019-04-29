@@ -58,9 +58,49 @@ objPara::objPara(QObject *parent) :
 
     m_startSecs = QDateTime::currentDateTime().toTime_t();
 
+    m_rxPSK = Mod_8psk34;
+    m_txPSK = Mod_8psk34;
+
     load();
+#if 0
+    int i,j,k;
+    for(i=0;i<16;i++){
+        qDebug("%d %lld %lld %lld %lld",i,getRate(i,0,0),getRate(i,1,0),getRate(i,0,1),getRate(i,1,1));
+    }
+#endif
+}
+// type:0:qpsk::1:8psk   r:0:1/2::1::3/4
+qint64 objPara::getRate(int sn, int type, int r)
+{
+    int ret;
+    qint64 ret64;
+    QList<int> r0;
+    r0 << 32 << 64 <<128 << 256 << 384 << 512 << 768 << 1024 << 1536 << 2048 << 3072 << 4096 << 6144 << 8192 << 12288 << 16384;
+    if(sn<0) ret=r0[0];
+    else if(sn>=r0.size()) ret=r0[r0.size()-1];
+    else ret=r0[sn];
+    switch(type){
+    case 0:
+        ret=ret<<1;
+        break;
+    default:
+        ret=(ret<<1)+ret;
+        break;
+    }
+    switch(r){
+    case 0:
+        ret=ret>>1;
+        break;
+    default:
+        ret=(ret<<1)+ret;
+        ret=ret>>2;
+        break;
+    }
+    ret64=ret;
+    return ret64;
 
 }
+
 QString objPara::strTxRate()
 {
     QString str="发送速率:  -- k";

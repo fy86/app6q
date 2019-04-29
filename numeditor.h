@@ -6,12 +6,15 @@
 
 
 #include "myqt.h"
+#include "objpara.h"
 
 class numEditor : public QObject
 {
     Q_OBJECT
 public:
     explicit numEditor(QObject *parent = 0);
+
+    enum objPara::enumPara m_nPSK;
 
     enum myqt::appConst paraName;
     enum myqt::appConst paraType;
@@ -70,6 +73,9 @@ public:
     void decIdx();
 
     void add(int n);
+
+    void setPSK(objPara::enumPara psk);
+    void pskInc(int one=1);
 
 signals:
 

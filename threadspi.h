@@ -47,7 +47,7 @@ signals:
 
 public slots:
     void slotSend();// semaphore release
-    void slotSend2(char ch0,char ch1);// enqueue
+    void slotSend2(char ch0,char cd);// enqueue
 
 };
 

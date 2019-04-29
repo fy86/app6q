@@ -34,8 +34,16 @@ public:
         Mode_unknown,
 
         DevMode_bridge,
-        DevMode_router
+        DevMode_router,
+
+        Mod_qpsk12,
+        Mod_qpsk34,
+        Mod_8psk12,
+        Mod_8psk34
     };
+
+    enumPara m_rxPSK;
+    enumPara m_txPSK;
 
     enumPara m_status;// idle , connecting , connected
     enumPara m_devMode;// bridge, router
@@ -113,6 +121,8 @@ public:
 
     QString strTxFreq();
     QString strRxFreq();
+
+    qint64 getRate(int sn,int type,int r);
 
 signals:
 
