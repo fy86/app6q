@@ -12,6 +12,8 @@
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 
+#include "myq32.h"
+
 class threadSPI : public QThread
 {
     Q_OBJECT
@@ -19,7 +21,8 @@ public:
     explicit threadSPI(QObject *parent = 0);
 
     //QQueue<char> m_q;// spi send
-    QQueue<int> m_q32;
+    //QQueue<int> m_q32;
+    myq32 m_myq32;
     QSemaphore m_sem;
     QByteArray m_baSend;// <256
 

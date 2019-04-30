@@ -39,7 +39,8 @@ SOURCES += main.cpp \
     myqt.cpp \
     numeditor.cpp \
     objpara.cpp \
-    objstatus.cpp
+    objstatus.cpp \
+    myq32.cpp
 
 HEADERS += \
     threadspi.h \
@@ -76,4 +77,5 @@ HEADERS += \
     myqt.h \
     numeditor.h \
     objpara.h \
-    objstatus.h
+    objstatus.h \
+    myq32.h

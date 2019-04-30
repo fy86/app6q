@@ -29,9 +29,11 @@ void threadSPI::run()
     emit sigReady();
 
     for(;;){
-        if(!m_q32.isEmpty()){
+        if(!m_myq32.isEmpty()){
+        //if(!m_q32.isEmpty()){
         //if(m_q.size()>3){
-            i32 = m_q32.dequeue();
+            //i32 = m_q32.dequeue();
+            m_myq32.deq(&i32);
             m_baSend.append(p,4);
 #if 0
             ch = m_q.dequeue();
@@ -74,7 +76,8 @@ void threadSPI::slotSend2(char ch0,char cd)
     int i;
     i = 0x0ff & ch0;
     i |= 0x0ff00 & (cd<<8);
-    m_q32.enqueue(i);
+    m_myq32.enq(i);
+    //m_q32.enqueue(i);
 #if 0
     char z=0;
     m_q.enqueue(ch0);

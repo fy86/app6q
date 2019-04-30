@@ -2232,12 +2232,13 @@ void objui::slotShowDevMode2()
 // ver1.17(4.18 add m_semKey
 //         4.23 voled
 // ver1.18(4.29 q.char->q.32 better , seg fault => abort
+//        (4.30 myq32
 void objui::slotShowAbout()
 {
     zeroFB(0);
 
-    strXY("ver: 1.17a",0,0);
-    centerXY("4.23",0,48,256,16,2,1);// data 19.3.10
+    strXY("ver: 1.18",0,0);
+    centerXY("4.30",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;
     foreach(const QHostAddress &addr, QNetworkInterface::allAddresses()){
