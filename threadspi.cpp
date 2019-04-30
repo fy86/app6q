@@ -17,6 +17,8 @@ threadSPI::threadSPI(QObject *parent) :
 
 void threadSPI::run()
 {
+    int i32;
+    char *p=(char*)(&i32);
     char ch;
     int ret;
     int len32;
@@ -27,7 +29,11 @@ void threadSPI::run()
     emit sigReady();
 
     for(;;){
-        if(m_q.size()>3){
+        if(!m_q32.isEmpty()){
+        //if(m_q.size()>3){
+            i32 = m_q32.dequeue();
+            m_baSend.append(p,4);
+#if 0
             ch = m_q.dequeue();
             m_baSend.append(ch);
             ch = m_q.dequeue();
@@ -36,6 +42,7 @@ void threadSPI::run()
             m_baSend.append(ch);
             ch = m_q.dequeue();
             m_baSend.append(ch);
+#endif
             len32 = m_baSend.size();
             if( (len32>=240) && (len32==((len32>>2)<<2)) ){
                 if(m_fdSPI>0){
@@ -64,12 +71,18 @@ void threadSPI::slotSend()
 }
 void threadSPI::slotSend2(char ch0,char cd)
 {
+    int i;
+    i = 0x0ff & ch0;
+    i |= 0x0ff00 & (cd<<8);
+    m_q32.enqueue(i);
+#if 0
     char z=0;
     m_q.enqueue(ch0);
     m_q.enqueue(cd);
     m_q.enqueue(z);
     m_q.enqueue(z);
     //m_sem.release();
+#endif
 }
 
 int threadSPI::openSPI()

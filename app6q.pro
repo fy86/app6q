@@ -17,7 +17,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     threadspi.cpp \
-    threadspioled.cpp \
     objbase.cpp \
     objoled.cpp \
     objfb.cpp \
@@ -44,7 +43,6 @@ SOURCES += main.cpp \
 
 HEADERS += \
     threadspi.h \
-    threadspioled.h \
     objbase.h \
     objoled.h \
     objfb.h \

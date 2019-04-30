@@ -18,7 +18,8 @@ class threadSPI : public QThread
 public:
     explicit threadSPI(QObject *parent = 0);
 
-    QQueue<char> m_q;// spi send
+    //QQueue<char> m_q;// spi send
+    QQueue<int> m_q32;
     QSemaphore m_sem;
     QByteArray m_baSend;// <256
 
