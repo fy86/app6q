@@ -68,7 +68,42 @@ objPara::objPara(QObject *parent) :
         qDebug("%d %lld %lld %lld %lld",i,getRate(i,0,0),getRate(i,1,0),getRate(i,0,1),getRate(i,1,1));
     }
 #endif
+    for(int i=0;i<32;i++)m_pnRate0[i]=-1;
+    m_pnRate0[0]=32;
+    m_pnRate0[1]=64;
+    m_pnRate0[2]=128;
+    m_pnRate0[3]=256;
+    m_pnRate0[4]=384;
+    m_pnRate0[5]=512;
+    m_pnRate0[6]=768;
+    m_pnRate0[7]=1024;
+    m_pnRate0[8]=1536;
+    m_pnRate0[9]=2048;
+    m_pnRate0[10]=3072;
+    m_pnRate0[11]=4096;
+    m_pnRate0[12]=6144;
+    m_pnRate0[13]=8192;
+    m_pnRate0[14]=12288;
+    m_pnRate0[15]=16384;
 }
+void objPara::setArrayRate(enumPara psk)
+{
+    int i;
+    for(i=0;i<32;i++)m_pnRate[i]=-1;
+    switch(psk){
+    case enumPara::Mod_qpsk12:
+        for(i=0;i<16;i++)m_pnRate[i]=m_pnRate0[i];
+        break;
+    case enumPara::Mod_qpsk34:
+    case enumPara::Mod_8psk12:
+        for(i=0;i<16;i++)m_pnRate[i]=m_pnRate0[i]+(m_pnRate0[i]>>1);
+        break;
+    default:// mod_8psk34
+        for(i=0;i<16;i++)m_pnRate[i]=(m_pnRate0[i]<<1)+(m_pnRate0[i]>>2);
+        break;
+    }
+}
+
 // type:0:qpsk::1:8psk   r:0:1/2::1::3/4
 qint64 objPara::getRate(int sn, int type, int r)
 {
@@ -106,7 +141,7 @@ QString objPara::strTxRate()
     QString str="发送速率:  -- k";
     if(m_TxRate<0) return str;
     //if(m_TxRate<=m_maxTxRate && m_TxRate>=m_minTxRate){
-        str = QString("发送速率: %1 k").arg(m_TxRate);
+        str = QString("发送速率: %1k").arg(m_TxRate);
     //}
     return str;
 }
@@ -116,7 +151,7 @@ QString objPara::strRxRate()
     if(m_RxRate<0) return str;
 
     //if(m_RxRate<=m_maxRxRate && m_RxRate>=m_minRxRate){
-        str = QString("接收速率: %1 k").arg(m_RxRate);
+        str = QString("接收速率: %1k").arg(m_RxRate);
     //}
     return str;
 }
@@ -160,6 +195,12 @@ void objPara::load()
                     m_devMode = objPara::DevMode_router;
                 }
             }
+            else if(0==sl.at(0).compare(QString("txPSK"),Qt::CaseInsensitive)){
+                m_txPSK=(enumPara)sl.at(1).toInt(&b);
+            }
+            else if(0==sl.at(0).compare(QString("rxPSK"),Qt::CaseInsensitive)){
+                m_rxPSK=(enumPara)sl.at(1).toInt(&b);
+            }
         }
         f.close();
     }
@@ -196,6 +237,10 @@ void objPara::save()
             break;
 
         }
+        sprintf(buf,"txPSK %d\n",m_txPSK);
+        f.write(buf,strlen(buf));
+        sprintf(buf,"rxPSK %d\n",m_rxPSK);
+        f.write(buf,strlen(buf));
 
         f.close();
     }

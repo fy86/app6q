@@ -22,7 +22,66 @@ numEditor::numEditor(QObject *parent) :
     m_maxIdxRate = 12;
     m_minIdxRate = 4;
     m_nIdxRate = 10;
+
+    for(int i=0;i<32;i++)m_pnRate0[i]=-1;
+    m_pnRate0[0]=32;
+    m_pnRate0[1]=64;
+    m_pnRate0[2]=128;
+    m_pnRate0[3]=256;
+    m_pnRate0[4]=384;
+    m_pnRate0[5]=512;
+    m_pnRate0[6]=768;
+    m_pnRate0[7]=1024;
+    m_pnRate0[8]=1536;
+    m_pnRate0[9]=2048;
+    m_pnRate0[10]=3072;
+    m_pnRate0[11]=4096;
+    m_pnRate0[12]=6144;
+    m_pnRate0[13]=8192;
+    m_pnRate0[14]=12288;
+    m_pnRate0[15]=16384;
+
+
 }
+void numEditor::setArrayRate(objPara::enumPara psk)
+{
+    int i;
+    for(i=0;i<32;i++)m_pnRate[i]=-1;
+    switch(psk){
+    case objPara::Mod_qpsk12:
+        for(i=0;i<16;i++)m_pnRate[i]=m_pnRate0[i];
+        break;
+    case objPara::Mod_qpsk34:
+    case objPara::Mod_8psk12:
+        for(i=0;i<16;i++)m_pnRate[i]=m_pnRate0[i]+(m_pnRate0[i]>>1);
+        break;
+    default:// mod_8psk34
+        for(i=0;i<16;i++)m_pnRate[i]=(m_pnRate0[i]<<1)+(m_pnRate0[i]>>2);
+        break;
+    }
+
+}
+void numEditor::incRatePSK(int one)
+{
+    if(one>0){
+        for(int i=0;i<16;i++){
+            if(m_pnRate[i]>m_num){
+                m_num = m_pnRate[i];
+                break;
+            }
+        }
+    }
+    else{
+        for(int i=15;i>=0;i--){
+            if(m_pnRate[i]<m_num){
+                m_num = m_pnRate[i];
+                break;
+            }
+        }
+
+    }
+}
+
 void numEditor::setPSK(objPara::enumPara psk)
 {
     m_nPSK = psk;

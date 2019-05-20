@@ -1066,6 +1066,78 @@ public:
     }
 
 };
+class ketTxRateEditorPSK : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketTxRateEditorPSK(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        if(m_pui->m_para.m_TxRate != m_pui->m_numEditor.m_num){
+            m_pui->m_para.m_TxRate = m_pui->m_numEditor.m_num;
+            m_pui->m_para.save();
+            m_pui->doCallP2Pagain();
+        }
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyUp(){
+        m_pui->m_numEditor.incRatePSK(1);// .incIdx();
+        m_pui->slotShowEditTxRatePSK();
+    }
+    virtual void doKeyDown(){
+        m_pui->m_numEditor.incRatePSK(-1);// .decIdx();
+        m_pui->slotShowEditTxRate();
+    }
+    virtual void doKeyLeft(){
+        m_pui->m_numEditor.incRatePSK(1);// .incIdx();
+        m_pui->slotShowEditTxRate();
+    }
+    virtual void doKeyRight(){
+        m_pui->m_numEditor.incRatePSK(-1);// .decIdx();
+        m_pui->slotShowEditTxRate();
+    }
+
+};
+class ketRxRateEditorPSK : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketRxRateEditorPSK(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        if(m_pui->m_para.m_RxRate != m_pui->m_numEditor.m_num){
+            m_pui->m_para.m_RxRate = m_pui->m_numEditor.m_num;
+            m_pui->m_para.save();
+            m_pui->doCallP2Pagain();
+        }
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyUp(){
+        m_pui->m_numEditor.incRatePSK(1);// .incIdx();
+        m_pui->slotShowEditRxRatePSK();
+    }
+    virtual void doKeyDown(){
+        m_pui->m_numEditor.incRatePSK(-1);// .decIdx();
+        m_pui->slotShowEditRxRatePSK();
+    }
+    virtual void doKeyLeft(){
+        m_pui->m_numEditor.incRatePSK(1);// .incIdx();
+        m_pui->slotShowEditRxRatePSK();
+    }
+    virtual void doKeyRight(){
+        m_pui->m_numEditor.incRatePSK(-1);// .decIdx();
+        m_pui->slotShowEditRxRatePSK();
+    }
+
+};
 class ketRxRateEditor : public ketBase
 {
     Q_OBJECT

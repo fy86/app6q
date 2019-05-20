@@ -77,6 +77,14 @@ public:
     void setPSK(objPara::enumPara psk);
     void pskInc(int one=1);
 
+    void incRatePSK(int one);
+
+    int m_pnRate[64];
+    int m_pnRate0[32];
+
+    void setArrayRate(objPara::enumPara psk);
+
+
 signals:
 
 public slots:

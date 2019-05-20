@@ -59,8 +59,10 @@ public:
     qint64 m_BUCfreq;
     qint64 m_LNBfreq;
 
-    int m_TxRate;
+    int m_TxRate;// kHz ?
     int m_RxRate;
+    int m_pnRate[64];
+    int m_pnRate0[32];
 
     qint64 m_maxTxFreq;
     qint64 m_minTxFreq;
@@ -123,6 +125,8 @@ public:
     QString strRxFreq();
 
     qint64 getRate(int sn,int type,int r);
+
+    void setArrayRate(enumPara psk);
 
 signals:
 

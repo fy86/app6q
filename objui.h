@@ -90,6 +90,8 @@ public:
     QState *m_pStateEditorRxFreq;
     QState *m_pStateEditorTxRate;
     QState *m_pStateEditorRxRate;
+    QState *m_pStateEditorTxRatePSK;
+    QState *m_pStateEditorRxRatePSK;
     QState *m_pStateEditorPower;
 
     QState *m_pStateEditorTDM;
@@ -99,21 +101,31 @@ public:
     QState *m_pStateEditorRxRateCentral;
     QState *m_pStateEditorPowerCentral;
 
-    QState *m_pStateParaPage1;// txFreq
-    QState *m_pStateParaPage11;// rxFreq
+    //QState *m_pStateParaPage1;// txFreq
+    //QState *m_pStateParaPage11;// rxFreq
     //QState *m_pStateParaPage12;//
     //QState *m_pStateParaPage13;
+    QState *m_pStateParaPage1a;// txFreq
+    QState *m_pStateParaPage11a;// rxFreq
+    QState *m_pStateParaPage12a;// BUCfreq
+    QState *m_pStateParaPage13a;// LNBfreq
+
     QState *m_pStateParaPage2;
     QState *m_pStateParaPage21;
-    QState *m_pStateParaPage22;
-    QState *m_pStateParaPage23;
+    //QState *m_pStateParaPage22;
+    //QState *m_pStateParaPage23;
 
-    QState *m_pStateParaPage30;// txRate
-    QState *m_pStateParaPage31;
+    //QState *m_pStateParaPage30;// txRate
+    //QState *m_pStateParaPage31;
     //QState *m_pStateParaPage32;
-    QState *m_pStateParaPage40;// rxRate
-    QState *m_pStateParaPage41;
+    //QState *m_pStateParaPage40;// rxRate
+    //QState *m_pStateParaPage41;
     //QState *m_pStateParaPage42;
+
+    QState *m_pStateParaPage30a;// txRate
+    QState *m_pStateParaPage31a;
+    QState *m_pStateParaPage40a;// rxRate
+    QState *m_pStateParaPage41a;
 
     QState *m_pStateEditRxPSK;
     QState *m_pStateEditTxPSK;
@@ -152,7 +164,9 @@ public:
     void showDataParaPage2c();
 
     void showDataParaPage1();
+    void showDataParaPage1a();
 
+    void showP3a();
     void showP3();
     void showP4();
 
@@ -250,6 +264,12 @@ public slots:
     void slotShowParaPage11();
     void slotShowParaPage12();
     void slotShowParaPage13();
+
+    void slotShowParaPage1a();
+    void slotShowParaPage11a();
+    void slotShowParaPage12a();
+    void slotShowParaPage13a();
+
     void slotShowParaPage2();
     void slotShowParaPage21();
     void slotShowParaPage22();
@@ -261,6 +281,11 @@ public slots:
     void slotShowP40();
     void slotShowP41();
     void slotShowP42();
+
+    void slotShowP30a();
+    void slotShowP31a();
+    void slotShowP40a();
+    void slotShowP41a();
 
     void slotShowParaPage1c();
     void slotShowParaPage11c();
@@ -277,6 +302,8 @@ public slots:
     void slotShowEditRxFreq();
     void slotShowEditTxRate();
     void slotShowEditRxRate();
+    void slotShowEditTxRatePSK();
+    void slotShowEditRxRatePSK();
     void slotShowEditPower();
 
     void slotShowEditTDM();
