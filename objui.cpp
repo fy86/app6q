@@ -1144,6 +1144,43 @@ void objui::doCallP2P()
     struct P2PMode p2pmode;
     std::string stdstr;
 
+    switch(m_para.m_txPSK){
+    case objPara::Mod_qpsk12:
+        p2pmode.txModType="QPSK";
+        p2pmode.txFECRate="1/2";
+        break;
+    case objPara::Mod_qpsk34:
+        p2pmode.txModType="QPSK";
+        p2pmode.txFECRate="3/4";
+        break;
+    case objPara::Mod_8psk12:
+        p2pmode.txModType="8PSK";
+        p2pmode.txFECRate="1/2";
+        break;
+    default:// 8psk34
+        p2pmode.txModType="8PSK";
+        p2pmode.txFECRate="3/4";
+        break;
+    }
+    switch(m_para.m_rxPSK){
+    case objPara::Mod_qpsk12:
+        p2pmode.rxModType="QPSK";
+        p2pmode.rxFECRate="1/2";
+        break;
+    case objPara::Mod_qpsk34:
+        p2pmode.rxModType="QPSK";
+        p2pmode.rxFECRate="3/4";
+        break;
+    case objPara::Mod_8psk12:
+        p2pmode.rxModType="8PSK";
+        p2pmode.rxFECRate="1/2";
+        break;
+    default:// 8psk34
+        p2pmode.rxModType="8PSK";
+        p2pmode.rxFECRate="3/4";
+        break;
+    }
+
     p2pmode.txFrequence = m_para.m_TxFreq;// + m_para.m_BUCfreq;
     p2pmode.txBitrate = m_para.m_TxRate*1000;
     p2pmode.txIFPower = 0.01 * m_para.m_power100;
@@ -1176,6 +1213,42 @@ void objui::doCallP2Pagain()
     struct P2PMode p2pmode;
     std::string stdstr;
 
+    switch(m_para.m_txPSK){
+    case objPara::Mod_qpsk12:
+        p2pmode.txModType="QPSK";
+        p2pmode.txFECRate="1/2";
+        break;
+    case objPara::Mod_qpsk34:
+        p2pmode.txModType="QPSK";
+        p2pmode.txFECRate="3/4";
+        break;
+    case objPara::Mod_8psk12:
+        p2pmode.txModType="8PSK";
+        p2pmode.txFECRate="1/2";
+        break;
+    default:// 8psk34
+        p2pmode.txModType="8PSK";
+        p2pmode.txFECRate="3/4";
+        break;
+    }
+    switch(m_para.m_rxPSK){
+    case objPara::Mod_qpsk12:
+        p2pmode.rxModType="QPSK";
+        p2pmode.rxFECRate="1/2";
+        break;
+    case objPara::Mod_qpsk34:
+        p2pmode.rxModType="QPSK";
+        p2pmode.rxFECRate="3/4";
+        break;
+    case objPara::Mod_8psk12:
+        p2pmode.rxModType="8PSK";
+        p2pmode.rxFECRate="1/2";
+        break;
+    default:// 8psk34
+        p2pmode.rxModType="8PSK";
+        p2pmode.rxFECRate="3/4";
+        break;
+    }
     p2pmode.txFrequence = m_para.m_TxFreq;// + m_para.m_BUCfreq;
     p2pmode.txBitrate = m_para.m_TxRate*1000;
     p2pmode.txIFPower = 0.01 * m_para.m_power100;
@@ -2427,7 +2500,7 @@ void objui::slotShowAbout()
     zeroFB(0);
 
     strXY("ver: 1.19",0,0);
-    centerXY("5.19b",0,48,256,16,2,1);// data 19.3.10
+    centerXY("5.20",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;
     foreach(const QHostAddress &addr, QNetworkInterface::allAddresses()){

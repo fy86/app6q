@@ -189,6 +189,10 @@ struct P2PMode
     int64_t rxFrequence;       ///< 收射频频点（单位Hz）
     int64_t rxBitrate;         ///< 收速率(单位bps)
     std::string dataCommMode;  ///< 数据通信模式(default、bridge、nat、route)
+    std::string txModType;     ///< QPSK 8PSK
+    std::string txFECRate;     ///< 1/2 3/4
+    std::string rxModType;
+    std::string rxFECRate;
 
     P2PMode()
     {
@@ -198,6 +202,10 @@ struct P2PMode
         rxFrequence = -1;
         rxBitrate = -1;
         dataCommMode = "";
+        txModType = "";
+        txFECRate = "";
+        rxModType = "";
+        rxFECRate = "";
     }
 
     // 将点对点参数转化成结构体
@@ -231,6 +239,26 @@ struct P2PMode
         if (json_value.isMember("dataCommMode") && json_value["dataCommMode"].isString())
         {
             dataCommMode = json_value["dataCommMode"].asString();
+        }
+
+        if (json_value.isMember("txModType") && json_value["txModType"].isString())
+        {
+            txModType = json_value["txModType"].asString();
+        }
+
+        if (json_value.isMember("txFECRate") && json_value["txFECRate"].isString())
+        {
+            txFECRate = json_value["txFECRate"].asString();
+        }
+
+        if (json_value.isMember("rxModType") && json_value["rxModType"].isString())
+        {
+            rxModType = json_value["rxModType"].asString();
+        }
+
+        if (json_value.isMember("rxFECRate") && json_value["rxFECRate"].isString())
+        {
+            rxFECRate = json_value["rxFECRate"].asString();
         }
     }
 };

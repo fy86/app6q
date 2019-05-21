@@ -201,6 +201,10 @@ bool RecvResponseRpc::getP2PModeParam(const Json::Value& root, Json::Value& resp
 		std::cout << "rx freq: " << p2p_mode.rxFrequence << std::endl;
 		std::cout << "rx bitrate: " << p2p_mode.rxBitrate << std::endl;
 		std::cout << "data communicate mode: " << p2p_mode.dataCommMode << std::endl;
+        std::cout << "txModType: " << p2p_mode.txModType << std::endl;
+        std::cout << "txFECRate: " << p2p_mode.txFECRate << std::endl;
+        std::cout << "rxModType: " << p2p_mode.rxModType << std::endl;
+        std::cout << "rxFECRate: " << p2p_mode.rxFECRate << std::endl;
 	}
 	else
 	{

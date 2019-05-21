@@ -228,6 +228,10 @@ std::string CuRpcControl::enterP2PMode(P2PMode &p2p_mode)
 	query["params"]["rxFrequence"] = p2p_mode.rxFrequence;
 	query["params"]["rxBitrate"] = p2p_mode.rxBitrate;
 	query["params"]["dataCommMode"] = p2p_mode.dataCommMode;
+    query["params"]["txModType"] = p2p_mode.txModType;
+    query["params"]["txFECRate"] = p2p_mode.txFECRate;
+    query["params"]["rxModType"] = p2p_mode.rxModType;
+    query["params"]["rxFECRate"] = p2p_mode.rxFECRate;
     std::ostringstream writer_os;
     m_writer->write(query, &writer_os);
     std::string request_str = writer_os.str();
