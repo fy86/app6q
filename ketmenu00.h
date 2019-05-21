@@ -1090,15 +1090,15 @@ public:
     }
     virtual void doKeyDown(){
         m_pui->m_numEditor.incRatePSK(-1);// .decIdx();
-        m_pui->slotShowEditTxRate();
+        m_pui->slotShowEditTxRatePSK();
     }
     virtual void doKeyLeft(){
         m_pui->m_numEditor.incRatePSK(1);// .incIdx();
-        m_pui->slotShowEditTxRate();
+        m_pui->slotShowEditTxRatePSK();
     }
     virtual void doKeyRight(){
         m_pui->m_numEditor.incRatePSK(-1);// .decIdx();
-        m_pui->slotShowEditTxRate();
+        m_pui->slotShowEditTxRatePSK();
     }
 
 };

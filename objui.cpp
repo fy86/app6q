@@ -680,8 +680,8 @@ void objui::slotGetCUstate()
     std::string stdstr;
 
     // test
-    //stdstr=m_cu.logoutNet();
-    //writeTcp(QString::fromStdString(stdstr).toUtf8());
+    stdstr=m_cu.logoutNet();
+    writeTcp(QString::fromStdString(stdstr).toUtf8());
 
     stdstr=m_cu.getCUState();
     writeTcp(QString::fromStdString(stdstr).toUtf8());
@@ -2495,12 +2495,13 @@ void objui::slotShowDevMode2()
 // ver1.19(5.19 36M
 //        (5.19a add ParaPage1a
 //        (5.19b
+// ver1.20(5.21 logout
 void objui::slotShowAbout()
 {
     zeroFB(0);
 
-    strXY("ver: 1.19",0,0);
-    centerXY("5.20",0,48,256,16,2,1);// data 19.3.10
+    strXY("ver: 1.20",0,0);
+    centerXY("5.21",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;
     foreach(const QHostAddress &addr, QNetworkInterface::allAddresses()){
