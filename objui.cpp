@@ -2496,11 +2496,12 @@ void objui::slotShowDevMode2()
 //        (5.19a add ParaPage1a
 //        (5.19b
 // ver1.20(5.21 logout
+//    1.20a , key<- ->
 void objui::slotShowAbout()
 {
     zeroFB(0);
 
-    strXY("ver: 1.20",0,0);
+    strXY("ver: 1.20a",0,0);
     centerXY("5.21",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;

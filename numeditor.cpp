@@ -63,22 +63,28 @@ void numEditor::setArrayRate(objPara::enumPara psk)
 }
 void numEditor::incRatePSK(int one)
 {
+    bool f=false;
     if(one>0){
         for(int i=0;i<16;i++){
             if(m_pnRate[i]>m_num){
                 m_num = m_pnRate[i];
+                f=true;
                 break;
             }
+        }
+        if(!f){
+            m_num = m_pnRate[0];
         }
     }
     else{
         for(int i=15;i>=0;i--){
             if(m_pnRate[i]<m_num){
                 m_num = m_pnRate[i];
+                f=true;
                 break;
             }
         }
-
+        if(!f) m_num = m_pnRate[15];
     }
 }
 
