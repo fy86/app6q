@@ -457,7 +457,7 @@ public:
         m_pui->slotStateTransitionDown();
     }
     virtual void doKeyLeft(){
-        m_pui->slotStateTransitionUp();
+        m_pui->slotStateTransitionLeft();
     }
     virtual void doKeyRight(){
         m_pui->slotStateTransitionRight();

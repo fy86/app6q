@@ -63,9 +63,17 @@ public:
     QState *m_pStateStatusPage1;
     QState *m_pStateStatusPage2;
 
+    QState *m_pStateMenuRadioSetting;// menu03
     QState *m_pStateMenuCtrl;
     QState *m_pStateMenuPara;
     QState *m_pStateMenuWorkMode;
+
+    QState *m_pStateMenuBUCctrl;
+    QState *m_pStateMenuBUC10m;
+    QState *m_pStateMenuBUCfreq;
+    QState *m_pStateMenuLNBctrl;
+    QState *m_pStateMenuLNB10m;
+    QState *m_pStateMenuLNBfreq;
 
     QState *m_pStateWorkMode1;// p2p menu.1
     QState *m_pStateWorkMode2;// central menu.2
@@ -316,6 +324,14 @@ public slots:
     void slotShowMenu00();
     void slotShowMenu01();
     void slotShowMenu02();
+    void slotShowMenu03();// radio setting ( BUC , LNB ..
+
+    void slotShowBUCctrl();
+    void slotShowBUC10m();
+    void slotShowBUCfreq();
+    void slotShowLNBctrl();
+    void slotShowLNB10m();
+    void slotShowLNBfreq();
 
     void slotShowMsgZZHJ();
     void slotShowMsgHJCG();

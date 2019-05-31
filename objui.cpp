@@ -150,6 +150,14 @@ void objui::initMachine()
     m_pStateMsgZZRW = new QState(m_pMachine);
     m_pStateMsgZZTW = new QState(m_pMachine);
 
+    m_pStateMenuBUCctrl = new QState(m_pStateGroupTimeout);//
+    m_pStateMenuBUC10m = new QState(m_pStateGroupTimeout);//
+    m_pStateMenuBUCfreq = new QState(m_pStateGroupTimeout);//
+    m_pStateMenuLNBctrl = new QState(m_pStateGroupTimeout);//
+    m_pStateMenuLNB10m = new QState(m_pStateGroupTimeout);//
+    m_pStateMenuLNBfreq = new QState(m_pStateGroupTimeout);//
+
+    m_pStateMenuRadioSetting = new QState(m_pStateGroupTimeout);//
     m_pStateMenuCtrl = new QState(m_pStateGroupTimeout);//
     m_pStateMenuPara = new QState(m_pStateGroupTimeout);
     m_pStateMenuWorkMode = new QState(m_pStateGroupTimeout);
@@ -233,6 +241,14 @@ void objui::initMachine()
     connect(m_pStateMsgZZRW,SIGNAL(entered()),this,SLOT(slotShowMsgZZRW()));
     connect(m_pStateMsgZZTW,SIGNAL(entered()),this,SLOT(slotShowMsgZZTW()));
 
+    connect(m_pStateMenuBUCctrl,SIGNAL(entered()),this,SLOT(slotShowBUCctrl()));
+    connect(m_pStateMenuBUC10m,SIGNAL(entered()),this,SLOT(slotShowBUC10m()));
+    connect(m_pStateMenuBUCfreq,SIGNAL(entered()),this,SLOT(slotShowBUCfreq()));
+    connect(m_pStateMenuLNBctrl,SIGNAL(entered()),this,SLOT(slotShowLNBctrl()));
+    connect(m_pStateMenuLNB10m,SIGNAL(entered()),this,SLOT(slotShowLNB10m()));
+    connect(m_pStateMenuLNBfreq,SIGNAL(entered()),this,SLOT(slotShowLNBfreq()));
+
+    connect(m_pStateMenuRadioSetting,SIGNAL(entered()),this,SLOT(slotShowMenu03()));
     connect(m_pStateMenuCtrl,SIGNAL(entered()),this,SLOT(slotShowMenu00()));
     connect(m_pStateMenuPara,SIGNAL(entered()),this,SLOT(slotShowMenu01()));
     connect(m_pStateMenuWorkMode,SIGNAL(entered()),this,SLOT(slotShowMenu02()));
@@ -331,7 +347,7 @@ void objui::initMachine()
     ketMenuCtrl *pKetMenuCtrl = new ketMenuCtrl(this);
     m_pStateMenuCtrl->addTransition(pKetMenuCtrl);
     m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuPara);
-    m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuWorkMode);
+    m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuRadioSetting);
     m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionEnter()),m_pStateMenuCall);
     m_pStateMenuCtrl->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
     ketMenuPara *pKetMenuPara = new ketMenuPara(this);
@@ -622,12 +638,68 @@ void objui::initMachine()
     m_pStateEditorPowerCentral->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateParaPage12c);
 
 
+    ketMenuWorkMode *pKetMenuBUCctrl = new ketMenuWorkMode(this);
+    m_pStateMenuBUCctrl->addTransition(pKetMenuBUCctrl);
+    m_pStateMenuBUCctrl->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateMenuLNBctrl);
+    m_pStateMenuBUCctrl->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuLNBctrl);
+    m_pStateMenuBUCctrl->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuBUC10m);
+    m_pStateMenuBUCctrl->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuLNBfreq);
+    m_pStateMenuBUCctrl->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuRadioSetting);
+    m_pStateMenuBUCctrl->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuBUCctrl);
+    ketMenuWorkMode *pKetMenuBUC10m = new ketMenuWorkMode(this);
+    m_pStateMenuBUC10m->addTransition(pKetMenuBUC10m);
+    m_pStateMenuBUC10m->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateMenuLNB10m);
+    m_pStateMenuBUC10m->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuLNB10m);
+    m_pStateMenuBUC10m->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuBUCfreq);
+    m_pStateMenuBUC10m->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuBUCctrl);
+    m_pStateMenuBUC10m->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuRadioSetting);
+    m_pStateMenuBUC10m->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuBUCctrl);
+    ketMenuWorkMode *pKetMenuBUCfreq = new ketMenuWorkMode(this);
+    m_pStateMenuBUCfreq->addTransition(pKetMenuBUCfreq);
+    m_pStateMenuBUCfreq->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateMenuLNBfreq);
+    m_pStateMenuBUCfreq->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuLNBfreq);
+    m_pStateMenuBUCfreq->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuLNBctrl);
+    m_pStateMenuBUCfreq->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuBUC10m);
+    m_pStateMenuBUCfreq->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuRadioSetting);
+    m_pStateMenuBUCfreq->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuBUCctrl);
+    ketMenuWorkMode *pKetMenuLNBctrl = new ketMenuWorkMode(this);
+    m_pStateMenuLNBctrl->addTransition(pKetMenuLNBctrl);
+    m_pStateMenuLNBctrl->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateMenuBUCctrl);
+    m_pStateMenuLNBctrl->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuBUCctrl);
+    m_pStateMenuLNBctrl->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuLNB10m);
+    m_pStateMenuLNBctrl->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuBUCfreq);
+    m_pStateMenuLNBctrl->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuRadioSetting);
+    m_pStateMenuLNBctrl->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuLNBctrl);
+    ketMenuWorkMode *pKetMenuLNB10m = new ketMenuWorkMode(this);
+    m_pStateMenuLNB10m->addTransition(pKetMenuLNB10m);
+    m_pStateMenuLNB10m->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateMenuBUC10m);
+    m_pStateMenuLNB10m->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuBUC10m);
+    m_pStateMenuLNB10m->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuLNBfreq);
+    m_pStateMenuLNB10m->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuLNBctrl);
+    m_pStateMenuLNB10m->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuRadioSetting);
+    m_pStateMenuLNB10m->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuLNBctrl);
+    ketMenuWorkMode *pKetMenuLNBfreq = new ketMenuWorkMode(this);
+    m_pStateMenuLNBfreq->addTransition(pKetMenuLNBfreq);
+    m_pStateMenuLNBfreq->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateMenuBUCfreq);
+    m_pStateMenuLNBfreq->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuBUCfreq);
+    m_pStateMenuLNBfreq->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuBUCctrl);
+    m_pStateMenuLNBfreq->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuLNB10m);
+    m_pStateMenuLNBfreq->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuRadioSetting);
+    m_pStateMenuLNBfreq->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuLNBctrl);
 
+
+    ketMenuWorkMode *pKetMenuRadioSetting = new ketMenuWorkMode(this);
+    m_pStateMenuRadioSetting->addTransition(pKetMenuRadioSetting);
+    m_pStateMenuRadioSetting->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuCtrl);
+    m_pStateMenuRadioSetting->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuWorkMode);
+    m_pStateMenuRadioSetting->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
+    m_pStateMenuRadioSetting->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuBUCctrl);
 
     ketMenuWorkMode *pKetMenuWorkMode = new ketMenuWorkMode(this);
     m_pStateMenuWorkMode->addTransition(pKetMenuWorkMode);
-    m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateAbout);
-    m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuCtrl);
+    m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateAbout);
+    m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuPara);
+    m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuRadioSetting);
     m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuPara);
     m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
     m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateWorkMode1);
@@ -2314,44 +2386,47 @@ void objui::slotShowStatusPage2()
 
     switch(m_para.m_workMode){
     case objPara::Mode_p2p:
-        strXY("发送功率:",0,6,0x0f,0);// fasong gonglv 发送 功率
-        strXY("发送频点:",0,6+16+2,0x0f,0);// fasong pindian 发送频率  频率。频点
-        strXY("接收频点:",0,48-6,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
+        strXY("发送功率:",0,0,0x0f,0);// fasong gonglv 发送 功率
+        strXY("发送频点:",0,16,0x0f,0);// fasong pindian 发送频率  频率。频点
+        strXY("接收频点:",0,32,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
+        strXY("业务接收:",0,48,0x0f,0);//
 
         //s=locale.toString(0.01*m_para.m_power100) + " dBm";
         sprintf(buf,"%.2f dBm",0.01*m_status.m_power100);
-        centerXY(buf,9*8, 6, 256-9*8,16,1,1,0x0f,0);
+        centerXY(buf,9*8, 0, 256-9*8,16,1,1,0x0f,0);
 
-        centerXY(m_status.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 6+16+2, 256-9*8,16,1,1,0x0f,0);
-        centerXY(m_status.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 48-6, 256-9*8,16,1,1,0x0f,0);
+        centerXY(m_status.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 16, 256-9*8,16,1,1,0x0f,0);
+        centerXY(m_status.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 32, 256-9*8,16,1,1,0x0f,0);
         break;
     case objPara::Mode_central:
         break;
     default: break;
     }
     if(m_para.m_status==objPara::Status_idle){// idle
-        strXY("发送功率:",0,6,0x0f,0);// fasong gonglv 发送 功率
-        strXY("发送频点:",0,6+16+2,0x0f,0);// fasong pindian 发送频率  频率。频点
-        strXY("接收频点:",0,48-6,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
+        strXY("发送功率:",0,0,0x0f,0);// fasong gonglv 发送 功率
+        strXY("发送频点:",0,16,0x0f,0);// fasong pindian 发送频率  频率。频点
+        strXY("接收频点:",0,32,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
+        strXY("业务接收:",0,48,0x0f,0);//
 
         //s=locale.toString(0.01*m_para.m_power100) + " dBm";
         sprintf(buf,"%.2f dBm",0.01*m_para.m_power100);
-        centerXY(buf,9*8, 6, 256-9*8,16,1,1,0x0f,0);
+        centerXY(buf,9*8, 0, 256-9*8,16,1,1,0x0f,0);
 
-        centerXY(m_para.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 6+16+2, 256-9*8,16,1,1,0x0f,0);
-        centerXY(m_para.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 48-6, 256-9*8,16,1,1,0x0f,0);
+        centerXY(m_para.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 16, 256-9*8,16,1,1,0x0f,0);
+        centerXY(m_para.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 32, 256-9*8,16,1,1,0x0f,0);
     }
     else{// if(m_para.m_status==objPara::Status_connected){
-        strXY("发送功率:",0,6,0x0f,0);// fasong gonglv 发送 功率
-        strXY("发送频点:",0,6+16+2,0x0f,0);// fasong pindian 发送频率  频率。频点
-        strXY("接收频点:",0,48-6,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
+        strXY("发送功率:",0,0,0x0f,0);// fasong gonglv 发送 功率
+        strXY("发送频点:",0,16,0x0f,0);// fasong pindian 发送频率  频率。频点
+        strXY("接收频点:",0,32,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
+        strXY("业务接收:",0,48,0x0f,0);//
 
         //s=locale.toString(0.01*m_para.m_power100) + " dBm";
         sprintf(buf,"%.2f dBm",0.01*m_status.m_power100);
-        centerXY(buf,9*8, 6, 256-9*8,16,1,1,0x0f,0);
+        centerXY(buf,9*8, 0, 256-9*8,16,1,1,0x0f,0);
 
-        centerXY(m_status.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 6+16+2, 256-9*8,16,1,1,0x0f,0);
-        centerXY(m_status.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 48-6, 256-9*8,16,1,1,0x0f,0);
+        centerXY(m_status.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 16, 256-9*8,16,1,1,0x0f,0);
+        centerXY(m_status.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 32, 256-9*8,16,1,1,0x0f,0);
     }
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
@@ -2497,12 +2572,13 @@ void objui::slotShowDevMode2()
 //        (5.19b
 // ver1.20(5.21 logout
 //    1.20a , key<- ->
+// ver1.21(5.31 BUC,LNB ctrl
 void objui::slotShowAbout()
 {
     zeroFB(0);
 
-    strXY("ver: 1.20a",0,0);
-    centerXY("5.21",0,48,256,16,2,1);// data 19.3.10
+    strXY("ver: 1.21",0,0);
+    centerXY("5.31",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;
     foreach(const QHostAddress &addr, QNetworkInterface::allAddresses()){
@@ -2607,9 +2683,11 @@ void objui::slotShowMenu00()
     //qDebug(" func slotShow.menu.00");
     zeroFB(0);
 
+    centerXY(QString("通  信  控  制"),0,0,256,16,1,1);
+    centerXY(QString("通  信  参  数"),0,16,256,16,1,1);
+    centerXY(QString("工  作  模  式"),0,32,256,16,1,1);
+    centerXY(QString("射  频  设  置"),0,48,256,16,1,1);
     centerXY(QString("通  信  控  制"),0,0,256,16,1,1,0,0x0f);
-    centerXY(QString("通  信  参  数"),0,24,256,16,1,1);
-    centerXY(QString("工  作  模  式"),0,48,256,16,1,1);
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -2637,8 +2715,10 @@ void objui::slotShowMenu01()
     zeroFB(0);
 
     centerXY(QString("通  信  控  制"),0,0,256,16,1,1);
-    centerXY(QString("通  信  参  数"),0,24,256,16,1,1,0,0x0f);
-    centerXY(QString("工  作  模  式"),0,48,256,16,1,1);
+    centerXY(QString("通  信  参  数"),0,16,256,16,1,1);
+    centerXY(QString("工  作  模  式"),0,32,256,16,1,1);
+    centerXY(QString("射  频  设  置"),0,48,256,16,1,1);
+    centerXY(QString("通  信  参  数"),0,16,256,16,1,1,0,0x0f);
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -2653,8 +2733,10 @@ void objui::slotShowMenu02()
     zeroFB(0);
 
     centerXY(QString("通  信  控  制"),0,0,256,16,1,1);
-    centerXY(QString("通  信  参  数"),0,24,256,16,1,1);
-    centerXY(QString("工  作  模  式"),0,48,256,16,1,1,0,0x0f);
+    centerXY(QString("通  信  参  数"),0,16,256,16,1,1);
+    centerXY(QString("工  作  模  式"),0,32,256,16,1,1);
+    centerXY(QString("射  频  设  置"),0,48,256,16,1,1);
+    centerXY(QString("工  作  模  式"),0,32,256,16,1,1,0,0x0f);
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -2663,6 +2745,139 @@ void objui::slotShowMenu02()
     //m_bEnableKeyboard = true;
 
 }
+void objui::slotShowMenu03()
+{
+    zeroFB(0);
+
+    centerXY(QString("通  信  控  制"),0,0,256,16,1,1);
+    centerXY(QString("通  信  参  数"),0,16,256,16,1,1);
+    centerXY(QString("工  作  模  式"),0,32,256,16,1,1);
+    centerXY(QString("射  频  设  置"),0,48,256,16,1,1);
+    centerXY(QString("射  频  设  置"),0,48,256,16,1,1,0,0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+    QTimer::singleShot(200,this,SLOT(slotKeyEnable()));
+
+}
+void objui::slotShowBUCctrl()
+{
+    qDebug(" func slotShow.buc.ctrl");
+    zeroFB(0);
+
+    centerXY(QString("BUC馈电设置"),0,4,128,16,1,1);
+    centerXY(QString("BUC馈钟设置"),0,8+16,128,16,1,1);
+    centerXY(QString("BUC本振频率"),0,12+32,128,16,1,1);
+    centerXY(QString("LNB馈电设置"),128,4,128,16,1,1);
+    centerXY(QString("LNB馈钟设置"),128,8+16,128,16,1,1);
+    centerXY(QString("LNB本振频率"),128,12+32,128,16,1,1);
+    centerXY(QString("BUC馈电设置"),0,4,128,16,1,1,0,0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+    QTimer::singleShot(200,this,SLOT(slotKeyEnable()));
+
+}
+void objui::slotShowBUC10m()
+{
+    qDebug(" func slotShow.buc.10m");
+    zeroFB(0);
+
+    centerXY(QString("BUC馈电设置"),0,4,128,16,1,1);
+    centerXY(QString("BUC馈钟设置"),0,8+16,128,16,1,1);
+    centerXY(QString("BUC本振频率"),0,12+32,128,16,1,1);
+    centerXY(QString("LNB馈电设置"),128,4,128,16,1,1);
+    centerXY(QString("LNB馈钟设置"),128,8+16,128,16,1,1);
+    centerXY(QString("LNB本振频率"),128,12+32,128,16,1,1);
+    centerXY(QString("BUC馈钟设置"),0,8+16,128,16,1,1,0,0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+    QTimer::singleShot(200,this,SLOT(slotKeyEnable()));
+
+}
+void objui::slotShowBUCfreq()
+{
+    qDebug(" func slotShow.buc.freq");
+    zeroFB(0);
+
+    centerXY(QString("BUC馈电设置"),0,4,128,16,1,1);
+    centerXY(QString("BUC馈钟设置"),0,8+16,128,16,1,1);
+    centerXY(QString("BUC本振频率"),0,12+32,128,16,1,1);
+    centerXY(QString("LNB馈电设置"),128,4,128,16,1,1);
+    centerXY(QString("LNB馈钟设置"),128,8+16,128,16,1,1);
+    centerXY(QString("LNB本振频率"),128,12+32,128,16,1,1);
+    centerXY(QString("BUC本振频率"),0,12+32,128,16,1,1,0,0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+    QTimer::singleShot(200,this,SLOT(slotKeyEnable()));
+
+}
+void objui::slotShowLNBctrl()
+{
+    qDebug(" func slotShow.lnb.ctrl");
+    zeroFB(0);
+
+    centerXY(QString("BUC馈电设置"),0,4,128,16,1,1);
+    centerXY(QString("BUC馈钟设置"),0,8+16,128,16,1,1);
+    centerXY(QString("BUC本振频率"),0,12+32,128,16,1,1);
+    centerXY(QString("LNB馈电设置"),128,4,128,16,1,1);
+    centerXY(QString("LNB馈钟设置"),128,8+16,128,16,1,1);
+    centerXY(QString("LNB本振频率"),128,12+32,128,16,1,1);
+    centerXY(QString("LNB馈电设置"),128,4,128,16,1,1,0,0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+    QTimer::singleShot(200,this,SLOT(slotKeyEnable()));
+
+}
+void objui::slotShowLNB10m()
+{
+    qDebug(" func slotShow.lnb.10m");
+    zeroFB(0);
+
+    centerXY(QString("BUC馈电设置"),0,4,128,16,1,1);
+    centerXY(QString("BUC馈钟设置"),0,8+16,128,16,1,1);
+    centerXY(QString("BUC本振频率"),0,12+32,128,16,1,1);
+    centerXY(QString("LNB馈电设置"),128,4,128,16,1,1);
+    centerXY(QString("LNB馈钟设置"),128,8+16,128,16,1,1);
+    centerXY(QString("LNB本振频率"),128,12+32,128,16,1,1);
+    centerXY(QString("LNB馈钟设置"),128,8+16,128,16,1,1,0,0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+    QTimer::singleShot(200,this,SLOT(slotKeyEnable()));
+
+}
+void objui::slotShowLNBfreq()
+{
+    qDebug(" func slotShow.lnb.freq");
+    zeroFB(0);
+
+    centerXY(QString("BUC馈电设置"),0,4,128,16,1,1);
+    centerXY(QString("BUC馈钟设置"),0,8+16,128,16,1,1);
+    centerXY(QString("BUC本振频率"),0,12+32,128,16,1,1);
+    centerXY(QString("LNB馈电设置"),128,4,128,16,1,1);
+    centerXY(QString("LNB馈钟设置"),128,8+16,128,16,1,1);
+    centerXY(QString("LNB本振频率"),128,12+32,128,16,1,1);
+    centerXY(QString("LNB本振频率"),128,12+32,128,16,1,1,0,0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+    QTimer::singleShot(200,this,SLOT(slotKeyEnable()));
+
+}
+
+
+
 void objui::slotShowLogo()
 {
 #if 0
