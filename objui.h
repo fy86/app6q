@@ -68,6 +68,9 @@ public:
     QState *m_pStateMenuPara;
     QState *m_pStateMenuWorkMode;
 
+    QState *m_pStateBUCctrl;
+    QState *m_pStateBUC10m;
+
     QState *m_pStateMenuBUCctrl;
     QState *m_pStateMenuBUC10m;
     QState *m_pStateMenuBUCfreq;
@@ -189,6 +192,7 @@ public:
 
     void showPSK(int psk);
 
+    void showBUCLNB();
 
 signals:
 
@@ -325,6 +329,9 @@ public slots:
     void slotShowMenu01();
     void slotShowMenu02();
     void slotShowMenu03();// radio setting ( BUC , LNB ..
+
+    void slotShow_BUCctrl();
+    void slotShow_BUC10m();
 
     void slotShowBUCctrl();
     void slotShowBUC10m();

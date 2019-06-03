@@ -935,8 +935,9 @@ public:
     virtual void doKeyEnter(){
         if(m_pui->m_para.m_LNBfreq != m_pui->m_numEditor.m_i64){
             m_pui->m_para.m_LNBfreq = m_pui->m_numEditor.m_i64;
-            m_pui->m_para.save();
-            m_pui->doCallP2Pagain();
+            m_pui->m_para.save();// fixme
+            //m_pui->doCallP2Pagain();
+            // fixme
         }
         m_pui->slotStateTransitionBack();
     }
