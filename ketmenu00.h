@@ -365,6 +365,41 @@ public:
 
 };
 
+class ketEditorCallID : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketEditorCallID(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+
+        m_pui->m_para.m_number = m_pui->m_numEditor.m_i64;
+        sprintf(m_pui->m_para.m_pNumber,"%08lld",m_pui->m_para.m_number);
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyUp(){
+        m_pui->m_editorCallID.inc(1);
+        m_pui->slotShowEditCallID();
+    }
+    virtual void doKeyDown(){
+        m_pui->m_editorCallID.inc(-1);
+        m_pui->slotShowEditCallID();
+    }
+    virtual void doKeyLeft(){
+        m_pui->m_editorCallID.movePos(1);
+        m_pui->slotShowEditCallID();
+    }
+    virtual void doKeyRight(){
+        m_pui->m_editorCallID.movePos(-1);
+        m_pui->slotShowEditCallID();
+    }
+
+};
+
 class ketMenuCtrl : public ketBase
 {
     Q_OBJECT

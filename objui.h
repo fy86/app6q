@@ -27,6 +27,7 @@
 #include "objstatus.h"
 #include "numeditor.h"
 #include "objpage.h"
+#include "editorcallid.h"
 //#include "kt0000.h"
 #include "jsonrpc/cu_rpc_control.h"
 
@@ -53,6 +54,7 @@ public:
     objPara m_para;
     objstatus m_status;
     numEditor m_numEditor;
+    editorCallID m_editorCallID;
 
     QStateMachine *m_pMachine;
 
@@ -141,12 +143,17 @@ public:
     QState *m_pStateEditRxPSK;
     QState *m_pStateEditTxPSK;
 
+    QState *m_pStateParaP11c;// tdm1
+    QState *m_pStateParaP12c;// tdm2
+    QState *m_pStateParaP13c;// power
+    QState *m_pStateParaP14c;// callID
+    QState *m_pStateEditCallID;
 
-
-    QState *m_pStateParaPage1c;// txFreq
-    QState *m_pStateParaPage11c;// rxFreq
-    QState *m_pStateParaPage12c;//
-    QState *m_pStateParaPage13c;
+    // ==> CP11 , CP12 , ...
+    //QState *m_pStateParaPage1c;// txFreq
+    //QState *m_pStateParaPage11c;// rxFreq
+    //QState *m_pStateParaPage12c;//
+    //QState *m_pStateParaPage13c;
     QState *m_pStateParaPage2c;
     QState *m_pStateParaPage21c;
     QState *m_pStateParaPage22c;
@@ -176,6 +183,8 @@ public:
 
     void showDataParaPage1();
     void showDataParaPage1a();
+
+    void showDataParaP1c();
 
     void showP3a();
     void showP3();
@@ -299,6 +308,11 @@ public slots:
     void slotShowP40a();
     void slotShowP41a();
 
+    void slotShowParaP11c();
+    void slotShowParaP12c();
+    void slotShowParaP13c();
+    void slotShowParaP14c();
+
     void slotShowParaPage1c();
     void slotShowParaPage11c();
     void slotShowParaPage12c();
@@ -321,6 +335,7 @@ public slots:
     void slotShowEditTDM();
     void slotShowEditTDM2();
     void slotShowEditNumber();
+    void slotShowEditCallID();
     void slotShowEditTxRateCentral();
     void slotShowEditRxRateCentral();
     void slotShowEditPowerCentral();
