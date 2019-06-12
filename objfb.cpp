@@ -324,8 +324,8 @@ void objFB::underLine(int left, int top, int n, int c)
 {
     int i;
     for(i=0;i<8;i++){
-        draw1(left+(n<<3)+i,top+14,c);
-        draw1(left+(n<<3)+i,top+15,c);
+        draw1(left+(n*8)+i,top+14,c);
+        draw1(left+(n*8)+i,top+15,c);
     }
 }
 

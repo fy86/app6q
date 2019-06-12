@@ -41,7 +41,8 @@ SOURCES += main.cpp \
     objpara.cpp \
     objstatus.cpp \
     myq32.cpp \
-    editorcallid.cpp
+    editorcallid.cpp \
+    editoridstr.cpp
 
 HEADERS += \
     threadspi.h \
@@ -80,4 +81,5 @@ HEADERS += \
     objpara.h \
     objstatus.h \
     myq32.h \
-    editorcallid.h
+    editorcallid.h \
+    editoridstr.h

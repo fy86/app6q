@@ -309,7 +309,7 @@ void objui::initMachine()
     connect(m_pStateParaP12c,SIGNAL(entered()),this,SLOT(slotShowParaP12c()));
     connect(m_pStateParaP13c,SIGNAL(entered()),this,SLOT(slotShowParaP13c()));
     connect(m_pStateParaP14c,SIGNAL(entered()),this,SLOT(slotShowParaP14c()));
-    connect(m_pStateEditCallID,SIGNAL(entered()),this,SLOT(slotShowEditCallID()));
+    connect(m_pStateEditCallID,SIGNAL(entered()),this,SLOT(slotShowEditIDstr()));
 
     //connect(m_pStateParaPage1c,SIGNAL(entered()),this,SLOT(slotShowParaPage1c()));
     //connect(m_pStateParaPage11c,SIGNAL(entered()),this,SLOT(slotShowParaPage11c()));
@@ -2089,15 +2089,38 @@ void objui::slotShowEditNumber()
 
 
 }
+#if 0
 void objui::slotShowEditCallID()
 {
     zeroFB(0);
     char buf[20];
     sprintf(buf,"%08lld",m_editorCallID.m_i64);
 
-    centerXY("被 叫 号 码",0,10,256,16,1,1,0x0f,0);
+    centerXY("呼 叫 号 码",0,10,256,16,1,1,0x0f,0);
     centerXY(QString(buf).insert(4,'-').toLatin1().data(),0,64-12-16,256,16,1,1,0x0f,0);
     underLine(11*8+4,64-12-16,m_editorCallID.getCursor(),0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+    //m_bEnableKeyboard = true;
+    QTimer::singleShot(200,this,SLOT(slotKeyEnable()));
+
+
+}
+#endif
+void objui::slotShowEditIDstr()
+{
+    QString str;
+    zeroFB(0);
+    char buf[20];
+    str = m_editorIDstr.getStrFormat();
+    sprintf(buf,"%08lld",str.toLatin1().data());
+    int x = (256-(str.size()<<3))>>1;
+
+    centerXY("呼 叫 号 码",0,10,256,16,1,1,0x0f,0);
+    centerXY(str.toLatin1().data(),0,64-12-16,256,16,1,1,0x0f,0);
+    underLine(x,64-12-16,m_editorIDstr.getCursor(),0x0f);
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -2291,7 +2314,8 @@ void objui::slotShowParaP14c()
 {
     zeroFB(0);
 
-    m_editorCallID.setNumber8(123456);
+    //m_editorCallID.setNumber8(123456);
+    m_editorIDstr.setStr("1234567");
 
     showDataParaP1c();
     strXY("呼叫号码",0,48,0,0x0f);//
@@ -2732,12 +2756,13 @@ void objui::slotShowDevMode2()
 // ver1.21(5.31 BUC,LNB ctrl
 //    1.21a(6.3 menu page BUC.setting
 // ver1.22a(6.9 add callID , StateParaP11c , 12c , 13c,14c
+//    1.22b(6.11 callID ==> IDstr
 void objui::slotShowAbout()
 {
     zeroFB(0);
 
-    strXY("ver: 1.22a",0,0);
-    centerXY("6.9",0,48,256,16,2,1);// data 19.3.10
+    strXY("ver: 1.22b",0,0);
+    centerXY("6.12",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;
     foreach(const QHostAddress &addr, QNetworkInterface::allAddresses()){

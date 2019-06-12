@@ -382,20 +382,20 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyUp(){
-        m_pui->m_editorCallID.inc(1);
-        m_pui->slotShowEditCallID();
+        m_pui->m_editorIDstr.inc();
+        m_pui->slotShowEditIDstr();
     }
     virtual void doKeyDown(){
-        m_pui->m_editorCallID.inc(-1);
-        m_pui->slotShowEditCallID();
+        m_pui->m_editorIDstr.dec();
+        m_pui->slotShowEditIDstr();
     }
     virtual void doKeyLeft(){
-        m_pui->m_editorCallID.movePos(1);
-        m_pui->slotShowEditCallID();
+        m_pui->m_editorIDstr.moveLeft();
+        m_pui->slotShowEditIDstr();
     }
     virtual void doKeyRight(){
-        m_pui->m_editorCallID.movePos(-1);
-        m_pui->slotShowEditCallID();
+        m_pui->m_editorIDstr.moveRight();
+        m_pui->slotShowEditIDstr();
     }
 
 };

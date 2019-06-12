@@ -28,6 +28,8 @@
 #include "numeditor.h"
 #include "objpage.h"
 #include "editorcallid.h"
+#include "editoridstr.h"
+
 //#include "kt0000.h"
 #include "jsonrpc/cu_rpc_control.h"
 
@@ -54,7 +56,8 @@ public:
     objPara m_para;
     objstatus m_status;
     numEditor m_numEditor;
-    editorCallID m_editorCallID;
+    //editorCallID m_editorCallID;
+    editorIDstr m_editorIDstr;
 
     QStateMachine *m_pMachine;
 
@@ -335,7 +338,8 @@ public slots:
     void slotShowEditTDM();
     void slotShowEditTDM2();
     void slotShowEditNumber();
-    void slotShowEditCallID();
+    //void slotShowEditCallID();
+    void slotShowEditIDstr();
     void slotShowEditTxRateCentral();
     void slotShowEditRxRateCentral();
     void slotShowEditPowerCentral();
