@@ -113,7 +113,7 @@ public:
 
     /**
     *  @brief                  获取终端配置参数
-    *  @param[in] 	type_str   终端参数类型：'tdm' or 'power'
+    *  @param[in] 	type_str   终端参数类型：'tdm' or 'power' or 'modem'
     *  @return			       获取终端配置参数命令内容
     */
     std::string getConfiguration(std::string type_str);
@@ -131,6 +131,13 @@ public:
     *  @return			           设置命令内容
     */
     std::string setConfigurationPower(PowerStruct &power_struct);
+
+    /**
+    *  @brief                      设置buc/lnb的10M相关参数
+    *  @param[in] 	modem_struct   要设置的参数
+    *  @return			           设置命令内容
+    */
+    std::string setConfigurationModem(ModemOutputStruct &modem_struct);
 
     /**
     *  @brief                      获取信道板参数

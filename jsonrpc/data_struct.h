@@ -279,7 +279,7 @@ struct TDMStruct
     }
 
     // 将TDM参数转化成结构体
-    void JsonToP2PMode(Json::Value const &json_value)
+    void JsonToTDM(Json::Value const &json_value)
     {
         if (json_value.isMember("version") && json_value["version"].isString())
         {
@@ -326,7 +326,7 @@ struct PowerStruct
     }
 
     // 将功率参数转化成结构体
-    void JsonToP2PMode(Json::Value const &json_value)
+    void JsonToPower(Json::Value const &json_value)
     {
         if (json_value.isMember("bucPower") && json_value["bucPower"].isDouble())
         {
@@ -351,6 +351,53 @@ struct PowerStruct
         if (json_value.isMember("powerAdjust") && json_value["powerAdjust"].isDouble())
         {
             powerAdjust = json_value["powerAdjust"].asDouble();
+        }
+    }
+};
+
+/**
+ * @brief modem output相关参数
+*/
+struct ModemOutputStruct
+{
+    int bucPowerSupply;                   ///< 是否为buc供电
+    int buc10MRef;                        ///< 是否为buc供10M参考
+    int lnbPowerSupply;                   ///< 是否为lnb供电
+    int lnb10MRef;                        ///<  是否为lnb供10M参考
+
+    ModemOutputStruct()
+    {
+        bucPowerSupply = -1;
+        buc10MRef = -1;
+        lnbPowerSupply = -1;
+        lnb10MRef = -1;
+    }
+
+    // 将modem output参数转化成结构体
+    void JsonToModem(Json::Value const &json_value)
+    {
+        if (json_value.isMember("bucPowerSupply") && json_value["bucPowerSupply"].isBool())
+        {
+            bool is_buc_supply = json_value["bucPowerSupply"].asBool();
+            bucPowerSupply = (is_buc_supply ? 1 : 0);
+        }
+
+        if (json_value.isMember("buc10MRef") && json_value["buc10MRef"].isBool())
+        {
+            bool is_buc10MRef = json_value["buc10MRef"].asBool();
+            buc10MRef = (is_buc10MRef ? 1 : 0);
+        }
+
+        if (json_value.isMember("lnbPowerSupply") && json_value["lnbPowerSupply"].isBool())
+        {
+            bool is_lnbPowerSupply = json_value["lnbPowerSupply"].asBool();
+            lnbPowerSupply = (is_lnbPowerSupply ? 1 : 0);
+        }
+
+        if (json_value.isMember("lnb10MRef") && json_value["lnb10MRef"].isBool())
+        {
+            bool is_lnb10MRef = json_value["lnb10MRef"].asBool();
+            lnb10MRef = (is_lnb10MRef ? 1 : 0);
         }
     }
 };

@@ -265,7 +265,7 @@ bool RecvResponseRpc::getConfigurationTDM(const Json::Value &root, Json::Value &
         response["result"] = "success";
 
         TDMStruct tdm_struct;
-        tdm_struct.JsonToP2PMode(root["result"]);
+        tdm_struct.JsonToTDM(root["result"]);
 
         QByteArray ba;
         ba.append((char *)(&tdm_struct), sizeof(TDMStruct));
@@ -307,7 +307,7 @@ bool RecvResponseRpc::getConfigurationPower(const Json::Value &root, Json::Value
         response["result"] = "success";
 
         PowerStruct power_struct;
-        power_struct.JsonToP2PMode(root["result"]);
+        power_struct.JsonToPower(root["result"]);
 
         QByteArray ba;
         ba.append((char *)(&power_struct), sizeof(PowerStruct));
@@ -319,6 +319,46 @@ bool RecvResponseRpc::getConfigurationPower(const Json::Value &root, Json::Value
         std::cout << "antennaGain: " << power_struct.antennaGain << std::endl;
         std::cout << "antennaGT: " << power_struct.antennaGT << std::endl;
         std::cout << "powerAdjust: " << power_struct.powerAdjust << std::endl;
+    }
+    else
+    {
+        response["result"] = "failed";
+        return false;
+    }
+
+
+    return true;
+}
+
+bool RecvResponseRpc::getConfigurationModem(const Json::Value &root, Json::Value &response)
+{
+    std::cout << std::endl << "getConfigurationModem response: " << std::endl;
+
+    response["jsonrpc"] = "2.0";
+
+    if(root.isMember("error"))
+    {
+        std::cout << root["id"].asString() << ": " << root["error"]["message"].asString() << std::endl;
+        response["result"] = "failed";
+        return false;
+    }
+
+    if (root.isMember("result")) // 查询状态成功
+    {
+        response["result"] = "success";
+
+        ModemOutputStruct modem_struct;
+        modem_struct.JsonToModem(root["result"]);
+
+        QByteArray ba;
+        ba.append((char *)(&modem_struct), sizeof(ModemOutputStruct));
+        emit sigModemConfig(ba);
+
+        // 控制台输出
+        std::cout << "bucPowerSupply: " << modem_struct.bucPowerSupply << std::endl;
+        std::cout << "buc10MRef: " << modem_struct.buc10MRef << std::endl;
+        std::cout << "lnbPowerSupply: " << modem_struct.lnbPowerSupply << std::endl;
+        std::cout << "lnb10MRef: " << modem_struct.lnb10MRef << std::endl;
     }
     else
     {

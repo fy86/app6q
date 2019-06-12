@@ -44,6 +44,9 @@ CuRpcControl::CuRpcControl()
         &RecvResponseRpc::getConfigurationPower, std::string("getConfigurationPower")));
 
     m_json_handler.AddMethod(new Json::Rpc::RpcMethod<RecvResponseRpc>(m_recv_response_rpc,
+        &RecvResponseRpc::getConfigurationModem, std::string("getConfigurationModem")));
+
+    m_json_handler.AddMethod(new Json::Rpc::RpcMethod<RecvResponseRpc>(m_recv_response_rpc,
         &RecvResponseRpc::getRadioLinkParams, std::string("getRadioLinkParams")));
 }
 
@@ -280,11 +283,16 @@ std::string CuRpcControl::getConfiguration(std::string type_str)
         query["id"] = "getConfigurationPower_id";
         query["params"]["configGroup"] = "powerControl";
     }
-    else
+    else if("tdm" == type_str)
     {
 
         query["id"] = "getConfigurationTDM_id";
         query["params"]["configGroup"] = "basic";
+    }
+    else
+    {
+        query["id"] = "getConfigurationModem_id";
+        query["params"]["configGroup"] = "modemOutput";
     }
     std::ostringstream writer_os;
     m_writer->write(query, &writer_os);
@@ -349,6 +357,33 @@ std::string CuRpcControl::setConfigurationPower(PowerStruct &power_struct)
     return request_str;
 }
 
+std::string CuRpcControl::setConfigurationModem(ModemOutputStruct &modem_struct)
+{
+    /* build JSON-RPC setConfigurationModem*/
+    Json::Value query;
+    query["jsonrpc"] = "2.0";
+    query["method"] = "setConfiguration";
+    query["id"] = "setConfigurationModem_id";
+    query["params"]["configGroup"] = "modemOutput";
+    if(-1 != modem_struct.bucPowerSupply)
+        query["params"]["configValue"]["bucPowerSupply"] = (1 == modem_struct.bucPowerSupply)?true:false;
+
+    if(-1 != modem_struct.buc10MRef)
+        query["params"]["configValue"]["buc10MRef"] = (1 == modem_struct.buc10MRef)?true:false;
+
+    if(-1 != modem_struct.lnbPowerSupply)
+        query["params"]["configValue"]["lnbPowerSupply"] = (1 == modem_struct.lnbPowerSupply)?true:false;
+
+    if(-1 != modem_struct.lnb10MRef)
+        query["params"]["configValue"]["lnb10MRef"] = (1 == modem_struct.lnb10MRef)?true:false;
+
+    std::ostringstream writer_os;
+    m_writer->write(query, &writer_os);
+    std::string request_str = writer_os.str();
+    request_str = (char)0x1E + request_str + (char)0x0A;
+    return request_str;
+}
+
 std::string CuRpcControl::getRadioLinkParams()
 {
     /* build JSON-RPC RadioLinkParams query */
@@ -377,10 +412,16 @@ std::string CuRpcControl::setRadioLinkParams(RadioLinkParamsChanged &radio_link_
         query["params"]["alohaLink"]["lo_frequency"] = radio_link_params.alohaLink.lo_frequency;
 
     if(-99999 < radio_link_params.dataSendLink.lo_frequency)
+    {
         query["params"]["dataSendLink"]["lo_frequency"] = radio_link_params.dataSendLink.lo_frequency;
+        query["params"]["alohaLink"]["lo_frequency"] = radio_link_params.dataSendLink.lo_frequency;
+    }
 
     if(-99999 < radio_link_params.dataRecvLink.lo_frequency)
+    {
         query["params"]["dataRecvLink"]["lo_frequency"] = radio_link_params.dataRecvLink.lo_frequency;
+        query["params"]["tdmLink"]["lo_frequency"] = radio_link_params.dataRecvLink.lo_frequency;
+    }
 
     std::ostringstream writer_os;
     m_writer->write(query, &writer_os);

@@ -87,6 +87,14 @@ public:
     bool getConfigurationPower(const Json::Value& root, Json::Value& response);
 
     /**
+    * @brief getConfigurationModem
+    * @param root
+    * @param response
+    * @return
+    */
+    bool getConfigurationModem(const Json::Value& root, Json::Value& response);
+
+    /**
     * @brief getRadioLinkParams
     * @param root
     * @param response
@@ -103,6 +111,7 @@ signals:
     void sigTDMConfig(QByteArray);
     void sigPowerConfig(QByteArray);
     void sigRadioLinkParams(QByteArray);
+    void sigModemConfig(QByteArray);
 };
 
 #endif // !RECV_RESPONSE_RPC_H
