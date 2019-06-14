@@ -38,6 +38,7 @@ struct RadioLinkStateChanged
         float if_attenuation;         ///< 中频衰减
         float if_power;               ///< 中频发送功率
         float snr;                    ///< 接收信噪比
+        bool sync;                    ///< receive sync
         int64_t pduCount;             ///< 累计收/发数据包
         int64_t byteCount;            ///< 累计收/发字节数
         int64_t errorCount;           ///< 累计错误数
@@ -49,6 +50,7 @@ struct RadioLinkStateChanged
             if_attenuation = -1;
             if_power = -1;
             snr = -1;
+            sync = false;
             pduCount = -1;
             byteCount = -1;
             errorCount = -1;
@@ -87,6 +89,12 @@ struct RadioLinkStateChanged
         if (json_value.isMember("snr") && json_value["snr"].isDouble())
         {
             radio_state_struct.snr = json_value["snr"].asDouble();
+        }
+
+        // sync
+        if (json_value.isMember("sync") && json_value["sync"].isBool())
+        {
+            radio_state_struct.sync = json_value["sync"].asBool();
         }
 
         // 累计收/发数据包

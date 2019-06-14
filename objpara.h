@@ -42,6 +42,8 @@ public:
         Mod_8psk34
     };
 
+    bool m_recvSync;
+
     int m_swBUCpwr;
     int m_swLNBpwr;
     int m_swBUC10m;

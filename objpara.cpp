@@ -3,6 +3,8 @@
 objPara::objPara(QObject *parent) :
     QObject(parent)
 {
+    m_recvSync = false;
+
     m_swBUC10m=1;// unknown   1:on -1:off
     m_swBUCpwr=1;
     m_swLNBpwr=1;//

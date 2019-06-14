@@ -1270,6 +1270,7 @@ void objui::slotRadioLinkState(QByteArray ba)
         m_status.m_TxFreq = i64;
         m_status.m_TxRate = pRadio->dataSendLink.datarate/1000;
     }
+    m_status.m_recvSync= pRadio->dataRecvLink.sync;
 }
 void objui::slotTDMConfig(QByteArray ba)
 {
@@ -2728,6 +2729,8 @@ void objui::slotShowStatusPage2()
         centerXY(m_status.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 16, 256-9*8,16,1,1,0x0f,0);
         centerXY(m_status.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 32, 256-9*8,16,1,1,0x0f,0);
     }
+    if(m_status.m_recvSync) centerXY("同步",9*8,48,256-9*8,16,1,1);
+    else centerXY("未同步",9*8,48,256-9*8,16,1,1);
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -2878,11 +2881,12 @@ void objui::slotShowDevMode2()
 //    1.22b(6.11 callID ==> IDstr
 // ver1.23a(6.12 BUCpwr
 // ver1.24a(6.14 sw4
+// ver1.25(6.14 add sync  status.page2
 void objui::slotShowAbout()
 {
     zeroFB(0);
 
-    strXY("ver: 1.24a",0,0);
+    strXY("ver: 1.25",0,0);
     centerXY("6.14",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;

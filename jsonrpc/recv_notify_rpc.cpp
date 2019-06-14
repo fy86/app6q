@@ -56,7 +56,8 @@ bool RecvNotifyRPC::notifyRadioLinkStateChanged(const Json::Value& root, Json::V
         << " dataRecvLink: datarate = " << radio_link_state.dataRecvLink.datarate <<  " if_attenuation = "
 		<< radio_link_state.dataRecvLink.if_attenuation << " if_power = "	<< radio_link_state.dataRecvLink.if_power
 		<< " snr = " << radio_link_state.dataRecvLink.snr << " pduCount = " << radio_link_state.dataRecvLink.pduCount << " byteCount = " 
-		<< radio_link_state.dataRecvLink.byteCount << " errorCount = " << radio_link_state.dataRecvLink.errorCount << std::endl;
+        << radio_link_state.dataRecvLink.byteCount << " errorCount = " << radio_link_state.dataRecvLink.errorCount << std::endl
+        << " sync = " << radio_link_state.dataRecvLink.sync << std::endl;
 
     std::cout << "dataSendLink: frequency = " << radio_link_state.dataSendLink.frequency
         << " dataSendLink: datarate = " << radio_link_state.dataSendLink.datarate << " if_attenuation = "
@@ -68,7 +69,8 @@ bool RecvNotifyRPC::notifyRadioLinkStateChanged(const Json::Value& root, Json::V
         << " tdmLink: datarate = " << radio_link_state.tdmLink.datarate << " if_attenuation = "
 		<< radio_link_state.tdmLink.if_attenuation << " if_power = " << radio_link_state.tdmLink.if_power
 		<< " snr = " << radio_link_state.tdmLink.snr << " pduCount = " << radio_link_state.tdmLink.pduCount << " byteCount = " 
-		<< radio_link_state.tdmLink.byteCount << " errorCount = " << radio_link_state.tdmLink.errorCount << std::endl;
+        << radio_link_state.tdmLink.byteCount << " errorCount = " << radio_link_state.tdmLink.errorCount << std::endl
+        << " sync = " << radio_link_state.tdmLink.sync << std::endl;
 
 	return true;
 }
