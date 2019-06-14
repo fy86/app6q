@@ -3,6 +3,11 @@
 objPara::objPara(QObject *parent) :
     QObject(parent)
 {
+    m_swBUC10m=1;// unknown   1:on -1:off
+    m_swBUCpwr=1;
+    m_swLNBpwr=1;//
+    m_swLNB10m = 1;
+
     //////             000   000
     m_localFreq    = 13050000000;// hz
     m_maxLocalFreq =  1000000000;

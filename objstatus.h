@@ -10,10 +10,8 @@ class objstatus : public objPara
 public:
     explicit objstatus(QObject *parent = 0);
 
-
     virtual void load();
     virtual void save();
-
 
     void setInvalid();
 #if 0

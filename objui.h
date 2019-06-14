@@ -73,13 +73,15 @@ public:
     QState *m_pStateMenuPara;
     QState *m_pStateMenuWorkMode;
 
-    QState *m_pStateBUCctrl;
+    QState *m_pStateBUCpwr;
     QState *m_pStateBUC10m;
+    QState *m_pStateLNBpwr;
+    QState *m_pStateLNB10m;
 
-    QState *m_pStateMenuBUCctrl;
+    QState *m_pStateMenuBUCpwr;
     QState *m_pStateMenuBUC10m;
     QState *m_pStateMenuBUCfreq;
-    QState *m_pStateMenuLNBctrl;
+    QState *m_pStateMenuLNBpwr;
     QState *m_pStateMenuLNB10m;
     QState *m_pStateMenuLNBfreq;
 
@@ -95,6 +97,11 @@ public:
     QState *m_pStateMsgHJCG;//
     QState *m_pStateMsgZZGD;//
     QState *m_pStateMsgGDCG;//
+
+    QState *m_pStateMsgSetBUCpwr;//
+    QState *m_pStateMsgSetBUC10m;//
+    QState *m_pStateMsgSetLNBpwr;//
+    QState *m_pStateMsgSetLNB10m;//
 
     QState *m_pStateMsgZZRW;// ru.wang
     QState *m_pStateMsgZZTW;// tui.wang
@@ -199,6 +206,7 @@ public:
     void showStatusPage1c();
 
     void getPara();// tdm.freq , power
+    void getParaModem();
     void setTDM();
     void setPower100c();
 
@@ -206,7 +214,15 @@ public:
 
     void showBUCLNB();
 
+    void setBUCpwr();
+    void setLNBpwr();
+    void setBUC10m();
+    void setLNB10m();
+
+    QString getSWstr(QString str,int sw);
+
 signals:
+    void sigStateTransitionRepaint();
 
     void sigStateTransitionUp();
     void sigStateTransitionDown();
@@ -231,6 +247,8 @@ signals:
     void sigKeyRight();
 
 public slots:
+    void slotGetSWStatus();// BUC LNB pwr, 10m
+
     void slotUDPkey();
     void slotTcpOn();
     void slotTcpOff();
@@ -241,6 +259,7 @@ public slots:
     void initMachine();
 
     void slotTDMConfig(QByteArray ba);
+    void slotModemConfig(QByteArray ba);
     void slotPowerConfig(QByteArray ba);
     void slotP2PmodeParam(QByteArray ba);
     void slotCUState(QByteArray ba);
@@ -349,15 +368,22 @@ public slots:
     void slotShowMenu02();
     void slotShowMenu03();// radio setting ( BUC , LNB ..
 
-    void slotShow_BUCctrl();
+    void slotShow_BUCpwr();
     void slotShow_BUC10m();
+    void slotShow_LNBpwr();
+    void slotShow_LNB10m();
 
-    void slotShowBUCctrl();
+    void slotShowBUCpwr();
     void slotShowBUC10m();
     void slotShowBUCfreq();
-    void slotShowLNBctrl();
+    void slotShowLNBpwr();
     void slotShowLNB10m();
     void slotShowLNBfreq();
+
+    void slotShowMsgSetBUCpwr();
+    void slotShowMsgSetBUC10m();
+    void slotShowMsgSetLNBpwr();
+    void slotShowMsgSetLNB10m();
 
     void slotShowMsgZZHJ();
     void slotShowMsgHJCG();

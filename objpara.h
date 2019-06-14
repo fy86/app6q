@@ -42,6 +42,11 @@ public:
         Mod_8psk34
     };
 
+    int m_swBUCpwr;
+    int m_swLNBpwr;
+    int m_swBUC10m;
+    int m_swLNB10m;
+
     enumPara m_rxPSK;
     enumPara m_txPSK;
 

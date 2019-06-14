@@ -8,6 +8,11 @@ objstatus::objstatus(QObject *parent) :
     //
     m_status=objPara::Status_idle;  // use m_para.m_status
     m_workMode=objPara::Mode_p2p;
+
+    m_swBUC10m=0;// unknown   1:on -1:off
+    m_swBUCpwr=0;
+    m_swLNBpwr=0;//
+    m_swLNB10m = 0;
 }
 
 void objstatus::load()

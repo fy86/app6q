@@ -499,6 +499,142 @@ public:
     }
 
 };
+class ketBUCpwr : public ketBase
+{
+    Q_OBJECT
+public:
+    ketBUCpwr(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        m_pui->slotStateTransitionNext();
+    }
+    virtual void doKeyUp(){
+        if(m_pui->m_para.m_swBUCpwr>0) m_pui->m_para.m_swBUCpwr=-1;
+        else m_pui->m_para.m_swBUCpwr = 1;
+        m_pui->slotStateTransitionRight();
+    }
+    virtual void doKeyDown(){
+        if(m_pui->m_para.m_swBUCpwr>0) m_pui->m_para.m_swBUCpwr=-1;
+        else m_pui->m_para.m_swBUCpwr = 1;
+        m_pui->slotStateTransitionRight();
+    }
+    virtual void doKeyLeft(){
+        if(m_pui->m_para.m_swBUCpwr>0) m_pui->m_para.m_swBUCpwr=-1;
+        else m_pui->m_para.m_swBUCpwr = 1;
+        m_pui->slotStateTransitionRight();
+    }
+    virtual void doKeyRight(){
+        if(m_pui->m_para.m_swBUCpwr>0) m_pui->m_para.m_swBUCpwr=-1;
+        else m_pui->m_para.m_swBUCpwr = 1;
+        m_pui->slotStateTransitionRight();
+    }
+
+};
+class ketBUC10m : public ketBase
+{
+    Q_OBJECT
+public:
+    ketBUC10m(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        m_pui->slotStateTransitionNext();
+    }
+    virtual void doKeyUp(){
+        if(m_pui->m_para.m_swBUC10m>0) m_pui->m_para.m_swBUC10m=-1;
+        else m_pui->m_para.m_swBUC10m = 1;
+        m_pui->slotStateTransitionRight();
+    }
+    virtual void doKeyDown(){
+        if(m_pui->m_para.m_swBUC10m>0) m_pui->m_para.m_swBUC10m=-1;
+        else m_pui->m_para.m_swBUC10m = 1;
+        m_pui->slotStateTransitionRight();
+    }
+    virtual void doKeyLeft(){
+        if(m_pui->m_para.m_swBUC10m>0) m_pui->m_para.m_swBUC10m=-1;
+        else m_pui->m_para.m_swBUC10m = 1;
+        m_pui->slotStateTransitionRight();
+    }
+    virtual void doKeyRight(){
+        if(m_pui->m_para.m_swBUC10m>0) m_pui->m_para.m_swBUC10m=-1;
+        else m_pui->m_para.m_swBUC10m = 1;
+        m_pui->slotStateTransitionRight();
+    }
+
+};
+class ketLNB10m : public ketBase
+{
+    Q_OBJECT
+public:
+    ketLNB10m(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        m_pui->slotStateTransitionNext();
+    }
+    virtual void doKeyUp(){
+        if(m_pui->m_para.m_swLNB10m>0) m_pui->m_para.m_swLNB10m=-1;
+        else m_pui->m_para.m_swLNB10m = 1;
+        m_pui->slotStateTransitionRight();
+    }
+    virtual void doKeyDown(){
+        if(m_pui->m_para.m_swLNB10m>0) m_pui->m_para.m_swLNB10m=-1;
+        else m_pui->m_para.m_swLNB10m = 1;
+        m_pui->slotStateTransitionRight();
+    }
+    virtual void doKeyLeft(){
+        if(m_pui->m_para.m_swLNB10m>0) m_pui->m_para.m_swLNB10m=-1;
+        else m_pui->m_para.m_swLNB10m = 1;
+        m_pui->slotStateTransitionRight();
+    }
+    virtual void doKeyRight(){
+        if(m_pui->m_para.m_swLNB10m>0) m_pui->m_para.m_swLNB10m=-1;
+        else m_pui->m_para.m_swLNB10m = 1;
+        m_pui->slotStateTransitionRight();
+    }
+
+};
+class ketLNBpwr : public ketBase
+{
+    Q_OBJECT
+public:
+    ketLNBpwr(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        m_pui->slotStateTransitionNext();
+    }
+    virtual void doKeyUp(){
+        if(m_pui->m_para.m_swLNBpwr>0) m_pui->m_para.m_swLNBpwr=-1;
+        else m_pui->m_para.m_swLNBpwr = 1;
+        m_pui->slotStateTransitionRight();
+    }
+    virtual void doKeyDown(){
+        if(m_pui->m_para.m_swLNBpwr>0) m_pui->m_para.m_swLNBpwr=-1;
+        else m_pui->m_para.m_swLNBpwr = 1;
+        m_pui->slotStateTransitionRight();
+    }
+    virtual void doKeyLeft(){
+        if(m_pui->m_para.m_swLNBpwr>0) m_pui->m_para.m_swLNBpwr=-1;
+        else m_pui->m_para.m_swLNBpwr = 1;
+        m_pui->slotStateTransitionRight();
+    }
+    virtual void doKeyRight(){
+        if(m_pui->m_para.m_swLNBpwr>0) m_pui->m_para.m_swLNBpwr=-1;
+        else m_pui->m_para.m_swLNBpwr = 1;
+        m_pui->slotStateTransitionRight();
+    }
+
+};
 
 class ketWorkMode1 : public ketBase
 {
