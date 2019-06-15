@@ -33,9 +33,9 @@ objPara::objPara(QObject *parent) :
     m_maxRxRate = 4096;
     m_minRxRate = 16;
 
-    m_power100 =  8000;
-    m_maxPower = 20000;
-    m_minPower =-20000;
+    m_power100 = -1100;
+    m_maxPower = -1100;
+    m_minPower = -4500;
 
     /////////////////////////////////////////////////////////////////////////////////////
     m_TDMfreq1   = 0;

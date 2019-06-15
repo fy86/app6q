@@ -436,6 +436,7 @@ void objui::initMachine()
     m_pStateStatusPage2->addTransition(pKetStatus2);
     m_pStateStatusPage2->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
     m_pStateStatusPage2->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuCtrl);
+    m_pStateStatusPage2->addTransition(this,SIGNAL(sigStateTransitionRepaint()),m_pStateStatusPage2);
 
     ketAbout *pKetAbout = new ketAbout(this);
     m_pStateAbout->addTransition(pKetAbout);
@@ -1271,6 +1272,7 @@ void objui::slotRadioLinkState(QByteArray ba)
         m_status.m_TxRate = pRadio->dataSendLink.datarate/1000;
     }
     m_status.m_recvSync= pRadio->dataRecvLink.sync;
+    emit sigStateTransitionRepaint();
 }
 void objui::slotTDMConfig(QByteArray ba)
 {
@@ -2660,7 +2662,8 @@ void objui::slotShowStatusPage1()
 
             strXY(QString("点对点"),0,32);
             //strXY(QString("集中控制"),0,32);
-            sprintf(buf,"S/N: %.2f",m_status.m_fSNR);
+            if(m_status.m_recvSync) sprintf(buf,"S/N: %.2f",m_status.m_fSNR);
+            else sprintf(buf,"S/N: 0.00");
             strXY(buf,0,48);
             strXY(m_status.strTxRate().toLatin1().data(),128,32);
             strXY(m_status.strRxRate().toLatin1().data(),128,48);
@@ -2882,12 +2885,13 @@ void objui::slotShowDevMode2()
 // ver1.23a(6.12 BUCpwr
 // ver1.24a(6.14 sw4
 // ver1.25(6.14 add sync  status.page2
+// ver1.26(6.15 status.page2 add repaint)    t2:pwr -10 -45
 void objui::slotShowAbout()
 {
     zeroFB(0);
 
-    strXY("ver: 1.25",0,0);
-    centerXY("6.14",0,48,256,16,2,1);// data 19.3.10
+    strXY("ver: 1.26",0,0);
+    centerXY("6.15",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;
     foreach(const QHostAddress &addr, QNetworkInterface::allAddresses()){
