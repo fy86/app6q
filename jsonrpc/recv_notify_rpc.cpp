@@ -12,7 +12,9 @@
 bool RecvNotifyRPC::notifyRadioLinkStateChanged(const Json::Value& root, Json::Value& response)
 {
 	//std::cout << "Receive notify: " << root << std::endl;
+#if 0 // cyx
 	std::cout << std::endl << "notifyRadioLinkStateChanged notify: " << std::endl;
+#endif
 	response["jsonrpc"] = "2.0";
 	response["result"] = "success";
 
@@ -44,7 +46,7 @@ bool RecvNotifyRPC::notifyRadioLinkStateChanged(const Json::Value& root, Json::V
     QByteArray ba;
     ba.append((char *)(&radio_link_state), sizeof(RadioLinkStateChanged));
     emit sigRadioLinkState(ba);
-
+#if 0 // cyx
 	// 控制台输出
     std::cout << "alohaLink: frequency = " << radio_link_state.alohaLink.frequency
         << " alohaLink: datarate = " << radio_link_state.alohaLink.datarate << " if_attenuation = "
@@ -71,7 +73,7 @@ bool RecvNotifyRPC::notifyRadioLinkStateChanged(const Json::Value& root, Json::V
 		<< " snr = " << radio_link_state.tdmLink.snr << " pduCount = " << radio_link_state.tdmLink.pduCount << " byteCount = " 
         << radio_link_state.tdmLink.byteCount << " errorCount = " << radio_link_state.tdmLink.errorCount << std::endl
         << " sync = " << radio_link_state.tdmLink.sync << std::endl;
-
+#endif
 	return true;
 }
 

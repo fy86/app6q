@@ -39,7 +39,37 @@ public:
         Mod_qpsk12,
         Mod_qpsk34,
         Mod_8psk12,
-        Mod_8psk34
+        Mod_8psk34,
+
+        CUState_mode_OFFLINE_P2P,   // mode
+        CUState_mode_NCC_CTRL,           // mode
+
+        CUState_netState_WAITING_TDM,
+        CUState_netState_LOGINING,
+        CUState_netState_LOGOUTING,
+        CUState_netState_ONLINE,
+        CUState_netState_OFFLINE,
+
+        CUState_usageState_IDLE,
+        CUState_usageState_P2P_CALL,
+        CUState_usageState_NCC_PLAN,
+
+        CUState_unknown,
+
+        SESSIONstate_dialing,
+        SESSIONstate_alerting,
+        SESSIONstate_incoming,
+        SESSIONstate_connected,
+        SESSIONstate_closing,
+        SESSIONstate_closed,
+
+        CMD_P2P_CALL,
+        CMD_P2P_HANGUP,
+        CMD_NCC_LOGIN,
+        CMD_NCC_LOGOUT,
+        CMD_NCC_CALL,
+        CMD_NCC_HANGUP,
+        CMD_DONOTHING,
     };
 
     bool m_recvSync;
@@ -48,6 +78,11 @@ public:
     int m_swLNBpwr;
     int m_swBUC10m;
     int m_swLNB10m;
+
+    enumPara m_cuMode;
+    enumPara m_cuNetState;
+    enumPara m_cuUsageState;
+    enumPara m_sessionState;
 
     enumPara m_rxPSK;
     enumPara m_txPSK;
@@ -94,12 +129,12 @@ public:
     qint64 m_number;
     int m_nLenNumber;
 
-    int m_TxRateCentral;
-    int m_RxRateCentral;
-    qint64 m_maxTxRateCentral;
-    qint64 m_minTxRateCentral;
-    qint64 m_maxRxRateCentral;
-    qint64 m_minRxRateCentral;
+    //int m_TxRateCentral;
+    //int m_RxRateCentral;
+    //qint64 m_maxTxRateCentral;
+    //qint64 m_minTxRateCentral;
+    //qint64 m_maxRxRateCentral;
+    //qint64 m_minRxRateCentral;
 
     qint64 m_power100Central;
     qint64 m_maxPowerCentral;

@@ -3,6 +3,11 @@
 objPara::objPara(QObject *parent) :
     QObject(parent)
 {
+    m_cuMode = CUState_unknown;
+    m_cuNetState = CUState_unknown;
+    m_cuUsageState = CUState_unknown;
+    m_sessionState = SESSIONstate_closed;
+
     m_recvSync = false;
 
     m_swBUC10m=1;// unknown   1:on -1:off
@@ -46,12 +51,12 @@ objPara::objPara(QObject *parent) :
     strcpy(m_pNumber,"12345678");
     m_number = 12345678;
 
-    m_TxRateCentral = 2048;
-    m_maxTxRateCentral = 4096;
-    m_minTxRateCentral = 16;
-    m_RxRateCentral = 2048;
-    m_maxRxRateCentral = 4096;
-    m_minRxRateCentral = 16;
+    //m_TxRateCentral = 2048;
+    //m_maxTxRateCentral = 4096;
+    //m_minTxRateCentral = 16;
+    //m_RxRateCentral = 2048;
+    //m_maxRxRateCentral = 4096;
+    //m_minRxRateCentral = 16;
 
     m_power100Central = 0;// dB
     m_maxPowerCentral = 20;
@@ -59,7 +64,7 @@ objPara::objPara(QObject *parent) :
 
     m_devMode = DevMode_bridge;
 
-    m_workMode = Mode_p2p;
+    m_workMode = Mode_central;// default
 
     m_status = Status_idle;
 

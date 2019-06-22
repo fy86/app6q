@@ -244,24 +244,24 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
-        m_pui->m_para.m_TxRateCentral = m_pui->m_numEditor.m_i64;
+        m_pui->m_para.m_TxRate = m_pui->m_editorRate.getRate();
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyUp(){
-        m_pui->m_numEditor.inc();
-        m_pui->slotShowEditTxRateCentral();
+        m_pui->m_editorRate.inc();
+        m_pui->slotShowEditTxRateC();
     }
     virtual void doKeyDown(){
-        m_pui->m_numEditor.dec();
-        m_pui->slotShowEditTxRateCentral();
+        m_pui->m_editorRate.dec();
+        m_pui->slotShowEditTxRateC();
     }
     virtual void doKeyLeft(){
-        m_pui->m_numEditor.moveCursor(1);
-        m_pui->slotShowEditTxRateCentral();
+        m_pui->m_editorRate.dec();
+        m_pui->slotShowEditTxRateC();
     }
     virtual void doKeyRight(){
-        m_pui->m_numEditor.moveCursor(-1);
-        m_pui->slotShowEditTxRateCentral();
+        m_pui->m_editorRate.inc();
+        m_pui->slotShowEditTxRateC();
     }
 
 };
@@ -276,24 +276,24 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
-        m_pui->m_para.m_RxRateCentral = m_pui->m_numEditor.m_i64;
+        m_pui->m_para.m_RxRate = m_pui->m_editorRate.getRate();
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyUp(){
-        m_pui->m_numEditor.inc();
-        m_pui->slotShowEditRxRateCentral();
+        m_pui->m_editorRate.inc();
+        m_pui->slotShowEditRxRateC();
     }
     virtual void doKeyDown(){
-        m_pui->m_numEditor.dec();
-        m_pui->slotShowEditRxRateCentral();
+        m_pui->m_editorRate.dec();
+        m_pui->slotShowEditRxRateC();
     }
     virtual void doKeyLeft(){
-        m_pui->m_numEditor.moveCursor(1);
-        m_pui->slotShowEditRxRateCentral();
+        m_pui->m_editorRate.dec();
+        m_pui->slotShowEditRxRateC();
     }
     virtual void doKeyRight(){
-        m_pui->m_numEditor.moveCursor(-1);
-        m_pui->slotShowEditRxRateCentral();
+        m_pui->m_editorRate.inc();
+        m_pui->slotShowEditRxRateC();
     }
 
 };
@@ -733,7 +733,7 @@ public:
     virtual void doKeyEnter(){
         m_pui->m_para.m_devMode=objPara::DevMode_bridge;
         m_pui->m_para.save();
-        m_pui->doCallP2Pagain();
+        if(m_pui->m_para.m_workMode==objPara::Mode_p2p) m_pui->doCallP2Pagain();
         m_pui->slotStateTransitionEnter();
     }
     virtual void doKeyUp(){
@@ -771,7 +771,7 @@ public:
     virtual void doKeyEnter(){
         m_pui->m_para.m_devMode=objPara::DevMode_router;
         m_pui->m_para.save();
-        m_pui->doCallP2Pagain();
+        if(m_pui->m_para.m_workMode==objPara::Mode_p2p) m_pui->doCallP2Pagain();
         m_pui->slotStateTransitionEnter();
     }
     virtual void doKeyUp(){

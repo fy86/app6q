@@ -29,6 +29,7 @@
 #include "objpage.h"
 #include "editorcallid.h"
 #include "editoridstr.h"
+#include "editorratec.h"
 
 //#include "kt0000.h"
 #include "jsonrpc/cu_rpc_control.h"
@@ -58,6 +59,7 @@ public:
     numEditor m_numEditor;
     //editorCallID m_editorCallID;
     editorIDstr m_editorIDstr;
+    editorRateC m_editorRate;
 
     QStateMachine *m_pMachine;
 
@@ -120,8 +122,8 @@ public:
     QState *m_pStateEditorTDM;
     QState *m_pStateEditorTDM2;
     //QState *m_pStateEditorNumber;
-    QState *m_pStateEditorTxRateCentral;
-    QState *m_pStateEditorRxRateCentral;
+    QState *m_pStateEditorTxRateC;
+    QState *m_pStateEditorRxRateC;
     QState *m_pStateEditorPowerCentral;
 
     //QState *m_pStateParaPage1;// txFreq
@@ -168,6 +170,11 @@ public:
     QState *m_pStateParaPage21c;
     QState *m_pStateParaPage22c;
 
+    QState *m_pStateParaP21c; // txRate
+    QState *m_pStateParaP22c; // RxRate
+    QState *m_pStateParaP23c; // devMode
+
+
     QTimer *m_pTimer60;
     QTimer *m_pTimer1s;
     QTimer *m_pTimer2s;
@@ -190,6 +197,8 @@ public:
     void showDataParaPage1c();
     void showDataParaPage2();
     void showDataParaPage2c();
+
+    void showDataParaP2c();
 
     void showDataParaPage1();
     void showDataParaPage1a();
@@ -220,6 +229,18 @@ public:
     void setLNB10m();
 
     QString getSWstr(QString str,int sw);
+
+    void showMenuCallP2Ph();
+    void showMenuCallP2Pc();
+    void showMenuCallNCC();
+    void showMenuCallNCClogout();
+    void showMenuCallgray();
+
+    bool isEnableLogin();
+    bool isEnableLogout();
+    bool isEnableCall();
+    bool isEnableHang();
+
 
 signals:
     void sigStateTransitionRepaint();
@@ -263,6 +284,7 @@ public slots:
     void slotPowerConfig(QByteArray ba);
     void slotP2PmodeParam(QByteArray ba);
     void slotCUState(QByteArray ba);
+    void slotSessionState(QByteArray ba);
     void slotRadioLinkState(QByteArray ba);
     void slotReadTCP();
     void slotErrTCP();
@@ -338,10 +360,15 @@ public slots:
     void slotShowParaPage1c();
     void slotShowParaPage11c();
     void slotShowParaPage12c();
-    void slotShowParaPage13c();
+    //void slotShowParaPage13c();
     void slotShowParaPage2c();
     void slotShowParaPage21c();
     void slotShowParaPage22c();
+
+    void slotShowParaP21c();
+    void slotShowParaP22c();
+    void slotShowParaP23c();
+
 
     void slotShowEditBUCfreq();
     void slotShowEditLNBfreq();
@@ -359,8 +386,8 @@ public slots:
     void slotShowEditNumber();
     //void slotShowEditCallID();
     void slotShowEditIDstr();
-    void slotShowEditTxRateCentral();
-    void slotShowEditRxRateCentral();
+    void slotShowEditTxRateC();
+    void slotShowEditRxRateC();
     void slotShowEditPowerCentral();
 
     void slotShowMenu00();
