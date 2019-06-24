@@ -499,6 +499,32 @@ public:
     }
 
 };
+class ketBackspace : public ketBase
+{
+    Q_OBJECT
+public:
+    ketBackspace(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotEVzzhjBack();
+    }
+    virtual void doKeyEnter(){
+        m_pui->slotEVzzhjBack();
+    }
+    virtual void doKeyUp(){
+        m_pui->slotEVzzhjBack();
+    }
+    virtual void doKeyDown(){
+        m_pui->slotEVzzhjBack();
+    }
+    virtual void doKeyLeft(){
+        m_pui->slotEVzzhjBack();
+    }
+    virtual void doKeyRight(){
+        m_pui->slotEVzzhjBack();
+    }
+
+};
 class ketBUCpwr : public ketBase
 {
     Q_OBJECT
@@ -849,10 +875,11 @@ protected:
         case Qt::Key_Backspace:
             m_pui->slotStateTransitionBackspace(); break;
         case Qt::Key_Enter:
-            m_pui->doMenuCall();break;
+            m_pui->slotStateTransitionNext();break;
         case Qt::Key_Up:
-            m_pui->changeSelectMenu10(-1);break;
         case Qt::Key_Down:
+        case Qt::Key_Right:
+        case Qt::Key_Left:
             m_pui->changeSelectMenu10(-1);break;
         default: break;
         }

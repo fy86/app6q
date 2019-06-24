@@ -79,6 +79,8 @@ public:
     int m_swBUC10m;
     int m_swLNB10m;
 
+    enumPara m_callCMD;
+
     enumPara m_cuMode;
     enumPara m_cuNetState;
     enumPara m_cuUsageState;

@@ -39,6 +39,15 @@ class objui : public objPage
     Q_OBJECT
 public:
     explicit objui(QObject *parent = 0);
+
+    int m_nCountTimerCall;
+
+    bool m_bMenuCall_login;
+    bool m_bMenuCall_logout;
+    bool m_bMenuCall_call;
+    bool m_bMenuCall_hangup;
+    int m_nCursorMenuCall;
+
     CuRpcControl m_cu;
     struct TDMStruct m_stTDM;
 
@@ -194,6 +203,11 @@ public:
     void doLogin();
     void doLogout();
 
+    void cmdLogin();
+    void cmdLogout();
+    void cmdNCCcall();
+    void cmdNCChangup();
+
     void showDataParaPage1c();
     void showDataParaPage2();
     void showDataParaPage2c();
@@ -230,8 +244,7 @@ public:
 
     QString getSWstr(QString str,int sw);
 
-    void showMenuCallP2Ph();
-    void showMenuCallP2Pc();
+    void showMenuCallP2P();
     void showMenuCallNCC();
     void showMenuCallNCClogout();
     void showMenuCallgray();
@@ -241,8 +254,23 @@ public:
     bool isEnableCall();
     bool isEnableHang();
 
+    void setEnableMenuCall();
+    void moveCursorMenuCall(int inc);
+
+    bool setCMD(int n);
+
+    void statusP2Pcall();
+    void statusP2Phangup();
+    void statusNCClogout();
+    void statusNCClogin();
+    void statusNCCcall();
+    void statusNCChangup();
 
 signals:
+    void sigEVzzhjBack();
+    void sigEVzzhjBackM();
+    void sigEVzzhjPaint();
+
     void sigStateTransitionRepaint();
 
     void sigStateTransitionUp();
@@ -300,6 +328,10 @@ public slots:
 
     virtual void slotKey(int);
 
+    void slotEVzzhjBack();
+    void slotEVzzhjBackM();
+    void slotEVzzhjPaint();
+
     void slotStateTransitionUp();
     void slotStateTransitionDown();
     void slotStateTransitionLeft();
@@ -310,6 +342,7 @@ public slots:
     void slotStateTransitionBack();
     void slotStateTransitionP2P();
     void slotStateTransitionCentral();
+    void slotStateTransitionRepaint();
 
     void slotShowStatusPage1();
     void slotShowStatusPage2();

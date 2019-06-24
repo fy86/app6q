@@ -7,6 +7,14 @@
 objui::objui(QObject *parent) :
     objPage(parent)
 {
+    m_nCountTimerCall = 0;
+
+    m_bMenuCall_login = false;
+    m_bMenuCall_logout = false;
+    m_bMenuCall_call = false;
+    m_bMenuCall_hangup = false;
+    m_nCursorMenuCall = 0;// 0--3  login,logout,call,hangup
+
     m_bErrChangeWorkMode = false;
     m_nShowStatusPage1= 0;
     m_bEnable1s = true;
@@ -458,7 +466,12 @@ void objui::initMachine()
     m_pStateMsgSetLNB10m->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateLNB10m);
 
 
-    m_pStateMsgZZHJ->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMsgHJCG);
+    ketBackspace *pKetMsgZZHJ = new ketBackspace(this);
+    m_pStateMsgZZHJ->addTransition(pKetMsgZZHJ);
+    m_pStateMsgZZHJ->addTransition(this,SIGNAL(sigEVzzhjPaint()),m_pStateMsgZZHJ);
+    m_pStateMsgZZHJ->addTransition(this,SIGNAL(sigEVzzhjBackM()),m_pStateStatusPage1);
+    m_pStateMsgZZHJ->addTransition(this,SIGNAL(sigEVzzhjBack()),m_pStateMenuCall);
+
     m_pStateMsgHJCG->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateStatusPage1);
     m_pStateMsgZZGD->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMsgGDCG);
     m_pStateMsgGDCG->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateStatusPage1);
@@ -891,13 +904,15 @@ void objui::initMachine()
     m_pStateMenuRadioSetting->addTransition(pKetMenuRadioSetting);
     m_pStateMenuRadioSetting->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuCtrl);
     m_pStateMenuRadioSetting->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuWorkMode);
+    m_pStateMenuRadioSetting->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuCtrl);
+    m_pStateMenuRadioSetting->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateMenuWorkMode);
     m_pStateMenuRadioSetting->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
     m_pStateMenuRadioSetting->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuBUCpwr);
 
     ketMenuWorkMode *pKetMenuWorkMode = new ketMenuWorkMode(this);
     m_pStateMenuWorkMode->addTransition(pKetMenuWorkMode);
     m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateAbout);
-    m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuPara);
+    m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuRadioSetting);
     m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuRadioSetting);
     m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuPara);
     m_pStateMenuWorkMode->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
@@ -930,7 +945,7 @@ void objui::initMachine()
     ketMenuCall *pKetMenuCall = new ketMenuCall(this);
     m_pStateMenuCall->addTransition(pKetMenuCall);
     m_pStateMenuCall->addTransition(this,SIGNAL(sigStateTransitionBackspace()),m_pStateMenuCtrl);
-    m_pStateMenuCall->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMsgZZHJ);
+    m_pStateMenuCall->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMsgZZHJ);
     m_pStateMenuCall->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMsgZZGD);
     m_pStateMenuCall->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateMsgZZRW);
     m_pStateMenuCall->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMsgZZTW);
@@ -971,6 +986,24 @@ void objui::slotGetCUstate()
 void objui::doMenuPara()
 {
     emit sigStateTransitionNext();
+}
+
+void objui::slotEVzzhjBack()
+{
+    emit sigEVzzhjBack();
+}
+void objui::slotEVzzhjBackM()
+{
+    emit sigEVzzhjBackM();
+}
+void objui::slotEVzzhjPaint()
+{
+    emit sigEVzzhjPaint();
+}
+
+void objui::slotStateTransitionRepaint()
+{
+    emit sigStateTransitionRepaint();
 }
 
 void objui::slotStateTransitionNext()
@@ -1246,32 +1279,28 @@ void objui::showMenuCallgray()
     slotKeyEnable();
 }
 
-// p2p hang up
-void objui::showMenuCallP2Ph()
+// p2p.menu.call
+void objui::showMenuCallP2P()
 {
     zeroFB(0);
 
-    centerXY(QString("呼    叫"),0,12,256,16,1,1,1);// gray
-    centerXY(QString("挂    断"),0,48-10,256,16,1,1,0,0x0f);
+    if(m_status.m_cuMode==objPara::CUState_mode_OFFLINE_P2P ){
+        centerXY(QString("呼    叫"),0,12,256,16,1,1,1);// gray
+        centerXY(QString("挂    断"),0,48-10,256,16,1,1,0,0x0f);
+        m_status.m_callCMD = objPara::CMD_P2P_HANGUP;
+    }
+    else{
+        centerXY(QString("呼    叫"),0,12,256,16,1,1,0,0x0f);
+        centerXY(QString("挂    断"),0,48-10,256,16,1,1,1);
+        m_status.m_callCMD = objPara::CMD_P2P_CALL;
+    }
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
     emit sigFlush();
     slotKeyEnable();
 }
-// p2p call
-void objui::showMenuCallP2Pc()
-{
-    zeroFB(0);
 
-    centerXY(QString("呼    叫"),0,12,256,16,1,1,0,0x0f);
-    centerXY(QString("挂    断"),0,48-10,256,16,1,1,1);
-
-    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
-
-    emit sigFlush();
-    slotKeyEnable();
-}
 void objui::showMenuCallNCC()
 {
 
@@ -1280,66 +1309,156 @@ void objui::showMenuCallNCClogout()
 {
 
 }
+void objui::setEnableMenuCall()
+{
+    switch(m_status.m_cuNetState){
+    case objPara::CUState_netState_WAITING_TDM:
+    case objPara::CUState_netState_LOGINING:
+    case objPara::CUState_netState_LOGOUTING:
+        m_bMenuCall_login=false;
+        m_bMenuCall_logout=true;
+        m_bMenuCall_call=false;
+        m_bMenuCall_hangup=false;
+        break;
+    case objPara::CUState_netState_OFFLINE:
+        m_bMenuCall_login=true;
+        m_bMenuCall_logout=false;
+        m_bMenuCall_call=false;
+        m_bMenuCall_hangup=false;
+        break;
+    case objPara::CUState_netState_ONLINE:
+        switch(m_status.m_sessionState){
+        case objPara::SESSIONstate_dialing:
+        case objPara::SESSIONstate_alerting:
+        case objPara::SESSIONstate_closing:
+        case objPara::SESSIONstate_connected:
+            m_bMenuCall_login=false;
+            m_bMenuCall_logout=true;
+            m_bMenuCall_call=false;
+            m_bMenuCall_hangup=true;
+            break;
+        case objPara::SESSIONstate_closed:
+            m_bMenuCall_login=false;
+            m_bMenuCall_logout=true;
+            m_bMenuCall_call=true;
+            m_bMenuCall_hangup=false;
+            break;
+        case objPara::SESSIONstate_incoming:
+            m_bMenuCall_login=false;
+            m_bMenuCall_logout=true;
+            m_bMenuCall_call=false;
+            m_bMenuCall_hangup=false;
+            break;
+        default:
+            m_bMenuCall_login=false;
+            m_bMenuCall_logout=true;
+            m_bMenuCall_call=false;
+            m_bMenuCall_hangup=false;
+            break;
+        }
+        break;
+    default:
+        m_bMenuCall_login=false;
+        m_bMenuCall_logout=false;
+        m_bMenuCall_call=false;
+        m_bMenuCall_hangup=false;
+        break;
+    }
+
+}
+bool objui::setCMD(int n)
+{
+    bool b=false;
+
+    m_status.m_callCMD = objPara::CMD_DONOTHING;
+    switch(n){
+    case 0:
+        if(m_bMenuCall_login){
+            m_status.m_callCMD = objPara::CMD_NCC_LOGIN;
+            b= true;
+        }
+        break;
+    case 1:
+        if(m_bMenuCall_logout){
+            m_status.m_callCMD = objPara::CMD_NCC_LOGOUT;
+            b= true;
+        }
+        break;
+    case 2:
+        if(m_bMenuCall_call){
+            m_status.m_callCMD = objPara::CMD_NCC_CALL;
+            b= true;
+        }
+        break;
+    case 3:
+        if(m_bMenuCall_hangup){
+            m_status.m_callCMD = objPara::CMD_NCC_HANGUP;
+            b= true;
+        }
+        break;
+    default:
+        break;
+    }
+    return b;
+}
+
+void objui::moveCursorMenuCall(int inc)
+{
+    int i;
+
+    m_nCursorMenuCall = (m_nCursorMenuCall+inc) % 4;
+    if(inc >= 0){
+        for(i=0;i<4;i++){
+            if(setCMD(m_nCursorMenuCall)) break;
+            m_nCursorMenuCall = (m_nCursorMenuCall+1) % 4;
+        }
+    }
+    else{
+        for(i=0;i<4;i++){
+            if(setCMD(m_nCursorMenuCall)) break;
+            m_nCursorMenuCall = (m_nCursorMenuCall-1) % 4;
+        }
+    }
+
+}
 
 void objui::slotShowMenuCall()
 {
+    m_nCountTimerCall = 0;// reset
+
     if(m_status.m_cuUsageState==objPara::CUState_usageState_NCC_PLAN){ // all gray
         showMenuCallgray();
         return;
     }
-    switch(m_status.m_cuMode){
-    case objPara::CUState_mode_OFFLINE_P2P:
-        showMenuCallP2Ph();
-        break;
-
-    case objPara::CUState_mode_NCC_CTRL:// ncc_ctrl
-        switch(m_status.m_cuNetState){
-        case objPara::CUState_netState_LOGINING:
-        case objPara::CUState_netState_LOGOUTING:
-        case objPara::CUState_netState_WAITING_TDM:
-            showMenuCallNCClogout();
-            break;
-        case objPara::CUState_netState_ONLINE://
-            break;
-        case objPara::CUState_netState_OFFLINE:
-            if(m_para.m_workMode==objPara::Mode_p2p){
-                showMenuCallP2Pc();
-            }
-            break;
-        default:
-            break;
-        }
-        break;
-
-    default:
-        break;
+    if(m_status.m_cuMode==objPara::CUState_mode_OFFLINE_P2P ){
+        showMenuCallP2P();
+        return;
     }
-
-
-
+    else if(m_para.m_workMode==objPara::Mode_p2p){
+        showMenuCallP2P();
+        return;
+    }
+    // NCC_CTRL
+    setEnableMenuCall();// central
+    moveCursorMenuCall(0);
 
     zeroFB(0);
 
-    if(m_para.m_status==objPara::Status_idle){
-        if(m_para.m_workMode==objPara::Mode_p2p){
-            centerXY(QString("呼    叫"),0,12,256,16,1,1,0,0x0f);
-            centerXY(QString("挂    断"),0,48-10,256,16,1,1,1);// gray
-        }
-        else{// central
-            centerXY(QString("入    网"),0,12,256,16,1,1,0,0x0f);
-            centerXY(QString("退    网"),0,48-10,256,16,1,1,1);// gray
-        }
+    if(m_bMenuCall_login) centerXY(QString("入    网"),0,0,256,16,1,1);
+    else centerXY(QString("入    网"),0,0,256,16,1,1,1);
+    if(m_bMenuCall_logout) centerXY(QString("退    网"),0,16,256,16,1,1);
+    else centerXY(QString("退    网"),0,16,256,16,1,1,1);// gray
+    if(m_bMenuCall_call) centerXY(QString("呼    叫"),0,32,256,16,1,1);
+    else centerXY(QString("呼    叫"),0,32,256,16,1,1,1);
+    if(m_bMenuCall_hangup) centerXY(QString("挂    断"),0,48,256,16,1,1);
+    else centerXY(QString("挂    断"),0,48,256,16,1,1,1);// gray
 
-    }
-    else{//  connected ...
-        if(m_status.m_workMode == objPara::Mode_p2p){
-            centerXY(QString("呼    叫"),0,12,256,16,1,1,1);// gray
-            centerXY(QString("挂    断"),0,48-10,256,16,1,1,0,0x0f);
-        }
-        else{
-            centerXY(QString("入    网"),0,12,256,16,1,1,1);// gray
-            centerXY(QString("退    网"),0,48-10,256,16,1,1,0,0x0f);
-        }
+    switch(m_status.m_callCMD){
+    case objPara::CMD_NCC_LOGIN: centerXY(QString("入    网"),0,0,256,16,1,1,0,0x0f);break;
+    case objPara::CMD_NCC_LOGOUT: centerXY(QString("退    网"),0,16,256,16,1,1,0,0x0f);break;
+    case objPara::CMD_NCC_CALL: centerXY(QString("呼    叫"),0,32,256,16,1,1,0,0x0f);break;
+    case objPara::CMD_NCC_HANGUP: centerXY(QString("挂    断"),0,48,256,16,1,1,0,0x0f);break;
+    default: break;
     }
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
@@ -1567,9 +1686,36 @@ void objui::slotGetP2Pstatus()
     writeTcp(QString::fromStdString(stdstr).toUtf8());
 
 }
+void objui::cmdNCCcall()
+{
+    struct Session s;
+    std::string stdstr;
+
+    s.sessionType=2;// data
+    s.calleeISDN="190072";
+    s.sendDataRate = m_para.m_TxRate * 1000;
+    s.recvDataRate = m_para.m_RxRate * 1000;
+    if(m_para.m_devMode==objPara::DevMode_bridge){
+        s.dataCommMode = "bridge";
+    }
+    else{
+        s.dataCommMode = "route";
+    }
+    stdstr=m_cu.createSession(s);
+    writeTcp(QString::fromStdString(stdstr).toUtf8());
+
+}
+void objui::cmdNCChangup()
+{
+    std::string stdstr;
+
+    stdstr=m_cu.closeSession();
+    writeTcp(QString::fromStdString(stdstr).toUtf8());
+}
 
 void objui::doCallP2P()
 {
+    qDebug(" docallp2p, +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     struct P2PMode p2pmode;
     std::string stdstr;
 
@@ -3171,12 +3317,13 @@ void objui::slotShowDevMode2()
 //    1.27c(6.19
 //    1.27d(6.20
 //    1.27e(6.21
+//    1.27f(6.24
 void objui::slotShowAbout()
 {
     zeroFB(0);
 
-    strXY("ver: 1.27e",0,0);
-    centerXY("6.21",0,48,256,16,2,1);// data 19.3.10
+    strXY("ver: 1.27f",0,0);
+    centerXY("6.24",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;
     foreach(const QHostAddress &addr, QNetworkInterface::allAddresses()){
@@ -3287,16 +3434,211 @@ void objui::slotShowMsgZZTW()
     emit sigFlush();
     QTimer::singleShot(1500,this,SLOT(slotStateTransitionNext()));
 }
+void objui::statusP2Pcall()
+{
+    switch(m_nCountTimerCall){
+    case 0:
+        doCallP2P();
+        zeroFB(0);
+        centerXY(QString("正 在 呼 叫 ......"),0,24,256,16,1,1);
+        Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+        emit sigFlush();
+        m_nCountTimerCall++;
+        QTimer::singleShot(1500,this,SLOT(slotEVzzhjPaint()));
+        break;
+    case 1:
+    case 2:
+        if(m_status.m_cuMode==objPara::CUState_mode_OFFLINE_P2P){
+            zeroFB(0);
+            centerXY(QString("呼 叫 成 功 !"),0,24,256,16,1,1);// chenggong
+            Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+            emit sigFlush();
+            QTimer::singleShot(1500,this,SLOT(slotEVzzhjBackM()));// go to main.status
+        }
+        else{
+            m_nCountTimerCall++;
+            QTimer::singleShot(1500,this,SLOT(slotEVzzhjPaint()));
+        }
+        break;
+    case 3:
+        zeroFB(0);
+        centerXY(QString("呼 叫 失 败 !"),0,24,256,16,1,1);// chenggong
+        Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+        emit sigFlush();
+        QTimer::singleShot(1500,this,SLOT(slotEVzzhjBack()));
+        break;
+    default:
+        break;
+    }
+
+}
+void objui::statusP2Phangup()
+{
+    switch(m_nCountTimerCall){
+    case 0:
+        doDisconnectP2P();
+        zeroFB(0);
+        centerXY(QString("正 在 挂 断 ......"),0,24,256,16,1,1);
+        Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+        emit sigFlush();
+        m_nCountTimerCall++;
+        QTimer::singleShot(1500,this,SLOT(slotEVzzhjPaint()));
+        break;
+    case 1:
+    case 2:
+        if(m_status.m_cuMode!=objPara::CUState_mode_OFFLINE_P2P){
+            zeroFB(0);
+            centerXY(QString("挂 断 成 功 !"),0,24,256,16,1,1);// chenggong
+            Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+            emit sigFlush();
+            QTimer::singleShot(1500,this,SLOT(slotEVzzhjBackM()));// go to main.status
+        }
+        else{
+            m_nCountTimerCall++;
+            QTimer::singleShot(1500,this,SLOT(slotEVzzhjPaint()));
+        }
+        break;
+    case 3:
+        zeroFB(0);
+        centerXY(QString("挂 断 失 败 !"),0,24,256,16,1,1);//
+        Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+        emit sigFlush();
+        QTimer::singleShot(1500,this,SLOT(slotEVzzhjBack()));// go to main.status
+        break;
+    default:
+        break;
+    }
+
+}
+void objui::cmdLogin()
+{
+    std::string stdstr;
+    stdstr=m_cu.loginNet();
+    writeTcp(QString::fromStdString(stdstr).toUtf8());
+}
+void objui::cmdLogout()
+{
+    std::string stdstr;
+    stdstr=m_cu.logoutNet();
+    writeTcp(QString::fromStdString(stdstr).toUtf8());
+}
+
+void objui::statusNCClogout()
+{
+    switch(m_nCountTimerCall){
+    case 0:
+        cmdLogout();
+        zeroFB(0);
+        centerXY(QString("正 在 退 网 ......"),0,24,256,16,1,1);
+        Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+        emit sigFlush();
+        m_nCountTimerCall++;
+        QTimer::singleShot(1500,this,SLOT(slotEVzzhjPaint()));
+        break;
+    case 1:
+    case 2:
+        if(m_status.m_cuNetState==objPara::CUState_netState_OFFLINE){
+            zeroFB(0);
+            centerXY(QString("退 网 成 功 !"),0,24,256,16,1,1);// chenggong
+            Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+            emit sigFlush();
+            QTimer::singleShot(1500,this,SLOT(slotEVzzhjBack()));// go to main.status
+        }
+        else{
+            m_nCountTimerCall++;
+            QTimer::singleShot(1500,this,SLOT(slotEVzzhjPaint()));
+        }
+        break;
+    case 3:
+        zeroFB(0);
+        centerXY(QString("退 网 失 败 !"),0,24,256,16,1,1);//
+        Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+        emit sigFlush();
+        QTimer::singleShot(1500,this,SLOT(slotEVzzhjBack()));
+        break;
+    default:
+        break;
+    }
+
+}
+void objui::statusNCClogin()
+{
+    switch(m_nCountTimerCall){
+    case 0:
+        cmdLogin();
+        zeroFB(0);
+        centerXY(QString("正 在 入 网 ......"),0,24,256,16,1,1);
+        Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+        emit sigFlush();
+        m_nCountTimerCall++;
+        QTimer::singleShot(1500,this,SLOT(slotEVzzhjPaint()));
+        break;
+    default:
+        if(m_status.m_cuNetState==objPara::CUState_netState_ONLINE){
+            zeroFB(0);
+            centerXY(QString("入 网 成 功 !"),0,24,256,16,1,1);// chenggong
+            Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+            emit sigFlush();
+            QTimer::singleShot(1500,this,SLOT(slotEVzzhjBack()));// go to main.status
+        }
+        else{
+            switch(m_status.m_cuNetState){
+            case objPara::CUState_netState_WAITING_TDM:
+                zeroFB(0);
+                centerXY(QString("等待网控广播"),0,24,256,16,1,1);
+                Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+                emit sigFlush();
+                m_nCountTimerCall++;
+                QTimer::singleShot(1500,this,SLOT(slotEVzzhjPaint()));
+                break;
+            case objPara::CUState_netState_LOGINING:
+                zeroFB(0);
+                centerXY(QString("正 在 入 网 ......"),0,24,256,16,1,1);
+                Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+                emit sigFlush();
+                m_nCountTimerCall++;
+                QTimer::singleShot(1500,this,SLOT(slotEVzzhjPaint()));
+                break;
+            default:
+                m_nCountTimerCall++;
+                QTimer::singleShot(1500,this,SLOT(slotEVzzhjPaint()));
+                break;
+            }
+        }
+        slotKeyEnable();
+        break;
+    }
+
+}
+void objui::statusNCCcall()
+{
+
+}
+void objui::statusNCChangup()
+{
+
+}
+
 void objui::slotShowMsgZZHJ()
 {
-    zeroFB(0);
+    switch(m_status.m_callCMD){
+    case objPara::CMD_P2P_CALL:
+        statusP2Pcall();
+        break;
+    case objPara::CMD_P2P_HANGUP:
+        statusP2Phangup();
+        break;
+    case objPara::CMD_NCC_LOGOUT:
+        statusNCClogout();
+        break;
+    case objPara::CMD_NCC_LOGIN:
+        statusNCClogin();
+        break;
+    default:
+        break;
+    }
 
-    centerXY(QString("正 在 呼 叫 ......"),0,24,256,16,1,1);
-
-    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
-
-    emit sigFlush();
-    QTimer::singleShot(1500,this,SLOT(slotStateTransitionNext()));
+    return;
 }
 void objui::slotShowMsgHJCG()
 {

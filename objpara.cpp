@@ -3,6 +3,9 @@
 objPara::objPara(QObject *parent) :
     QObject(parent)
 {
+
+    m_callCMD = CMD_DONOTHING;
+
     m_cuMode = CUState_unknown;
     m_cuNetState = CUState_unknown;
     m_cuUsageState = CUState_unknown;
