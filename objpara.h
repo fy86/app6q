@@ -72,6 +72,8 @@ public:
         CMD_DONOTHING,
     };
 
+    QString m_strCallID;
+
     bool m_recvSync;
 
     int m_swBUCpwr;

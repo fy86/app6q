@@ -3,6 +3,7 @@
 objPara::objPara(QObject *parent) :
     QObject(parent)
 {
+    m_strCallID="190072";
 
     m_callCMD = CMD_DONOTHING;
 
@@ -216,6 +217,9 @@ void objPara::load()
             else if(0==sl.at(0).compare(QString("rxPSK"),Qt::CaseInsensitive)){
                 m_rxPSK=(enumPara)sl.at(1).toInt(&b);
             }
+            else if(0==sl.at(0).compare(QString("callid"),Qt::CaseInsensitive)){
+                m_strCallID = sl.at(1);
+            }
         }
         f.close();
     }
@@ -255,6 +259,8 @@ void objPara::save()
         sprintf(buf,"txPSK %d\n",m_txPSK);
         f.write(buf,strlen(buf));
         sprintf(buf,"rxPSK %d\n",m_rxPSK);
+        f.write(buf,strlen(buf));
+        sprintf(buf,"callid %s\n",m_strCallID.toLatin1().data());
         f.write(buf,strlen(buf));
 
         f.close();

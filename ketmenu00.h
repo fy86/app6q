@@ -376,9 +376,8 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
-
-        m_pui->m_para.m_number = m_pui->m_numEditor.m_i64;
-        sprintf(m_pui->m_para.m_pNumber,"%08lld",m_pui->m_para.m_number);
+        m_pui->m_para.m_strCallID = m_pui->m_editorIDstr.m_IDstr;
+        m_pui->m_para.save();
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyUp(){
@@ -877,11 +876,24 @@ protected:
         case Qt::Key_Enter:
             m_pui->slotStateTransitionNext();break;
         case Qt::Key_Up:
+            m_pui->moveCursorMenuCall(-1);
+            m_pui->slotStateTransitionRepaint();
+            break;
         case Qt::Key_Down:
+            m_pui->moveCursorMenuCall(1);
+            m_pui->slotStateTransitionRepaint();
+            break;
         case Qt::Key_Right:
+            m_pui->moveCursorMenuCall(1);
+            m_pui->slotStateTransitionRepaint();
+            break;
         case Qt::Key_Left:
-            m_pui->changeSelectMenu10(-1);break;
-        default: break;
+            m_pui->moveCursorMenuCall(-1);
+            m_pui->slotStateTransitionRepaint();
+            break;
+        default:
+            m_pui->slotStateTransitionRepaint();
+            break;
         }
     }
 

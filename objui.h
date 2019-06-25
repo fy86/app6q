@@ -266,6 +266,7 @@ public:
     void statusNCCcall();
     void statusNCChangup();
 
+    void getCUstate();
 signals:
     void sigEVzzhjBack();
     void sigEVzzhjBackM();
