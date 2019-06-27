@@ -677,7 +677,10 @@ public:
             if(m_pui->m_para.m_status!=objPara::Status_idle){
                 m_pui->m_bErrChangeWorkMode = true;
             }
-            else m_pui->m_para.m_workMode=objPara::Mode_p2p;
+            else{
+                m_pui->m_para.m_workMode=objPara::Mode_p2p;
+                m_pui->m_para.save();
+            }
         }
         m_pui->slotStateTransitionEnter();
     }
@@ -715,7 +718,10 @@ public:
             if(m_pui->m_para.m_status!=objPara::Status_idle){
                 m_pui->m_bErrChangeWorkMode = true;
             }
-            else m_pui->m_para.m_workMode=objPara::Mode_central;
+            else{
+                m_pui->m_para.m_workMode=objPara::Mode_central;
+                m_pui->m_para.save();
+            }
         }
         m_pui->slotStateTransitionEnter();
     }

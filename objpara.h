@@ -43,6 +43,7 @@ public:
 
         CUState_mode_OFFLINE_P2P,   // mode
         CUState_mode_NCC_CTRL,           // mode
+        CUState_mode_unknown,
 
         CUState_netState_WAITING_TDM,
         CUState_netState_LOGINING,
@@ -71,6 +72,8 @@ public:
         CMD_NCC_HANGUP,
         CMD_DONOTHING,
     };
+
+    QString m_cwDevID;
 
     QString m_strCallID;
 

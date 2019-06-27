@@ -40,6 +40,8 @@ class objui : public objPage
 public:
     explicit objui(QObject *parent = 0);
 
+    bool m_bInitDone;
+
     int m_nCountTimerCall;
 
     bool m_bMenuCall_login;
@@ -306,6 +308,8 @@ public slots:
 
     void slotKeyEnable();
     void slotGetCUstate();
+    void slotGetCUstateInit();// init , only once
+    void slotGetCUstateInitLogout();// init exit waiting.tdm
     void initMachine();
 
     void slotTDMConfig(QByteArray ba);

@@ -7,6 +7,8 @@
 objui::objui(QObject *parent) :
     objPage(parent)
 {
+    m_bInitDone = false;
+
     m_nCountTimerCall = 0;
 
     m_bMenuCall_login = false;
@@ -955,17 +957,13 @@ void objui::initMachine()
 
     m_pTimer1s->start();
 
-    QTimer::singleShot(500,this,SLOT(slotGetCUstate()));
+    QTimer::singleShot(1000,this,SLOT(slotGetCUstateInit()));
 
     qDebug("     end objui.initMachine");
 }
 void objui::slotGetCUstate()
 {
     std::string stdstr;
-
-    // test
-    //stdstr=m_cu.logoutNet();
-    //writeTcp(QString::fromStdString(stdstr).toUtf8());
 
     stdstr=m_cu.getCUState();
     writeTcp(QString::fromStdString(stdstr).toUtf8());
@@ -975,10 +973,48 @@ void objui::slotGetCUstate()
     stdstr=m_cu.getRadioLinkState();
     writeTcp(QString::fromStdString(stdstr).toUtf8());
 
-    stdstr=m_cu.getP2PModeParam();
-    writeTcp(QString::fromStdString(stdstr).toUtf8());
+    if(m_status.m_cuMode==objPara::CUState_mode_OFFLINE_P2P){
+        stdstr=m_cu.getP2PModeParam();
+        writeTcp(QString::fromStdString(stdstr).toUtf8());
+    }
+}
+void objui::slotGetCUstateInit()
+{
+    std::string stdstr;
 
+    if(m_status.m_cuMode==objPara::CUState_mode_unknown){
+        stdstr=m_cu.getCUState();
+        writeTcp(QString::fromStdString(stdstr).toUtf8());
+        stdstr=m_cu.getSessionState();
+        writeTcp(QString::fromStdString(stdstr).toUtf8());
+        QTimer::singleShot(1000,this,SLOT(slotGetCUstateInit()));
+    }
+    else{
+        if(m_para.m_workMode==objPara::Mode_p2p){
+            stdstr=m_cu.logoutNet();
+            writeTcp(QString::fromStdString(stdstr).toUtf8());
+            QTimer::singleShot(500,this,SLOT(slotGetCUstate()));
+            QTimer::singleShot(1000,this,SLOT(slotGetCUstateInitLogout()));
+        }
+        else{
+            m_bInitDone = true;
+        }
+    }
+}
+void objui::slotGetCUstateInitLogout()
+{
+    std::string stdstr;
 
+    if(m_status.m_cuMode==objPara::CUState_mode_NCC_CTRL
+            && m_status.m_cuNetState==objPara::CUState_netState_OFFLINE){
+        m_bInitDone = true;
+    }
+    else{
+        stdstr=m_cu.logoutNet();
+        writeTcp(QString::fromStdString(stdstr).toUtf8());
+        QTimer::singleShot(500,this,SLOT(slotGetCUstate()));
+        QTimer::singleShot(1000,this,SLOT(slotGetCUstateInitLogout()));
+    }
 }
 void objui::getCUstate()
 {
@@ -3055,7 +3091,10 @@ void objui::slotShowStatusPage1()
     char buf[40];
     zeroFB(0);
 
-    if(m_para.m_status==objPara::Status_idle){// idle
+    if(!m_bInitDone){
+        centerXY("正在初始化......",0,0,256,32,1,1);
+    }
+    else if(m_para.m_status==objPara::Status_idle){// idle
         switch(m_para.m_workMode){
         case objPara::Mode_p2p:
             switch(m_para.m_devMode){
@@ -3331,13 +3370,16 @@ void objui::slotShowDevMode2()
 // ver1.27a(6.17 para.default.workmode=central , donot logout on start
 // ver1.27b(6.18 ..ParaP21c,..
 //    1.28(6.25
+// ver1.28a(6.27 save p2p.workmode ,
+// ver1.28b(6.27 init.ing
+// ver1.29(6.27 csdev_id.about
 
 void objui::slotShowAbout()
 {
     zeroFB(0);
 
-    strXY("ver: 1.28",0,0);
-    centerXY("6.25",0,48,256,16,2,1);// data 19.3.10
+    strXY("ver: 1.29",0,0);
+    centerXY("6.27",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;
     foreach(const QHostAddress &addr, QNetworkInterface::allAddresses()){
@@ -3348,6 +3390,7 @@ void objui::slotShowAbout()
             //qDebug(" ======================= ipaddress : %s",addr.toString().toLatin1().data());
     }
     strXY(getTimeRunning().toLatin1().data(),0,32);
+    strXY(m_para.m_cwDevID.toLatin1().data(),0,48);
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 

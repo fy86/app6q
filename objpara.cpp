@@ -3,6 +3,8 @@
 objPara::objPara(QObject *parent) :
     QObject(parent)
 {
+    m_cwDevID = "cwdev_id: ";
+
     m_strCallID="190072";
 
     m_callCMD = CMD_DONOTHING;
@@ -220,8 +222,38 @@ void objPara::load()
             else if(0==sl.at(0).compare(QString("callid"),Qt::CaseInsensitive)){
                 m_strCallID = sl.at(1);
             }
+            else if(0==sl.at(0).compare(QString("workmode"),Qt::CaseInsensitive)){
+                if(0==sl.at(1).compare(QString("p2p"),Qt::CaseInsensitive)){
+                    m_workMode = objPara::Mode_p2p;
+                }
+                else {
+                    m_workMode = objPara::Mode_central;
+                }
+            }
         }
         f.close();
+    }
+    //qDebug("    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxx load >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
+
+    QFile fcmdline("/proc/cmdline");
+    if(fcmdline.open(QIODevice::ReadOnly)){
+        //qDebug("    open.ok  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxx load >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
+        QTextStream in(&fcmdline);
+        //while(!in.atEnd()){
+            QString line=in.readLine();
+            //qDebug(" line : %s",line.toLatin1().data());
+            QStringList sl=line.split(' ',QString::SkipEmptyParts,Qt::CaseInsensitive);
+            int len=sl.size();
+            for(int i=0;i<len;i++){
+                //qDebug("cwdev_id:::::::::::::::::::::             %s",sl.at(i).toLatin1().data());
+                if(sl.at(i).contains("cwdev_id")){
+                    m_cwDevID = sl.at(i);
+                    m_cwDevID.replace(QString("="),QString(": "));
+                    break;
+                }
+            }
+        //}
+        fcmdline.close();
     }
 }
 
@@ -255,6 +287,14 @@ void objPara::save()
             f.write(buf,strlen(buf));
             break;
 
+        }
+        if(m_workMode==objPara::Mode_p2p){
+            sprintf(buf,"workmode p2p\n");
+            f.write(buf,strlen(buf));
+        }
+        else{
+            sprintf(buf,"workmode central\n");
+            f.write(buf,strlen(buf));
         }
         sprintf(buf,"txPSK %d\n",m_txPSK);
         f.write(buf,strlen(buf));
