@@ -1479,14 +1479,25 @@ void objui::slotShowMenuCall()
         return;
     }
     if(m_status.m_cuMode==objPara::CUState_mode_OFFLINE_P2P ){
+        qDebug("       slotShowMenuCall , m_status.m_cuMode(%d) == offline_p2p(%d) ",
+               m_status.m_cuMode,objPara::CUState_mode_OFFLINE_P2P);
+        qDebug("      2 slotShowMenuCall , m_status.m_cuMode(%d) ?? ncc_ctrl(%d) ",
+               m_status.m_cuMode,objPara::CUState_mode_NCC_CTRL);
         showMenuCallP2P();
         return;
     }
-    else if(m_para.m_workMode==objPara::Mode_p2p){
+    else if(m_status.m_cuNetState==objPara::CUState_netState_OFFLINE && m_para.m_workMode==objPara::Mode_p2p){
+        qDebug("     *****  slotShowMenuCall , m_status.m_cuMode(%d) == offline_p2p(%d) ",
+               m_status.m_cuMode,objPara::CUState_mode_OFFLINE_P2P);
+        qDebug("     ****** 2 slotShowMenuCall , m_status.m_cuMode(%d) ?? ncc_ctrl(%d) ",
+               m_status.m_cuMode,objPara::CUState_mode_NCC_CTRL);
+        qDebug("       slotShowMenuCall , m_para.m_workMode(%d) == mode_p2p(%d) ",
+               m_para.m_workMode, objPara::Mode_p2p);
         showMenuCallP2P();
         return;
     }
     // NCC_CTRL
+    qDebug("          slotshowMenuCall    NCC_CTRL ");
     setEnableMenuCall();// central
     moveCursorMenuCall(0);
 
@@ -3061,7 +3072,7 @@ void objui::showStatusPage1c()
         str="在线等待";
         break;
     case objPara::Status_online_p2p_call:
-        str="呼叫通信";
+        str="正在通信";
         break;
     case objPara::Status_online_ncc_plan:
         str="预案通信";
@@ -3373,13 +3384,14 @@ void objui::slotShowDevMode2()
 // ver1.28a(6.27 save p2p.workmode ,
 // ver1.28b(6.27 init.ing
 // ver1.29(6.27 csdev_id.about
+// ver1.30(6.28   bugfix , app.central.display.p2p
 
 void objui::slotShowAbout()
 {
     zeroFB(0);
 
-    strXY("ver: 1.29",0,0);
-    centerXY("6.27",0,48,256,16,2,1);// data 19.3.10
+    strXY("ver: 1.30",0,0);
+    centerXY("6.28",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;
     foreach(const QHostAddress &addr, QNetworkInterface::allAddresses()){
@@ -3831,7 +3843,7 @@ void objui::slotShowMsgGDCG()
 
 void objui::slotShowMenu00()
 {
-    //qDebug(" func slotShow.menu.00");
+    qDebug(" func slotShow.menu.00000000000000000000000000000000000000");
     getPara();
     zeroFB(0);
 
