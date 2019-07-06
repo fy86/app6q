@@ -3385,13 +3385,14 @@ void objui::slotShowDevMode2()
 // ver1.28b(6.27 init.ing
 // ver1.29(6.27 csdev_id.about
 // ver1.30(6.28   bugfix , app.central.display.p2p
+// ver1.31(7.6 power.c +-20 ==> +-40
 
 void objui::slotShowAbout()
 {
     zeroFB(0);
 
-    strXY("ver: 1.30",0,0);
-    centerXY("6.28",0,48,256,16,2,1);// data 19.3.10
+    strXY("ver: 1.31",0,0);
+    centerXY("7.6",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;
     foreach(const QHostAddress &addr, QNetworkInterface::allAddresses()){

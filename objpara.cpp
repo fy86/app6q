@@ -65,8 +65,8 @@ objPara::objPara(QObject *parent) :
     //m_minRxRateCentral = 16;
 
     m_power100Central = 0;// dB
-    m_maxPowerCentral = 20;
-    m_minPowerCentral = -20;
+    m_maxPowerCentral = 40;
+    m_minPowerCentral = -40;
 
     m_devMode = DevMode_bridge;
 
