@@ -80,6 +80,85 @@ public slots:
 
 };
 
+class ketMenuTestCtrl : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketMenuTestCtrl(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        if( m_pui->m_para.m_testON ){
+            m_pui->slotStateTransitionLeft();
+        }
+        else{
+            m_pui->slotStateTransitionBack();
+        }
+    }
+    virtual void doKeyEnter(){
+        if(m_pui->m_para.m_testON){
+            m_pui->m_para.m_testON = false;
+            m_pui->doStopTest();
+            m_pui->slotStateTransitionLeft();
+        }
+        else{
+            m_pui->m_para.m_testON = true;
+            m_pui->doStartTest();
+            m_pui->slotStateTransitionLeft();
+        }
+    }
+    virtual void doKeyUp(){
+        if(m_pui->m_para.m_testON){
+            m_pui->slotStateTransitionLeft();
+        }
+        else{
+            m_pui->slotStateTransitionUp();
+        }
+    }
+    virtual void doKeyDown(){
+        if(m_pui->m_para.m_testON){
+            m_pui->slotStateTransitionLeft();
+        }
+        else{
+            m_pui->slotStateTransitionDown();
+        }
+    }
+    virtual void doKeyLeft(){
+        m_pui->slotStateTransitionLeft();
+    }
+    virtual void doKeyRight(){
+        m_pui->slotStateTransitionLeft();
+    }
+
+};
+class ketMenuTestFreq : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketMenuTestFreq(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        m_pui->slotStateTransitionNext();
+    }
+    virtual void doKeyUp(){
+        m_pui->slotStateTransitionUp();
+    }
+    virtual void doKeyDown(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyLeft(){
+        m_pui->slotStateTransitionLeft();
+    }
+    virtual void doKeyRight(){
+        m_pui->slotStateTransitionRight();
+    }
+
+};
+
 class ketAbout : public ketBase
 {
     Q_OBJECT
@@ -121,7 +200,7 @@ public:
         m_pui->slotStateTransitionNext();
     }
     virtual void doKeyUp(){
-        m_pui->slotStateTransitionDown();
+        m_pui->slotStateTransitionUp();
     }
     virtual void doKeyDown(){
         m_pui->slotStateTransitionDown();
@@ -149,6 +228,33 @@ public:
     }
     virtual void doKeyUp(){
         m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyDown(){
+        m_pui->slotStateTransitionDown();
+    }
+    virtual void doKeyLeft(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyRight(){
+        m_pui->slotStateTransitionBack();
+    }
+
+};
+class ketStatus3 : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketStatus3(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        m_pui->slotStateTransitionNext();
+    }
+    virtual void doKeyUp(){
+        m_pui->slotStateTransitionUp();
     }
     virtual void doKeyDown(){
         m_pui->slotStateTransitionBack();
@@ -328,6 +434,42 @@ public:
         m_pui->m_numEditor.add(-1);
         m_pui->slotShowEditPowerCentral();
     }
+
+};
+class ketTestPwrEditor : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketTestPwrEditor(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        if( m_pui->m_para.m_testPwr != m_pui->m_numEditor.m_i64 ){
+            m_pui->m_para.m_testPwr = m_pui->m_numEditor.m_i64;
+            m_pui->m_para.save();
+        }
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyUp(){
+        m_pui->m_numEditor.inc();
+        m_pui->slotShowEditTestPwr();
+    }
+    virtual void doKeyDown(){
+        m_pui->m_numEditor.dec();
+        m_pui->slotShowEditTestPwr();
+    }
+    virtual void doKeyLeft(){
+        m_pui->m_numEditor.moveCursor(1);
+        m_pui->slotShowEditTestPwr();
+    }
+    virtual void doKeyRight(){
+        m_pui->m_numEditor.moveCursor(-1);
+        m_pui->slotShowEditTestPwr();
+    }
+
 
 };
 class ketNumberEditor : public ketBase
@@ -1098,6 +1240,41 @@ public slots:
 
 private:
     objui *m_pui;
+
+};
+class ketTestFreqEditor : public ketBase
+{
+    Q_OBJECT
+public:
+    //explicit ketMenu00(QObject *parent = 0);
+    ketTestFreqEditor(objui *obj):ketBase(obj){}
+
+    virtual void doKeyBackspace(){
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyEnter(){
+        if( m_pui->m_para.m_testFreq != m_pui->m_numEditor.m_i64 ){
+            m_pui->m_para.m_testFreq = m_pui->m_numEditor.m_i64;
+            m_pui->m_para.save();
+        }
+        m_pui->slotStateTransitionBack();
+    }
+    virtual void doKeyUp(){
+        m_pui->m_numEditor.inc();
+        m_pui->slotShowEditTestFreq();
+    }
+    virtual void doKeyDown(){
+        m_pui->m_numEditor.dec();
+        m_pui->slotShowEditTestFreq();
+    }
+    virtual void doKeyLeft(){
+        m_pui->m_numEditor.moveCursor(1);
+        m_pui->slotShowEditTestFreq();
+    }
+    virtual void doKeyRight(){
+        m_pui->m_numEditor.moveCursor(-1);
+        m_pui->slotShowEditTestFreq();
+    }
 
 };
 

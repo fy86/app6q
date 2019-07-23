@@ -38,6 +38,7 @@ struct RadioLinkStateChanged
         float if_attenuation;         ///< 中频衰减
         float if_power;               ///< 中频发送功率
         float snr;                    ///< 接收信噪比
+        int64_t freqOffset;           ///< 接收频偏(Hz)
         bool sync;                    ///< receive sync
         int64_t pduCount;             ///< 累计收/发数据包
         int64_t byteCount;            ///< 累计收/发字节数
@@ -50,6 +51,7 @@ struct RadioLinkStateChanged
             if_attenuation = -1;
             if_power = -1;
             snr = -1;
+            freqOffset = 0;
             sync = false;
             pduCount = -1;
             byteCount = -1;
@@ -89,6 +91,12 @@ struct RadioLinkStateChanged
         if (json_value.isMember("snr") && json_value["snr"].isDouble())
         {
             radio_state_struct.snr = json_value["snr"].asDouble();
+        }
+
+        // freqOffset
+        if (json_value.isMember("freqOffset") && json_value["freqOffset"].isInt64())
+        {
+            radio_state_struct.freqOffset = json_value["freqOffset"].asInt64();
         }
 
         // sync
@@ -470,6 +478,45 @@ struct RadioLinkParamsChanged
         if (json_value.isMember("lo_frequency") && json_value["lo_frequency"].isInt64())
         {
             radio_params_struct.lo_frequency = json_value["lo_frequency"].asInt64();
+        }
+    }
+};
+
+/**
+ * @brief 测试信号结构
+*/
+struct TestSignalStruct
+{
+    int64_t txFrequence;            ///< 发中频频点(Hz)
+    int64_t txIFPower;              ///< 发中频功率(dBm)
+    int64_t rxFrequency;            ///< 收中频频点(Hz)
+
+    TestSignalStruct()
+    {
+        txFrequence = -1;
+        txIFPower = -1;
+        rxFrequency = -1;
+    }
+
+    // 将测试信号参数转化成结构体
+    void JsonToTestSignalParams(TestSignalStruct &test_signal_struct, Json::Value const &json_value)
+    {
+        // 发中频频点
+        if (json_value.isMember("txFrequence") && json_value["txFrequence"].isInt64())
+        {
+            test_signal_struct.txFrequence = json_value["txFrequence"].asInt64();
+        }
+
+        // 发中频功率
+        if (json_value.isMember("txIFPower") && json_value["txIFPower"].isInt64())
+        {
+            test_signal_struct.txIFPower = json_value["txIFPower"].asInt64();
+        }
+
+        // 收中频频点
+        if (json_value.isMember("rxFrequency") && json_value["rxFrequency"].isInt64())
+        {
+            test_signal_struct.rxFrequency = json_value["rxFrequency"].asInt64();
         }
     }
 };

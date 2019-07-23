@@ -3,9 +3,15 @@
 objPara::objPara(QObject *parent) :
     QObject(parent)
 {
+    m_freqOffset = 0;
+
     m_cwDevID = "cwdev_id: ";
 
     m_strCallID="190072";
+
+    m_testFreq = 1200000000;// hz
+    m_testPwr = -4500;//dbm
+    m_testON = false;
 
     m_callCMD = CMD_DONOTHING;
 
@@ -28,11 +34,11 @@ objPara::objPara(QObject *parent) :
 
     m_fSNR = 0.;
     m_TxFreq    =  1200000000;
-    m_maxTxFreq =  9999000000;// 9.9 GHz
-    m_minTxFreq =   999000000;// 999 MHz
+    m_maxTxFreq =  2150000000;// 9.9 GHz
+    m_minTxFreq =   950000000;// 900 MHz
     m_RxFreq    =  1200000000;
-    m_maxRxFreq =  9999000000;
-    m_minRxFreq =   999000000;
+    m_maxRxFreq =  2150000000;
+    m_minRxFreq =   950000000;
 
     m_BUCfreq = 13050000000;//13g
     m_LNBfreq = 11300000000;// 13g
@@ -184,7 +190,13 @@ void objPara::load()
             QString line=in.readLine();
             QStringList sl=line.split(' ',QString::SkipEmptyParts,Qt::CaseInsensitive);
             if(sl.size()<2)continue;
-            if(0==sl.at(0).compare(QString("txfreq_p2p"),Qt::CaseInsensitive)){
+            if(0==sl.at(0).compare(QString("testfreq"),Qt::CaseInsensitive)){
+                m_testFreq=sl.at(1).toLongLong(&b);
+            }
+            else if(0==sl.at(0).compare(QString("testpwr"),Qt::CaseInsensitive)){
+                m_testPwr=sl.at(1).toLongLong(&b);
+            }
+            else if(0==sl.at(0).compare(QString("txfreq_p2p"),Qt::CaseInsensitive)){
                 m_TxFreq=sl.at(1).toLongLong(&b);
             }
             else if(0==sl.at(0).compare(QString("rxfreq_p2p"),Qt::CaseInsensitive)){
@@ -262,6 +274,11 @@ void objPara::save()
     char buf[100];
     QFile f("/root/qt/para.txt");
     if(f.open(QIODevice::WriteOnly|QIODevice::Truncate)){
+        sprintf(buf,"testfreq %lld\n",m_testFreq);
+        f.write(buf,strlen(buf));
+        sprintf(buf,"testpwr %lld\n",m_testPwr);
+        f.write(buf,strlen(buf));
+
         sprintf(buf,"txfreq_p2p %lld\n",m_TxFreq);
         f.write(buf,strlen(buf));
         sprintf(buf,"rxfreq_p2p %lld\n",m_RxFreq);

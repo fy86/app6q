@@ -198,6 +198,7 @@ void objui::initMachine()
 
     m_pStateStatusPage1 = new QState(m_pMachine);
     m_pStateStatusPage2 = new QState(m_pStateGroupTimeout);
+    m_pStateStatusPage3 = new QState(m_pStateGroupTimeout);
 
     m_pStateAbout = new QState(m_pStateGroupTimeout);
     m_pStateLogo = new QState(m_pMachine);
@@ -214,6 +215,12 @@ void objui::initMachine()
 
     m_pStateMsgZZRW = new QState(m_pMachine);
     m_pStateMsgZZTW = new QState(m_pMachine);
+
+    m_pStateMenuTestCtrl = new QState(m_pMachine);
+    m_pStateMenuTestFreq = new QState(m_pStateGroupTimeout);//
+    m_pStateMenuTestPwr = new QState(m_pStateGroupTimeout);//
+    m_pStateEditorTestPwr = new QState(m_pStateGroupTimeout);//
+    m_pStateEditorTestFreq = new QState(m_pStateGroupTimeout);//
 
     m_pStateBUCpwr = new QState(m_pStateGroupTimeout);//
     m_pStateBUC10m = new QState(m_pStateGroupTimeout);//
@@ -310,9 +317,17 @@ void objui::initMachine()
 
     connect(m_pStateStatusPage1,SIGNAL(entered()),this,SLOT(slotShowStatusPage1()));
     connect(m_pStateStatusPage2,SIGNAL(entered()),this,SLOT(slotShowStatusPage2()));
+    connect(m_pStateStatusPage3,SIGNAL(entered()),this,SLOT(slotShowStatusPage3()));
 
     connect(m_pStateAbout,SIGNAL(entered()),this,SLOT(slotShowAbout()));
     connect(m_pStateLogo,SIGNAL(entered()),this,SLOT(slotShowLogo()));
+
+    connect(m_pStateMenuTestCtrl,SIGNAL(entered()),this,SLOT(slotShowMenuTestCtrl()));
+    connect(m_pStateMenuTestFreq,SIGNAL(entered()),this,SLOT(slotShowMenuTestFreq()));
+    connect(m_pStateMenuTestPwr,SIGNAL(entered()),this,SLOT(slotShowMenuTestPwr()));
+    connect(m_pStateEditorTestPwr,SIGNAL(entered()),this,SLOT(slotShowEditTestPwr()));
+    connect(m_pStateEditorTestFreq,SIGNAL(entered()),this,SLOT(slotShowEditTestFreq()));
+
 
     connect(m_pStateMsgSetBUCpwr,SIGNAL(entered()),this,SLOT(slotShowMsgSetBUCpwr()));
     connect(m_pStateMsgSetBUC10m,SIGNAL(entered()),this,SLOT(slotShowMsgSetBUC10m()));
@@ -451,12 +466,20 @@ void objui::initMachine()
     m_pStateStatusPage1->addTransition(pKetStatus1);
     m_pStateStatusPage1->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateStatusPage2);
     m_pStateStatusPage1->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuCtrl);
+    m_pStateStatusPage1->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateStatusPage3);
     m_pStateStatusPage1->addTransition(this,SIGNAL(sigStateTransition1s()),m_pStateStatusPage1);
     ketStatus2 *pKetStatus2 = new ketStatus2(this);
     m_pStateStatusPage2->addTransition(pKetStatus2);
     m_pStateStatusPage2->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
+    m_pStateStatusPage2->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateStatusPage3);
     m_pStateStatusPage2->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuCtrl);
     m_pStateStatusPage2->addTransition(this,SIGNAL(sigStateTransitionRepaint()),m_pStateStatusPage2);
+    ketStatus3 *pKetStatus3 = new ketStatus3(this);
+    m_pStateStatusPage3->addTransition(pKetStatus3);
+    m_pStateStatusPage3->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateStatusPage1);
+    m_pStateStatusPage3->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateStatusPage2);
+    m_pStateStatusPage3->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateMenuCtrl);
+    m_pStateStatusPage3->addTransition(this,SIGNAL(sigStateTransitionRepaint()),m_pStateStatusPage3);
 
     ketAbout *pKetAbout = new ketAbout(this);
     m_pStateAbout->addTransition(pKetAbout);
@@ -814,6 +837,9 @@ void objui::initMachine()
     m_pStateEditorLNBfreq->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuLNBfreq);
 
 
+    ketTestFreqEditor *pKetTestFreqEditor = new ketTestFreqEditor(this);
+    m_pStateEditorTestFreq->addTransition(pKetTestFreqEditor);
+    m_pStateEditorTestFreq->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuTestFreq);
 
     ketTxFreqEditor *pKetTxFreqEditor = new ketTxFreqEditor(this);
     m_pStateEditorTxFreq->addTransition(pKetTxFreqEditor);
@@ -832,6 +858,10 @@ void objui::initMachine()
     ketPowerEditor *pKetPowerEditor = new ketPowerEditor(this);
     m_pStateEditorPower->addTransition(pKetPowerEditor);
     m_pStateEditorPower->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateParaPage2);
+
+    ketTestPwrEditor *pKetTestPwrEditor = new ketTestPwrEditor(this);
+    m_pStateEditorTestPwr->addTransition(pKetTestPwrEditor);
+    m_pStateEditorTestPwr->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuTestPwr);
 
 
     ketTDMeditor *pKetTDMeditor = new ketTDMeditor(this);
@@ -896,10 +926,39 @@ void objui::initMachine()
     m_pStateMenuLNBfreq->addTransition(pKetMenuLNBfreq);
     m_pStateMenuLNBfreq->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateMenuLNBfreq);
     m_pStateMenuLNBfreq->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuLNBfreq);
-    m_pStateMenuLNBfreq->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuBUCpwr);
+    m_pStateMenuLNBfreq->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuTestCtrl);
     m_pStateMenuLNBfreq->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuBUCfreq);
     m_pStateMenuLNBfreq->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuRadioSetting);
     m_pStateMenuLNBfreq->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorLNBfreq);
+
+
+
+    ketMenuTestCtrl *pKetMenuTestCtrl = new ketMenuTestCtrl(this);
+    m_pStateMenuTestCtrl->addTransition(pKetMenuTestCtrl);
+    m_pStateMenuTestCtrl->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateMenuTestCtrl);
+    m_pStateMenuTestCtrl->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuTestCtrl);
+    m_pStateMenuTestCtrl->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuTestFreq);
+    m_pStateMenuTestCtrl->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuLNBfreq);
+    m_pStateMenuTestCtrl->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuRadioSetting);
+    m_pStateMenuTestCtrl->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorLNBfreq);
+    ketMenuTestFreq *pKetMenuTestFreq = new ketMenuTestFreq(this);
+    m_pStateMenuTestFreq->addTransition(pKetMenuTestFreq);
+    m_pStateMenuTestFreq->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateMenuTestFreq);
+    m_pStateMenuTestFreq->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuTestFreq);
+    m_pStateMenuTestFreq->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuTestPwr);
+    m_pStateMenuTestFreq->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuTestCtrl);
+    m_pStateMenuTestFreq->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuRadioSetting);
+    m_pStateMenuTestFreq->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTestFreq);
+    ketMenuTestFreq *pKetMenuTestPwr = new ketMenuTestFreq(this);
+    m_pStateMenuTestPwr->addTransition(pKetMenuTestPwr);
+    m_pStateMenuTestPwr->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateMenuTestPwr);
+    m_pStateMenuTestPwr->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateMenuTestPwr);
+    m_pStateMenuTestPwr->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateMenuTestCtrl);
+    m_pStateMenuTestPwr->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateMenuTestFreq);
+    m_pStateMenuTestPwr->addTransition(this,SIGNAL(sigStateTransitionBack()),m_pStateMenuRadioSetting);
+    m_pStateMenuTestPwr->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditorTestPwr);
+
+
 
 
     ketMenuWorkMode *pKetMenuRadioSetting = new ketMenuWorkMode(this);
@@ -1564,8 +1623,9 @@ void objui::slotRadioLinkState(QByteArray ba)
     qint64 i64;
     struct RadioLinkStateChanged *pRadio;
     pRadio = (struct RadioLinkStateChanged *)ba.data();
-    qDebug("  --- %s ---------snr: %.2f",QTime::currentTime().toString("h:m:s").toLatin1().data(),pRadio->dataRecvLink.snr);
+    //qDebug("  --- %s ---------snr: %.2f",QTime::currentTime().toString("h:m:s").toLatin1().data(),pRadio->dataRecvLink.snr);
     m_status.m_fSNR = pRadio->dataRecvLink.snr;
+    m_status.m_freqOffset = pRadio->dataRecvLink.freqOffset;
     i64 = pRadio->dataRecvLink.frequency;
     if(i64>0){
         m_status.m_RxFreq = i64;
@@ -3154,8 +3214,9 @@ void objui::slotShowStatusPage1()
 
             strXY(QString("点对点"),0,32);
             //strXY(QString("集中控制"),0,32);
-            if(m_status.m_recvSync) sprintf(buf,"S/N: %.2f",m_status.m_fSNR);
-            else sprintf(buf,"S/N: 0.00");
+            sprintf(buf,"S/N: %.2f",m_status.m_fSNR);
+            //if(m_status.m_recvSync) sprintf(buf,"S/N: %.2f",m_status.m_fSNR);
+            //else sprintf(buf,"S/N: 0.00");
             strXY(buf,0,48);
             strXY(m_status.strTxRate().toLatin1().data(),128,32);
             strXY(m_status.strRxRate().toLatin1().data(),128,48);
@@ -3226,6 +3287,25 @@ void objui::slotShowStatusPage2()
     }
     if(m_status.m_recvSync) centerXY("同步",9*8,48,256-9*8,16,1,1);
     else centerXY("未同步",9*8,48,256-9*8,16,1,1);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+
+    QTimer::singleShot(200,this,SLOT(slotKeyEnable()));
+
+}
+void objui::slotShowStatusPage3()
+{
+    char buf[40];
+    //const QLocale & locale = QLocale::c();
+    QString s;//=locale.toString(m_numEditor.m_i64);
+    zeroFB(0);
+
+    strXY("业务频偏:",0,0,0x0f,0);//
+
+    sprintf(buf,"%.1f kHz",0.001*m_status.m_freqOffset);
+    centerXY(buf,9*8, 0, 256-9*8,16,1,1,0x0f,0);
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -3386,13 +3466,16 @@ void objui::slotShowDevMode2()
 // ver1.29(6.27 csdev_id.about
 // ver1.30(6.28   bugfix , app.central.display.p2p
 // ver1.31(7.6 power.c +-20 ==> +-40
+// ver1.32(7.12 RxTxFreq: 950-2150
+// ver1.32a(7.22 add testSignal ,
+// ver1.32d(7.23 recvSync.snr
 
 void objui::slotShowAbout()
 {
     zeroFB(0);
 
-    strXY("ver: 1.31",0,0);
-    centerXY("7.6",0,48,256,16,2,1);// data 19.3.10
+    strXY("ver: 1.32d",0,0);
+    centerXY("7.23",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;
     foreach(const QHostAddress &addr, QNetworkInterface::allAddresses()){
@@ -4446,5 +4529,126 @@ void objui::slotShowEditTxPSK()
 
     slotKeyEnable();
 }
+void objui::showTestCtrl()
+{
+    int c=0x0f;
+    char buf[40];
+    if(m_para.m_testON){
+        centerXY("关闭单载波模式",0,0,256,32,1,1);
+        c = 0x1;
+    }
+    else{
+        centerXY("打开单载波模式",0,0,256,32,1,1);
+        c = 0x0f;
+    }
+    strXY("发射频点",32,32,c);
+    strXY("发射功率",32,48,c);
+    sprintf(buf,"%.4f MHz",0.000001*m_para.m_testFreq);
+    centerXY(buf,64+32,32,256-64-64,16,2,1,c);
+    sprintf(buf,"%.2f dBm",0.01*m_para.m_testPwr);
+    centerXY(buf,64+32,48,256-64-64,16,2,1,c);
+}
 
+void objui::slotShowMenuTestCtrl()
+{
+    //m_numEditor.setPSK(m_para.m_rxPSK);
+    zeroFB(0);
+    showTestCtrl();
+    if(m_para.m_testON){
+        centerXY("关闭单载波模式",0,0,256,32,1,1,0,0x0f);
+        //centerXY("关  闭",80,0,256-80,16,1,1,0,0x0f);
+    }
+    else{
+        centerXY("打开单载波模式",0,0,256,32,1,1,0,0x0f);
+        //centerXY("打  开",80,0,256-80,16,1,1,0,0x0f);
+    }
 
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+    emit sigFlush();
+    slotKeyEnable();
+
+}
+void objui::slotShowMenuTestFreq()
+{
+    //m_numEditor.setPSK(m_para.m_rxPSK);
+    m_numEditor.setNum64(m_para.m_testFreq,m_para.m_maxTxFreq,m_para.m_minTxFreq,-1,2,-1);
+    zeroFB(0);
+    showTestCtrl();
+    strXY("发射频点",32,32,0,0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+    emit sigFlush();
+    slotKeyEnable();
+
+}
+void objui::slotShowMenuTestPwr()
+{
+    m_numEditor.setNum64(m_para.m_testPwr,m_para.m_maxPower,m_para.m_minPower,-1,0,0);
+    zeroFB(0);
+    showTestCtrl();
+    strXY("发射功率",32,48,0,0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+    emit sigFlush();
+    slotKeyEnable();
+
+}
+
+void objui::slotShowEditTestPwr()
+{
+    zeroFB(0);
+    char buf[20];
+
+    const QLocale & locale = QLocale::c();
+    QString s=locale.toString(0.01 * m_numEditor.m_i64);
+    sprintf(buf,"%.2f",0.01*m_numEditor.m_i64);
+
+    centerXY("单载波发射功率",0,10,256,16,1,1,0x0f,0);
+    centerXY(buf,0,64-12-16,(11+6)<<3,16,2,1,0x0f,0);
+    strXY(" dBm",(11+6)<<3,64-12-16,0x0f,0);
+    underLine(0,64-12-16,11+6-1-m_numEditor.getCursor(),0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+    //m_bEnableKeyboard = true;
+    QTimer::singleShot(200,this,SLOT(slotKeyEnable()));
+
+}
+void objui::slotShowEditTestFreq()
+{
+    char buf[40];
+    zeroFB(0);
+
+    centerXY("单载波发射频点",0,10,256,16,1,1,0x0f,0);
+    m_numEditor.getStrFreq(buf);
+    centerXY(buf,0,64-12-16,(9+9)<<3,16,2,1,0x0f,0);
+    strXY("  MHz",(9+9)<<3,64-12-16,0x0f,0);
+    underLine(0,64-12-16,9+9-1-m_numEditor.getCursorMHz(),0x0f);
+
+    Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
+
+    emit sigFlush();
+    //m_bEnableKeyboard = true;
+    QTimer::singleShot(200,this,SLOT(slotKeyEnable()));
+
+}
+void objui::doStartTest()
+{
+    struct TestSignalStruct s;
+    std::string stdstr;
+
+    s.txFrequence = m_para.m_testFreq;
+    s.txIFPower = m_para.m_testPwr * 0.01;
+    stdstr=m_cu.startTestSignal(s);
+    writeTcp(QString::fromStdString(stdstr).toUtf8());
+
+}
+void objui::doStopTest()
+{
+    std::string stdstr;
+
+    stdstr=m_cu.stopTestSignal();
+    writeTcp(QString::fromStdString(stdstr).toUtf8());
+
+}

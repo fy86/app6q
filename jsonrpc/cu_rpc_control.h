@@ -153,6 +153,20 @@ public:
     */
     std::string setRadioLinkParams(RadioLinkParamsChanged &radio_link_params);
 
+	/**
+    *  @brief                        发送测试信号，退网模式下有效
+    *  @param[in] test_signal_params 要设置的参数值
+    *  @return			             命令内容
+    */
+    std::string startTestSignal(TestSignalStruct &test_signal_params);
+
+	/**
+    *  @brief                        停止发送测试信号
+    *  @param[in] void               void
+    *  @return			             命令内容
+    */
+    std::string stopTestSignal();
+
     RecvNotifyRPC *getRecvNotifyObject();
 
     RecvResponseRpc *getRecvResponseObject();

@@ -77,6 +77,10 @@ public:
 
     QString m_strCallID;
 
+    qint64 m_testFreq;
+    int m_testPwr;
+    bool m_testON;// off
+
     bool m_recvSync;
 
     int m_swBUCpwr;
@@ -176,6 +180,8 @@ public:
     qint64 getRate(int sn,int type,int r);
 
     void setArrayRate(enumPara psk);
+
+    qint64 m_freqOffset;
 
 signals:
 

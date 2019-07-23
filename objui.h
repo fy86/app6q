@@ -80,6 +80,13 @@ public:
     QState *m_pStateAbout;
     QState *m_pStateStatusPage1;
     QState *m_pStateStatusPage2;
+    QState *m_pStateStatusPage3;
+
+    QState *m_pStateMenuTestCtrl;
+    QState *m_pStateMenuTestFreq;
+    QState *m_pStateMenuTestPwr;
+    QState *m_pStateEditorTestPwr;
+    QState *m_pStateEditorTestFreq;
 
     QState *m_pStateMenuRadioSetting;// menu03
     QState *m_pStateMenuCtrl;
@@ -269,6 +276,10 @@ public:
     void statusNCChangup();
 
     void getCUstate();
+
+    void showTestCtrl();
+    void doStartTest();
+    void doStopTest();
 signals:
     void sigEVzzhjBack();
     void sigEVzzhjBackM();
@@ -300,6 +311,12 @@ signals:
 
 public slots:
     void slotGetSWStatus();// BUC LNB pwr, 10m
+
+    void slotShowMenuTestCtrl();
+    void slotShowMenuTestFreq();
+    void slotShowMenuTestPwr();
+    void slotShowEditTestPwr();
+    void slotShowEditTestFreq();
 
     void slotUDPkey();
     void slotTcpOn();
@@ -351,6 +368,7 @@ public slots:
 
     void slotShowStatusPage1();
     void slotShowStatusPage2();
+    void slotShowStatusPage3();
 
     void slotShowAbout();
 

@@ -146,27 +146,29 @@ bool RecvResponseRpc::getRadioLinkState(const Json::Value& root, Json::Value& re
         << " alohaLink: datarate = " << radio_link_state.alohaLink.datarate << " if_attenuation = "
         << radio_link_state.alohaLink.if_attenuation << " if_power = " << radio_link_state.alohaLink.if_power
         << " snr = " << radio_link_state.alohaLink.snr << " pduCount = " << radio_link_state.alohaLink.pduCount << " byteCount = "
-        << radio_link_state.alohaLink.byteCount << " errorCount = " << radio_link_state.alohaLink.errorCount << std::endl;
+        << radio_link_state.alohaLink.byteCount << " errorCount = " << radio_link_state.alohaLink.errorCount << "freqOffset = "
+        << radio_link_state.alohaLink.freqOffset << std::endl;
 
     std::cout << "dataRecvLink: frequency = " << radio_link_state.dataRecvLink.frequency
         << " dataRecvLink: datarate = " << radio_link_state.dataRecvLink.datarate <<  " if_attenuation = "
         << radio_link_state.dataRecvLink.if_attenuation << " if_power = "	<< radio_link_state.dataRecvLink.if_power
         << " snr = " << radio_link_state.dataRecvLink.snr << " pduCount = " << radio_link_state.dataRecvLink.pduCount << " byteCount = "
-        << radio_link_state.dataRecvLink.byteCount << " errorCount = " << radio_link_state.dataRecvLink.errorCount << std::endl
-        << " sync = " << radio_link_state.dataRecvLink.sync << std::endl;
+        << radio_link_state.dataRecvLink.byteCount << " errorCount = " << radio_link_state.dataRecvLink.errorCount << "freqOffset = "
+        << radio_link_state.dataRecvLink.freqOffset << std::endl;
 
     std::cout << "dataSendLink: frequency = " << radio_link_state.dataSendLink.frequency
         << " dataSendLink: datarate = " << radio_link_state.dataSendLink.datarate << " if_attenuation = "
         << radio_link_state.dataSendLink.if_attenuation << " if_power = "	<< radio_link_state.dataSendLink.if_power
         << " snr = " << radio_link_state.dataSendLink.snr << " pduCount = " << radio_link_state.dataSendLink.pduCount << " byteCount = "
-        << radio_link_state.dataSendLink.byteCount << " errorCount = " << radio_link_state.dataSendLink.errorCount << std::endl;
+        << radio_link_state.dataSendLink.byteCount << " errorCount = " << radio_link_state.dataSendLink.errorCount << "freqOffset = "
+        << radio_link_state.dataSendLink.freqOffset << std::endl;
 
     std::cout << "tdmLink: frequency = " << radio_link_state.tdmLink.frequency
         << " tdmLink: datarate = " << radio_link_state.tdmLink.datarate << " if_attenuation = "
         << radio_link_state.tdmLink.if_attenuation << " if_power = " << radio_link_state.tdmLink.if_power
         << " snr = " << radio_link_state.tdmLink.snr << " pduCount = " << radio_link_state.tdmLink.pduCount << " byteCount = "
         << radio_link_state.tdmLink.byteCount << " errorCount = " << radio_link_state.tdmLink.errorCount << std::endl
-        << " sync = " << radio_link_state.tdmLink.sync << std::endl;
+        << " sync = " << radio_link_state.tdmLink.sync << "freqOffset = " << radio_link_state.tdmLink.freqOffset << std::endl;
 
 	return true;
 }

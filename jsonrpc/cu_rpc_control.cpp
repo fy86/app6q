@@ -430,6 +430,44 @@ std::string CuRpcControl::setRadioLinkParams(RadioLinkParamsChanged &radio_link_
     return request_str;
 }
 
+std::string CuRpcControl::stopTestSignal()
+{
+    /* build JSON-RPC stopTestSignal*/
+    Json::Value query;
+    query["jsonrpc"] = "2.0";
+    query["method"] = "stopTestSignal";
+    query["id"] = "stopTestSignal_id";
+
+    std::ostringstream writer_os;
+    m_writer->write(query, &writer_os);
+    std::string request_str = writer_os.str();
+    request_str = (char)0x1E + request_str + (char)0x0A;
+    return request_str;
+}
+
+std::string CuRpcControl::startTestSignal(TestSignalStruct &test_signal_params)
+{
+    /* build JSON-RPC startTestSignal*/
+    Json::Value query;
+    query["jsonrpc"] = "2.0";
+    query["method"] = "startTestSignal";
+    query["id"] = "startTestSignal_id";
+    if(-1 != test_signal_params.txFrequence)
+        query["params"]["txFrequence"] = test_signal_params.txFrequence;
+
+    if(-1 != test_signal_params.txIFPower)
+        query["params"]["txIFPower"] = test_signal_params.txIFPower;
+
+    if(-1 != test_signal_params.rxFrequency)
+        query["params"]["rxFrequency"] = test_signal_params.rxFrequency;
+
+    std::ostringstream writer_os;
+    m_writer->write(query, &writer_os);
+    std::string request_str = writer_os.str();
+    request_str = (char)0x1E + request_str + (char)0x0A;
+    return request_str;
+}
+
 RecvNotifyRPC *CuRpcControl::getRecvNotifyObject()
 {
     return &m_recv_notify_rpc;
