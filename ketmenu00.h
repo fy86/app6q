@@ -200,7 +200,8 @@ public:
         m_pui->slotStateTransitionNext();
     }
     virtual void doKeyUp(){
-        m_pui->slotStateTransitionUp();
+        if(m_pui->isStatusP2P()) m_pui->slotStateTransitionUp();
+        else m_pui->slotStateTransitionDown();
     }
     virtual void doKeyDown(){
         m_pui->slotStateTransitionDown();
@@ -230,7 +231,8 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyDown(){
-        m_pui->slotStateTransitionDown();
+        if(m_pui->isStatusP2P()) m_pui->slotStateTransitionDown();
+        else m_pui->slotStateTransitionBack();
     }
     virtual void doKeyLeft(){
         m_pui->slotStateTransitionBack();
@@ -350,7 +352,7 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
-        m_pui->m_para.m_TxRate = m_pui->m_editorRate.getRate();
+        m_pui->m_para.m_txRateC = m_pui->m_editorRate.getRate();
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyUp(){
@@ -382,7 +384,7 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
-        m_pui->m_para.m_RxRate = m_pui->m_editorRate.getRate();
+        m_pui->m_para.m_rxRateC = m_pui->m_editorRate.getRate();
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyUp(){
@@ -1289,11 +1291,15 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
+#if 0
         if( m_pui->m_para.m_BUCfreq != m_pui->m_numEditor.m_i64 ){
             m_pui->m_para.m_BUCfreq = m_pui->m_numEditor.m_i64;
             m_pui->m_para.save();
             m_pui->doCallP2Pagain();
         }
+#endif
+        m_pui->setBUCfreq(m_pui->m_numEditor.m_i64);
+        m_pui->m_para.m_BUCfreq = m_pui->m_numEditor.m_i64;
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyUp(){
@@ -1326,12 +1332,16 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
+#if 0
         if(m_pui->m_para.m_LNBfreq != m_pui->m_numEditor.m_i64){
             m_pui->m_para.m_LNBfreq = m_pui->m_numEditor.m_i64;
             m_pui->m_para.save();// fixme
             //m_pui->doCallP2Pagain();
             // fixme
         }
+#endif
+        m_pui->setLNBfreq(m_pui->m_numEditor.m_i64);
+        m_pui->m_para.m_LNBfreq = m_pui->m_numEditor.m_i64;
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyUp(){
@@ -1435,8 +1445,8 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
-        if(m_pui->m_para.m_TxRate != m_pui->m_numEditor.m_ArrayRate[m_pui->m_numEditor.m_nIdxRate]){
-            m_pui->m_para.m_TxRate = m_pui->m_numEditor.m_ArrayRate[m_pui->m_numEditor.m_nIdxRate];
+        if(m_pui->m_para.m_txRate != m_pui->m_numEditor.m_ArrayRate[m_pui->m_numEditor.m_nIdxRate]){
+            m_pui->m_para.m_txRate = m_pui->m_numEditor.m_ArrayRate[m_pui->m_numEditor.m_nIdxRate];
             m_pui->m_para.save();
             m_pui->doCallP2Pagain();
         }
@@ -1471,8 +1481,8 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
-        if(m_pui->m_para.m_TxRate != m_pui->m_numEditor.m_num){
-            m_pui->m_para.m_TxRate = m_pui->m_numEditor.m_num;
+        if(m_pui->m_para.m_txRate != m_pui->m_numEditor.m_num){
+            m_pui->m_para.m_txRate = m_pui->m_numEditor.m_num;
             m_pui->m_para.save();
             m_pui->doCallP2Pagain();
         }
@@ -1507,8 +1517,8 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
-        if(m_pui->m_para.m_RxRate != m_pui->m_numEditor.m_num){
-            m_pui->m_para.m_RxRate = m_pui->m_numEditor.m_num;
+        if(m_pui->m_para.m_rxRate != m_pui->m_numEditor.m_num){
+            m_pui->m_para.m_rxRate = m_pui->m_numEditor.m_num;
             m_pui->m_para.save();
             m_pui->doCallP2Pagain();
         }
@@ -1543,8 +1553,8 @@ public:
         m_pui->slotStateTransitionBack();
     }
     virtual void doKeyEnter(){
-        if(m_pui->m_para.m_RxRate != m_pui->m_numEditor.m_ArrayRate[m_pui->m_numEditor.m_nIdxRate]){
-            m_pui->m_para.m_RxRate = m_pui->m_numEditor.m_ArrayRate[m_pui->m_numEditor.m_nIdxRate];
+        if(m_pui->m_para.m_rxRate != m_pui->m_numEditor.m_ArrayRate[m_pui->m_numEditor.m_nIdxRate]){
+            m_pui->m_para.m_rxRate = m_pui->m_numEditor.m_ArrayRate[m_pui->m_numEditor.m_nIdxRate];
             m_pui->m_para.save();
             m_pui->doCallP2Pagain();
         }

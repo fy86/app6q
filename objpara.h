@@ -13,6 +13,7 @@ class objPara : public QObject
     Q_OBJECT
 public:
     explicit objPara(QObject *parent = 0);
+    void loadv();
     virtual void load();
     virtual void save();
 
@@ -73,6 +74,8 @@ public:
         CMD_DONOTHING,
     };
 
+    int m_vRate;// 4:4m , default 36:36m
+
     QString m_cwDevID;
 
     QString m_strCallID;
@@ -112,8 +115,8 @@ public:
     qint64 m_BUCfreq;
     qint64 m_LNBfreq;
 
-    int m_TxRate;// kHz ?
-    int m_RxRate;
+    int m_txRate;// kHz ?
+    int m_rxRate;
     int m_pnRate[64];
     int m_pnRate0[32];
 
@@ -140,8 +143,8 @@ public:
     qint64 m_number;
     int m_nLenNumber;
 
-    //int m_TxRateCentral;
-    //int m_RxRateCentral;
+    int m_txRateC;
+    int m_rxRateC;
     //qint64 m_maxTxRateCentral;
     //qint64 m_minTxRateCentral;
     //qint64 m_maxRxRateCentral;
@@ -168,8 +171,10 @@ public:
     QString strTxFreq(qint64 lfreq);
     QString strRxFreq(qint64 lfreq);
 #endif
-    QString strTxRate();
-    QString strRxRate();
+    QString strTXrate();
+    QString strRXrate();
+    QString strTXrateC();
+    QString strRXrateC();
 
     QString strTxFreq(qint64 lfreq);
     QString strRxFreq(qint64 lfreq);

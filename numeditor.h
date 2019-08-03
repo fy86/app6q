@@ -14,6 +14,11 @@ class numEditor : public QObject
 public:
     explicit numEditor(QObject *parent = 0);
 
+    int m_vRate;
+    void loadv();
+    int getVrate(int r);
+    bool isValidRate();
+
     enum objPara::enumPara m_nPSK;
 
     enum myqt::appConst paraName;

@@ -40,6 +40,15 @@ class objui : public objPage
 public:
     explicit objui(QObject *parent = 0);
 
+    bool m_boolStatusPageP2P;
+    // status struct
+    struct RadioLinkParamsChanged m_RadioLinkParamsChanged;
+    struct P2PMode m_P2PMode;// status.p2p txFreq , txRate
+    struct RadioLinkStateChanged m_RadioLinkStateChanged; // state.c txFreq txRate
+    struct CUState m_CUState;
+    void setBUCfreq(qint64 freq);
+    void setLNBfreq(qint64 freq);
+
     bool m_bInitDone;
 
     int m_nCountTimerCall;
@@ -280,6 +289,8 @@ public:
     void showTestCtrl();
     void doStartTest();
     void doStopTest();
+
+    bool isStatusP2P();
 signals:
     void sigEVzzhjBack();
     void sigEVzzhjBackM();
@@ -310,6 +321,7 @@ signals:
     void sigKeyRight();
 
 public slots:
+    void slotGetRadioParams();
     void slotGetSWStatus();// BUC LNB pwr, 10m
 
     void slotShowMenuTestCtrl();
@@ -336,6 +348,7 @@ public slots:
     void slotCUState(QByteArray ba);
     void slotSessionState(QByteArray ba);
     void slotRadioLinkState(QByteArray ba);
+    void slotRadioLinkParams(QByteArray ba);
     void slotReadTCP();
     void slotErrTCP();
 
@@ -383,8 +396,8 @@ public slots:
 
     void slotShowParaPage1();
     void slotShowParaPage11();
-    void slotShowParaPage12();
-    void slotShowParaPage13();
+//    void slotShowParaPage12();
+//    void slotShowParaPage13();
 
     void slotShowParaPage1a();
     void slotShowParaPage11a();

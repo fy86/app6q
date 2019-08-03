@@ -43,7 +43,8 @@ SOURCES += main.cpp \
     myq32.cpp \
     editorcallid.cpp \
     editoridstr.cpp \
-    editorratec.cpp
+    editorratec.cpp \
+    statuspara.cpp
 
 HEADERS += \
     threadspi.h \
@@ -84,4 +85,5 @@ HEADERS += \
     myq32.h \
     editorcallid.h \
     editoridstr.h \
-    editorratec.h
+    editorratec.h \
+    statuspara.h

@@ -20,6 +20,30 @@ editorRateC::editorRateC(QObject *parent) :
     m_listRate.append(10240);
 
     m_nLen = m_listRate.size();
+
+    m_vRate = 36;
+    loadv();
+}
+void editorRateC::loadv()
+{
+    QFile fcmdline("/opt/satcs/conf/rixi_config.json");
+    if(fcmdline.open(QIODevice::ReadOnly)){
+        //qDebug("    open.ok  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxx load >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
+        QTextStream in(&fcmdline);
+        while(!in.atEnd()){
+            QString line=in.readLine();
+            //qDebug(" line : %s",line.toLatin1().data());
+            if(line.contains("hardware_version")){
+                if(line.contains("3")){
+                    m_vRate = 4;
+                }
+                else m_vRate = 36;
+                break;
+            }
+        }
+        fcmdline.close();
+    }
+
 }
 
 int editorRateC::setRate(int rate)
@@ -40,11 +64,28 @@ int editorRateC::getRate()
 {
     return m_listRate.at(m_nIdx);
 }
+bool editorRateC::isValidRate()
+{
+    bool ret=true;
+
+    if(m_vRate==4){
+        if(getRate()>4096) ret = false;
+    }
+
+    return ret;
+
+}
 
 void editorRateC::inc()
 {
     m_nIdx++;
     if(m_nIdx>=m_nLen) m_nIdx = m_nLen-1;
+
+    if(!isValidRate()){
+        m_nIdx--;
+        if(m_nIdx<0) m_nIdx=0;
+    }
+
 
 }
 

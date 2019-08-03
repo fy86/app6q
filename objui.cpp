@@ -9,6 +9,8 @@ objui::objui(QObject *parent) :
 {
     m_bInitDone = false;
 
+    m_boolStatusPageP2P = true;
+
     m_nCountTimerCall = 0;
 
     m_bMenuCall_login = false;
@@ -38,6 +40,7 @@ objui::objui(QObject *parent) :
     connect(m_cu.getRecvResponseObject(),SIGNAL(sigTDMConfig(QByteArray)),this,SLOT(slotTDMConfig(QByteArray)));
     connect(m_cu.getRecvResponseObject(),SIGNAL(sigPowerConfig(QByteArray)),this,SLOT(slotPowerConfig(QByteArray)));
     connect(m_cu.getRecvResponseObject(),SIGNAL(sigModemConfig(QByteArray)),this,SLOT(slotModemConfig(QByteArray)));
+    connect(m_cu.getRecvResponseObject(),SIGNAL(sigRadioLinkParams(QByteArray)),this,SLOT(slotRadioLinkParams(QByteArray)));
 
     m_pTimer60=new QTimer(this);
     m_pTimer60->setInterval(30000);
@@ -551,7 +554,7 @@ void objui::initMachine()
 
     ketParaPage1 *pKetParaPage11a = new ketParaPage1(this);
     m_pStateParaPage11a->addTransition(pKetParaPage11a);
-    m_pStateParaPage11a->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage12a);
+    m_pStateParaPage11a->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage30a);
     m_pStateParaPage11a->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage1a);
     m_pStateParaPage11a->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage2);
     m_pStateParaPage11a->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage30a);
@@ -586,7 +589,7 @@ void objui::initMachine()
     ketParaPage1 *pKetParaPage30a = new ketParaPage1(this);
     m_pStateParaPage30a->addTransition(pKetParaPage30a);
     m_pStateParaPage30a->addTransition(this,SIGNAL(sigStateTransitionDown()),m_pStateParaPage31a);
-    m_pStateParaPage30a->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage13a);
+    m_pStateParaPage30a->addTransition(this,SIGNAL(sigStateTransitionUp()),m_pStateParaPage11a);
     m_pStateParaPage30a->addTransition(this,SIGNAL(sigStateTransitionLeft()),m_pStateParaPage1a);
     m_pStateParaPage30a->addTransition(this,SIGNAL(sigStateTransitionRight()),m_pStateParaPage2);
     m_pStateParaPage30a->addTransition(this,SIGNAL(sigStateTransitionNext()),m_pStateEditRxPSK);
@@ -1045,6 +1048,8 @@ void objui::slotGetCUstateInit()
         stdstr=m_cu.getCUState();
         writeTcp(QString::fromStdString(stdstr).toUtf8());
         stdstr=m_cu.getSessionState();
+        writeTcp(QString::fromStdString(stdstr).toUtf8());
+        stdstr=m_cu.getRadioLinkParams();
         writeTcp(QString::fromStdString(stdstr).toUtf8());
         QTimer::singleShot(1000,this,SLOT(slotGetCUstateInit()));
     }
@@ -1599,6 +1604,7 @@ void objui::slotP2PmodeParam(QByteArray ba)
 {
     struct P2PMode *pMode;
     pMode = (struct P2PMode *)ba.data();
+    memcpy(&m_P2PMode,ba.data(),sizeof(struct P2PMode));
     qDebug("  == p2p.param------------tx.freq: %lld",pMode->txFrequence);
     qDebug("  p2p.param------------rx.freq: %lld",pMode->rxFrequence);
     qDebug("  p2p.param------------tx.rate: %lld",pMode->txBitrate);
@@ -1606,8 +1612,8 @@ void objui::slotP2PmodeParam(QByteArray ba)
     qDebug("  p2p.param------------power: %.2f",pMode->txIFPower);
     m_status.m_RxFreq = pMode->rxFrequence;
     m_status.m_TxFreq = pMode->txFrequence;
-    m_status.m_RxRate = pMode->rxBitrate/1000;
-    m_status.m_TxRate = pMode->txBitrate/1000;
+    m_status.m_rxRate = pMode->rxBitrate/1000;
+    m_status.m_txRate = pMode->txBitrate/1000;
     m_status.m_power100 = pMode->txIFPower * 100.;
     QString str=QString::fromStdString(pMode->dataCommMode);
     if(str.contains("bridge")){
@@ -1617,26 +1623,66 @@ void objui::slotP2PmodeParam(QByteArray ba)
         m_status.m_devMode = objPara::DevMode_router;
     }
 }
+void objui::setBUCfreq(qint64 freq)
+{
+    std::string stdstr;
+
+    struct RadioLinkParamsChanged para;
+    para.dataSendLink.lo_frequency = freq;
+
+    stdstr=m_cu.setRadioLinkParams(para);// setConfigurationModem(modem);
+    writeTcp(QString::fromStdString(stdstr).toUtf8());
+
+    QTimer::singleShot(500,this,SLOT(slotGetRadioParams()));
+    QTimer::singleShot(1500,this,SLOT(slotGetRadioParams()));
+
+}
+void objui::setLNBfreq(qint64 freq)
+{
+    std::string stdstr;
+
+    struct RadioLinkParamsChanged para;
+    para.dataRecvLink.lo_frequency = freq;
+
+    stdstr=m_cu.setRadioLinkParams(para);// setConfigurationModem(modem);
+    writeTcp(QString::fromStdString(stdstr).toUtf8());
+
+    QTimer::singleShot(500,this,SLOT(slotGetRadioParams()));
+    QTimer::singleShot(1500,this,SLOT(slotGetRadioParams()));
+
+}
+
+void objui::slotRadioLinkParams(QByteArray ba)
+{
+    struct RadioLinkParamsChanged *pRadio;
+    pRadio = (struct RadioLinkParamsChanged *)ba.data();
+
+    memcpy(&m_RadioLinkParamsChanged,pRadio,sizeof(struct RadioLinkParamsChanged));
+    m_para.m_BUCfreq = m_RadioLinkParamsChanged.dataSendLink.lo_frequency;
+    m_para.m_LNBfreq = m_RadioLinkParamsChanged.dataRecvLink.lo_frequency;
+}
 
 void objui::slotRadioLinkState(QByteArray ba)
 {
     qint64 i64;
     struct RadioLinkStateChanged *pRadio;
     pRadio = (struct RadioLinkStateChanged *)ba.data();
+    memcpy(&m_RadioLinkStateChanged,ba.data(),sizeof(struct RadioLinkStateChanged));
     //qDebug("  --- %s ---------snr: %.2f",QTime::currentTime().toString("h:m:s").toLatin1().data(),pRadio->dataRecvLink.snr);
     m_status.m_fSNR = pRadio->dataRecvLink.snr;
     m_status.m_freqOffset = pRadio->dataRecvLink.freqOffset;
     i64 = pRadio->dataRecvLink.frequency;
     if(i64>0){
         m_status.m_RxFreq = i64;
-        m_status.m_RxRate = pRadio->dataRecvLink.datarate/1000;
+        m_status.m_rxRateC = pRadio->dataRecvLink.datarate/1000;
     }
     i64 = pRadio->dataSendLink.frequency;
     if(i64>0){
         m_status.m_TxFreq = i64;
-        m_status.m_TxRate = pRadio->dataSendLink.datarate/1000;
+        m_status.m_txRateC = pRadio->dataSendLink.datarate/1000;
     }
     m_status.m_recvSync= pRadio->dataRecvLink.sync;
+    m_status.m_power100Central = 100. * pRadio->dataSendLink.if_power;
     emit sigStateTransitionRepaint();
 }
 void objui::slotTDMConfig(QByteArray ba)
@@ -1711,11 +1757,19 @@ void objui::slotSessionState(QByteArray ba)
     }
 
 }
+bool objui::isStatusP2P()
+{
+
+    return m_boolStatusPageP2P;
+}
+
 void objui::slotCUState(QByteArray ba)
 {
     struct CUState *p;
     p = (struct CUState*)ba.data();
     QString str=QString::fromStdString(p->mode);
+
+    memcpy(&m_CUState,ba.data(),sizeof(struct CUState));
 
     if(0==str.compare(QString("offline_p2p"),Qt::CaseInsensitive)){
         qDebug("             ===========custate , p2p  ");
@@ -1812,8 +1866,8 @@ void objui::cmdNCCcall()
 
     s.sessionType=2;// data
     s.calleeISDN=m_para.m_strCallID.toLatin1().data();
-    s.sendDataRate = m_para.m_TxRate * 1000;
-    s.recvDataRate = m_para.m_RxRate * 1000;
+    s.sendDataRate = m_para.m_txRateC * 1000;
+    s.recvDataRate = m_para.m_rxRateC * 1000;
     if(m_para.m_devMode==objPara::DevMode_bridge){
         s.dataCommMode = "bridge";
     }
@@ -1876,10 +1930,10 @@ void objui::doCallP2P()
     }
 
     p2pmode.txFrequence = m_para.m_TxFreq;// + m_para.m_BUCfreq;
-    p2pmode.txBitrate = m_para.m_TxRate*1000;
+    p2pmode.txBitrate = m_para.m_txRate*1000;
     p2pmode.txIFPower = 0.01 * m_para.m_power100;
     p2pmode.rxFrequence = m_para.m_RxFreq;// + m_para.m_LNBfreq;
-    p2pmode.rxBitrate = m_para.m_RxRate*1000;
+    p2pmode.rxBitrate = m_para.m_rxRate*1000;
     if(m_para.m_devMode==objPara::DevMode_bridge){
         p2pmode.dataCommMode="bridge";
     }
@@ -1890,6 +1944,7 @@ void objui::doCallP2P()
     writeTcp(QString::fromStdString(stdstr).toUtf8());
 
     QTimer::singleShot(500,this,SLOT(slotGetP2Pstatus()));
+
 #if 0
     stdstr=m_cu.getCUState();
     writeTcp(QString::fromStdString(stdstr).toUtf8());
@@ -1944,10 +1999,10 @@ void objui::doCallP2Pagain()
         break;
     }
     p2pmode.txFrequence = m_para.m_TxFreq;// + m_para.m_BUCfreq;
-    p2pmode.txBitrate = m_para.m_TxRate*1000;
+    p2pmode.txBitrate = m_para.m_txRate*1000;
     p2pmode.txIFPower = 0.01 * m_para.m_power100;
     p2pmode.rxFrequence = m_para.m_RxFreq;// + m_para.m_LNBfreq;
-    p2pmode.rxBitrate = m_para.m_RxRate*1000;
+    p2pmode.rxBitrate = m_para.m_rxRate*1000;
     if(m_para.m_devMode==objPara::DevMode_bridge){
         p2pmode.dataCommMode="bridge";
     }
@@ -2124,9 +2179,9 @@ void objui::showDataParaPage1a()
 
     //s=locale.toString(m_para.m_TxFreq).replace(',',' ') + " Hz";
     sprintf(buf,"%.4f MHz",0.000001*m_para.m_TxFreq);
-    centerXY(buf,16*4,0,256-16*4,16,1,1,0x0f,0);
+    centerXY(buf,16*4,0+11,256-16*4,16,1,1,0x0f,0);
     sprintf(buf,"%.4f MHz",0.000001*m_para.m_RxFreq);
-    centerXY(buf,16*4,16,256-16*4,16,1,1,0x0f,0);
+    centerXY(buf,16*4,48-11,256-16*4,16,1,1,0x0f,0);
 #if 0
     sprintf(buf,"%d kbps",m_para.m_TxRate);
     centerXY(buf,16*4,32,256-16*4,16,1,1,0x0f,0);
@@ -2135,15 +2190,15 @@ void objui::showDataParaPage1a()
 #endif
     strXY("1/3",256-8*3,48,0x0f,0);
 
-    strXY("中频发送",0,0);// fasong pindian 发送频率  频率。频点
-    strXY("中频接收",0,16);// jieshou pindian 发送频率  频率。频点 接收
-    strXY("BUC本振",0,32);//
-    strXY("LNB本振",0,48);//
+    strXY("中频发送",0,0+11);// fasong pindian 发送频率  频率。频点
+    strXY("中频接收",0,48-11);// jieshou pindian 发送频率  频率。频点 接收
+    //strXY("BUC本振",0,32);//
+    //strXY("LNB本振",0,48);//
 
-    sprintf(buf,"%.4f MHz",0.000001*m_para.m_BUCfreq);
-    centerXY(buf,16*4,32,256-16*4,16,1,1,0x0f,0);
-    sprintf(buf,"%.4f MHz",0.000001*m_para.m_LNBfreq);
-    centerXY(buf,16*4,48,256-16*4,16,1,1,0x0f,0);
+    //sprintf(buf,"%.4f MHz",0.000001*m_para.m_BUCfreq);
+    //centerXY(buf,16*4,32,256-16*4,16,1,1,0x0f,0);
+    //sprintf(buf,"%.4f MHz",0.000001*m_para.m_LNBfreq);
+    //centerXY(buf,16*4,48,256-16*4,16,1,1,0x0f,0);
 
 }
 
@@ -2154,7 +2209,7 @@ void objui::slotShowParaPage1a()
     m_numEditor.setNum64(m_para.m_TxFreq,m_para.m_maxTxFreq,m_para.m_minTxFreq,-1,2,-1);
 
     showDataParaPage1a();
-    strXY("中频发送",0,0,0,0x0f);// fasong pindian 发送频率  频率。频点
+    strXY("中频发送",0,0+11,0,0x0f);// fasong pindian 发送频率  频率。频点
     //strXY("中频接收",0,38,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
@@ -2171,7 +2226,7 @@ void objui::slotShowParaPage11a()
 
     showDataParaPage1a();
     //strXY("中频发送",0,0,0x0f,0);// fasong pindian 发送频率  频率。频点
-    strXY("中频接收",0,16,0,0x0f);// jieshou pindian 发送频率  频率。频点 接收
+    strXY("中频接收",0,48-11,0,0x0f);// jieshou pindian 发送频率  频率。频点 接收
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -2255,6 +2310,7 @@ void objui::slotShowParaPage11()
 
 
 }
+#if 0
 void objui::slotShowParaPage12()
 {
     //qDebug("     show menu.page.12");
@@ -2277,6 +2333,7 @@ void objui::slotShowParaPage12()
 
 
 }
+
 void objui::slotShowParaPage13()
 {
     //qDebug("     show menu.page.13");
@@ -2299,10 +2356,11 @@ void objui::slotShowParaPage13()
 
 
 }
+#endif
 void objui::showDataParaPage2()
 {
-    strXY("发送功率",0,0);// fasong gonglv 发送 功率
-    strXY("业务类型",0,16);// yewu leixing 业务类型
+    strXY("发送功率",0,0+11);// fasong gonglv 发送 功率
+    strXY("业务类型",0,48-11);// yewu leixing 业务类型
     //strXY("BUC本振",0,32);//
     //strXY("LNB本振",0,48);// bianma fangshi 编码方式
 
@@ -2312,13 +2370,13 @@ void objui::showDataParaPage2()
 
     //s=locale.toString(0.01*m_para.m_power100) + " dBm";
     sprintf(buf,"%.2f dBm",0.01*m_para.m_power100);
-    centerXY(buf,4*16,0,256-16*4,16,1,1,0x0f,0);
+    centerXY(buf,4*16,0+11,256-16*4,16,1,1,0x0f,0);
     switch(m_para.m_devMode){
     case objPara::DevMode_bridge:
-        centerXY("网桥",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
+        centerXY("网桥",4*16,48-11,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
         break;
     case objPara::DevMode_router:
-        centerXY("路由",4*16,16,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
+        centerXY("路由",4*16,48-11,256-16*4,16,1,1,0x0f,0);// wangqiao  网桥
         break;
     default:
         break;
@@ -2366,7 +2424,7 @@ void objui::slotShowParaPage2()
     m_numEditor.setNum64(m_para.m_power100,m_para.m_maxPower,m_para.m_minPower,-1,0,0);
 
     showDataParaPage2();
-    strXY("发送功率",0,0,0,0x0f);// fasong gonglv 发送 功率
+    strXY("发送功率",0,0+11,0,0x0f);// fasong gonglv 发送 功率
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -2381,7 +2439,7 @@ void objui::slotShowParaPage21()
     zeroFB(0);
 
     showDataParaPage2();
-    strXY("业务类型",0,16,0,0x0f);// yewu leixing 业务类型
+    strXY("业务类型",0,48-11,0,0x0f);// yewu leixing 业务类型
 
     Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
 
@@ -2971,9 +3029,9 @@ void objui::showDataParaP2c()
     strXY("接收速率",0,16);// jieshou sulv 发送频率  频率。频点
     strXY("业务类型",0,32);// yewu leixing 业务类型
 
-    sprintf(buf,"%d kbps",m_para.m_TxRate);
+    sprintf(buf,"%d kbps",m_para.m_txRateC);
     centerXY(buf,16*4,0,256-16*4,16,1,1);
-    sprintf(buf,"%d kbps",m_para.m_RxRate);
+    sprintf(buf,"%d kbps",m_para.m_rxRateC);
     centerXY(buf,16*4,16,256-16*4,16,1,1);
 
     switch(m_para.m_devMode){
@@ -2994,7 +3052,7 @@ void objui::showDataParaP2c()
 void objui::slotShowParaP21c()
 {
     //qDebug("   tx.rate:%d",m_para.m_TxRate);
-    m_para.m_TxRate = m_editorRate.setRate(m_para.m_TxRate);
+    m_para.m_txRateC = m_editorRate.setRate(m_para.m_txRateC);
     //qDebug("    after.set  tx.rate:%d",m_para.m_TxRate);
 
     showDataParaP2c();
@@ -3010,7 +3068,7 @@ void objui::slotShowParaP21c()
 }
 void objui::slotShowParaP22c()
 {
-    m_para.m_RxRate = m_editorRate.setRate(m_para.m_RxRate);
+    m_para.m_rxRateC = m_editorRate.setRate(m_para.m_rxRateC);
 
     showDataParaP2c();
     //strXY("发送速率",0,0,0x0f,0);// fasong sulv 发送频率  频率。频点  速率
@@ -3117,6 +3175,8 @@ QString objui::getTimeRunning()
 void objui::showStatusPage1c()
 {
     char buf[40];
+    strXY("发送速率:  -- k",128,32);
+    strXY("接收速率:  -- k",128,48);
     QString str="--";
     switch(m_para.m_status){
     case objPara::Status_waiting_tdm:
@@ -3132,6 +3192,10 @@ void objui::showStatusPage1c()
         str="在线等待";
         break;
     case objPara::Status_online_p2p_call:
+        strXY("发送速率:       ",128,32);
+        strXY("接收速率:       ",128,48);
+        strXY(m_status.strTXrateC().toLatin1().data(),128,32);
+        strXY(m_status.strRXrateC().toLatin1().data(),128,48);
         str="正在通信";
         break;
     case objPara::Status_online_ncc_plan:
@@ -3145,8 +3209,6 @@ void objui::showStatusPage1c()
     strXY(QString("集中控制"),0,32);
     sprintf(buf,"S/N: %.2f",m_status.m_fSNR);
     strXY(buf,0,48);
-    strXY(m_status.strTxRate().toLatin1().data(),128,32);
-    strXY(m_status.strRxRate().toLatin1().data(),128,48);
 
 }
 
@@ -3168,6 +3230,7 @@ void objui::slotShowStatusPage1()
     else if(m_para.m_status==objPara::Status_idle){// idle
         switch(m_para.m_workMode){
         case objPara::Mode_p2p:
+            m_boolStatusPageP2P = true;
             switch(m_para.m_devMode){
             case objPara::DevMode_bridge:
                 strXY(QString("(网桥)"),48,32);
@@ -3182,15 +3245,20 @@ void objui::slotShowStatusPage1()
             strXY(QString("点对点"),0,32);
             //sprintf(buf,"S/N: 0.00",m_status.m_fSNR);
             strXY("S/N: 0.00",0,48);
-            strXY(m_para.strTxRate().toLatin1().data(),128,32);
-            strXY(m_para.strRxRate().toLatin1().data(),128,48);
+            strXY("发送速率:  -- k",128,32);
+            strXY("接收速率:  -- k",128,48);
+            //strXY(m_para.strTxRate().toLatin1().data(),128,32);
+            //strXY(m_para.strRxRate().toLatin1().data(),128,48);
             break;
         case objPara::Mode_central:
+            m_boolStatusPageP2P = false;
             centerXY("空    闲",0,0,256,32,1,1);
             strXY(QString("集中控制"),0,32);
             strXY("S/N: 0.00",0,48);
-            strXY(m_para.strTxRate().toLatin1().data(),128,32);
-            strXY(m_para.strRxRate().toLatin1().data(),128,48);
+            strXY("发送速率:  -- k",128,32);
+            strXY("接收速率:  -- k",128,48);
+            //strXY(m_para.strTxRate().toLatin1().data(),128,32);
+            //strXY(m_para.strRxRate().toLatin1().data(),128,48);
             break;
         default: break;
         }
@@ -3198,6 +3266,7 @@ void objui::slotShowStatusPage1()
     else{// if(m_para.m_status==objPara::Status_connected){
         switch(m_status.m_workMode){
         case objPara::Mode_p2p:
+            m_boolStatusPageP2P = true;
             switch(m_status.m_devMode){
             case objPara::DevMode_bridge:
                 strXY(QString("(网桥)"),48,32);
@@ -3218,10 +3287,13 @@ void objui::slotShowStatusPage1()
             //if(m_status.m_recvSync) sprintf(buf,"S/N: %.2f",m_status.m_fSNR);
             //else sprintf(buf,"S/N: 0.00");
             strXY(buf,0,48);
-            strXY(m_status.strTxRate().toLatin1().data(),128,32);
-            strXY(m_status.strRxRate().toLatin1().data(),128,48);
+            strXY("发送速率:       ",128,32);
+            strXY("接收速率:       ",128,48);
+            strXY(m_status.strTXrate().toLatin1().data(),128,32);
+            strXY(m_status.strRXrate().toLatin1().data(),128,48);
             break;
         case objPara::Mode_central:
+            m_boolStatusPageP2P = false;
             showStatusPage1c();
             break;
         default: break;
@@ -3249,42 +3321,71 @@ void objui::slotShowStatusPage2()
         strXY("业务接收:",0,48,0x0f,0);//
 
         //s=locale.toString(0.01*m_para.m_power100) + " dBm";
-        sprintf(buf,"%.2f dBm",0.01*m_status.m_power100);
-        centerXY(buf,9*8, 0, 256-9*8,16,1,1,0x0f,0);
+        //sprintf(buf,"%.2f dBm",0.01*m_status.m_power100);
+        //centerXY(buf,9*8, 0, 256-9*8,16,1,1,0x0f,0);
 
-        centerXY(m_status.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 16, 256-9*8,16,1,1,0x0f,0);
-        centerXY(m_status.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 32, 256-9*8,16,1,1,0x0f,0);
+        //centerXY(m_status.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 16, 256-9*8,16,1,1,0x0f,0);
+        //centerXY(m_status.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 32, 256-9*8,16,1,1,0x0f,0);
+
+        if(m_para.m_status==objPara::Status_idle){// idle
+            strXY("发送功率:",0,0,0x0f,0);// fasong gonglv 发送 功率
+            strXY("发送频点:",0,16,0x0f,0);// fasong pindian 发送频率  频率。频点
+            strXY("接收频点:",0,32,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
+            strXY("业务接收:",0,48,0x0f,0);//
+
+            //s=locale.toString(0.01*m_para.m_power100) + " dBm";
+            sprintf(buf,"%.2f dBm",0.01*m_para.m_power100);
+            centerXY(buf,9*8, 0, 256-9*8,16,1,1,0x0f,0);
+
+            centerXY(m_para.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 16, 256-9*8,16,1,1,0x0f,0);
+            centerXY(m_para.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 32, 256-9*8,16,1,1,0x0f,0);
+        }
+        else{// if(m_para.m_status==objPara::Status_connected){
+            strXY("发送功率:",0,0,0x0f,0);// fasong gonglv 发送 功率
+            strXY("发送频点:",0,16,0x0f,0);// fasong pindian 发送频率  频率。频点
+            strXY("接收频点:",0,32,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
+            strXY("业务接收:",0,48,0x0f,0);//
+
+            //s=locale.toString(0.01*m_para.m_power100) + " dBm";
+            sprintf(buf,"%.2f dBm",0.01*m_status.m_power100);
+            centerXY(buf,9*8, 0, 256-9*8,16,1,1,0x0f,0);
+
+            centerXY(m_status.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 16, 256-9*8,16,1,1,0x0f,0);
+            centerXY(m_status.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 32, 256-9*8,16,1,1,0x0f,0);
+        }
+
         break;
     case objPara::Mode_central:
+        if(m_para.m_status==objPara::Status_idle){// idle
+            strXY("发送功率:",0,0,0x0f,0);// fasong gonglv 发送 功率
+            strXY("发送频点:",0,16,0x0f,0);// fasong pindian 发送频率  频率。频点
+            strXY("接收频点:",0,32,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
+            strXY("业务接收:",0,48,0x0f,0);//
+
+            //s=locale.toString(0.01*m_para.m_power100) + " dBm";
+            sprintf(buf,"--- dBm");
+            centerXY(buf,9*8, 0, 256-9*8,16,1,1,0x0f,0);
+
+            centerXY(m_para.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 16, 256-9*8,16,1,1,0x0f,0);
+            centerXY(m_para.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 32, 256-9*8,16,1,1,0x0f,0);
+        }
+        else{// if(m_para.m_status==objPara::Status_connected){
+            strXY("发送功率:",0,0,0x0f,0);// fasong gonglv 发送 功率
+            strXY("发送频点:",0,16,0x0f,0);// fasong pindian 发送频率  频率。频点
+            strXY("接收频点:",0,32,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
+            strXY("业务接收:",0,48,0x0f,0);//
+
+            //s=locale.toString(0.01*m_para.m_power100) + " dBm";
+            sprintf(buf,"%.2f dBm",0.01*m_status.m_power100Central);
+            centerXY(buf,9*8, 0, 256-9*8,16,1,1,0x0f,0);
+
+            centerXY(m_status.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 16, 256-9*8,16,1,1,0x0f,0);
+            centerXY(m_status.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 32, 256-9*8,16,1,1,0x0f,0);
+        }
         break;
     default: break;
     }
-    if(m_para.m_status==objPara::Status_idle){// idle
-        strXY("发送功率:",0,0,0x0f,0);// fasong gonglv 发送 功率
-        strXY("发送频点:",0,16,0x0f,0);// fasong pindian 发送频率  频率。频点
-        strXY("接收频点:",0,32,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
-        strXY("业务接收:",0,48,0x0f,0);//
 
-        //s=locale.toString(0.01*m_para.m_power100) + " dBm";
-        sprintf(buf,"%.2f dBm",0.01*m_para.m_power100);
-        centerXY(buf,9*8, 0, 256-9*8,16,1,1,0x0f,0);
-
-        centerXY(m_para.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 16, 256-9*8,16,1,1,0x0f,0);
-        centerXY(m_para.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 32, 256-9*8,16,1,1,0x0f,0);
-    }
-    else{// if(m_para.m_status==objPara::Status_connected){
-        strXY("发送功率:",0,0,0x0f,0);// fasong gonglv 发送 功率
-        strXY("发送频点:",0,16,0x0f,0);// fasong pindian 发送频率  频率。频点
-        strXY("接收频点:",0,32,0x0f,0);// jieshou pindian 发送频率  频率。频点 接收
-        strXY("业务接收:",0,48,0x0f,0);//
-
-        //s=locale.toString(0.01*m_para.m_power100) + " dBm";
-        sprintf(buf,"%.2f dBm",0.01*m_status.m_power100);
-        centerXY(buf,9*8, 0, 256-9*8,16,1,1,0x0f,0);
-
-        centerXY(m_status.strTxFreq(m_para.m_BUCfreq).toLatin1().data(),9*8, 16, 256-9*8,16,1,1,0x0f,0);
-        centerXY(m_status.strRxFreq(m_para.m_LNBfreq).toLatin1().data(),9*8, 32, 256-9*8,16,1,1,0x0f,0);
-    }
     if(m_status.m_recvSync) centerXY("同步",9*8,48,256-9*8,16,1,1);
     else centerXY("未同步",9*8,48,256-9*8,16,1,1);
 
@@ -3469,13 +3570,16 @@ void objui::slotShowDevMode2()
 // ver1.32(7.12 RxTxFreq: 950-2150
 // ver1.32a(7.22 add testSignal ,
 // ver1.32d(7.23 recvSync.snr
+// ver1.33(7.31   if_power
+// ver1.34(8.3
+// ver1.35(8.3 4m,36m
 
 void objui::slotShowAbout()
 {
     zeroFB(0);
 
-    strXY("ver: 1.32d",0,0);
-    centerXY("7.23",0,48,256,16,2,1);// data 19.3.10
+    strXY("ver: 1.35",0,0);
+    centerXY("8.3",0,48,256,16,2,1);// data 19.3.10
 
     const QHostAddress &localaddress = QHostAddress::LocalHost;
     foreach(const QHostAddress &addr, QNetworkInterface::allAddresses()){
@@ -3784,7 +3888,7 @@ void objui::statusNCCcall()
             Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
             emit sigFlush();
             m_nCountTimerCall++;
-            QTimer::singleShot(1500,this,SLOT(slotEVzzhjBack()));// go to main.status
+            QTimer::singleShot(1500,this,SLOT(slotEVzzhjBackM()));// go to main.status
         }
         else{
             m_nCountTimerCall++;
@@ -3808,7 +3912,7 @@ void objui::statusNCCcall()
             Fill_BlockP((unsigned char*)m_baFB.data(),0,63,0,63);
             emit sigFlush();
             m_nCountTimerCall++;
-            QTimer::singleShot(1500,this,SLOT(slotEVzzhjBack()));
+            QTimer::singleShot(1500,this,SLOT(slotEVzzhjBackM()));
         }
         else{
             m_nCountTimerCall++;
@@ -3944,6 +4048,16 @@ void objui::slotShowMenu00()
     //m_bEnableKeyboard = true;
 
 }
+void objui::slotGetRadioParams()
+{
+    std::string stdstr;
+
+    // get bufFreq LNBfreq
+    stdstr=m_cu.getRadioLinkParams();// getConfiguration(QString("modem").toStdString());
+    writeTcp(QString::fromStdString(stdstr).toUtf8());
+
+}
+
 void objui::getPara()
 {
     qDebug(" ========================================================================================= get para");
@@ -3959,6 +4073,9 @@ void objui::getPara()
     writeTcp(QString::fromStdString(stdstr).toUtf8());
 
     stdstr=m_cu.getConfiguration(QString("modem").toStdString());
+    writeTcp(QString::fromStdString(stdstr).toUtf8());
+    // get bufFreq LNBfreq
+    stdstr=m_cu.getRadioLinkParams();// getConfiguration(QString("modem").toStdString());
     writeTcp(QString::fromStdString(stdstr).toUtf8());
 }
 void objui::getParaModem()
@@ -4010,7 +4127,7 @@ void objui::slotGetSWStatus()
 {
 
 }
-
+// radio setting
 void objui::slotShowMenu03()
 {
 
@@ -4280,7 +4397,7 @@ void objui::showP3a()
     }
     //sprintf(buf,"%d kbps",m_para.m_TxRate);
     //centerXY(buf,16*4,32,256-16*4,16,1,1,0x0f,0);
-    sprintf(buf,"%d kbps",m_para.m_RxRate);
+    sprintf(buf,"%d kbps",m_para.m_rxRate);
     centerXY(buf,16*6,y1,256-16*6,16,1,1);
 
     strXY("发送调制方式",0,y2);
@@ -4299,7 +4416,7 @@ void objui::showP3a()
         centerXY("3/4 8PSK",6*16,y2,10*16,16,1,1);
         break;
     }
-    sprintf(buf,"%d kbps",m_para.m_TxRate);
+    sprintf(buf,"%d kbps",m_para.m_txRate);
     centerXY(buf,16*6,y3,256-16*6,16,1,1);
 
     strXY("2/3",256-8*3,48,0x0f,0);
@@ -4326,7 +4443,7 @@ void objui::showP3()
     }
     //sprintf(buf,"%d kbps",m_para.m_TxRate);
     //centerXY(buf,16*4,32,256-16*4,16,1,1,0x0f,0);
-    sprintf(buf,"%d kbps",m_para.m_RxRate);
+    sprintf(buf,"%d kbps",m_para.m_rxRate);
     centerXY(buf,16*6,38,256-16*6,16,1,1);
 
     strXY("2/4",256-8*3,48,0x0f,0);
@@ -4352,7 +4469,7 @@ void objui::showP4()
         centerXY("3/4 8PSK",6*16,11,10*16,16,1,1);
         break;
     }
-    sprintf(buf,"%d kbps",m_para.m_TxRate);
+    sprintf(buf,"%d kbps",m_para.m_txRate);
     centerXY(buf,16*6,38,256-16*6,16,1,1);
     //sprintf(buf,"%d kbps",m_para.m_RxRate);
     //centerXY(buf,16*6,38,256-16*6,16,1,1);
@@ -4375,7 +4492,7 @@ void objui::slotShowP30a()
 void objui::slotShowP31a()
 {
     m_numEditor.setArrayRate(m_para.m_rxPSK);
-    m_numEditor.m_num = m_para.m_RxRate;
+    m_numEditor.m_num = m_para.m_rxRate;
     zeroFB(0);
     showP3a();
     strXY("接 收 速 率",4,16,0,0x0f);
@@ -4402,7 +4519,7 @@ void objui::slotShowP40a()
 void objui::slotShowP41a()
 {
     m_numEditor.setArrayRate(m_para.m_txPSK);
-    m_numEditor.m_num = m_para.m_TxRate;
+    m_numEditor.m_num = m_para.m_txRate;
     zeroFB(0);
     showP3a();
     strXY("发 送 速 率",4,48,0,0x0f);

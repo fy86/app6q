@@ -3,6 +3,8 @@
 numEditor::numEditor(QObject *parent) :
     QObject(parent)
 {
+    m_vRate = 36;
+
     m_nPSK = objPara::Mod_8psk34;
 
     paraType=myqt::paraTypeInt64;
@@ -42,21 +44,57 @@ numEditor::numEditor(QObject *parent) :
     m_pnRate0[15]=16384;
 
 
+    loadv();
 }
+void numEditor::loadv()
+{
+    QFile fcmdline("/opt/satcs/conf/rixi_config.json");
+    if(fcmdline.open(QIODevice::ReadOnly)){
+        //qDebug("    open.ok  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxx load >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
+        QTextStream in(&fcmdline);
+        while(!in.atEnd()){
+            QString line=in.readLine();
+            //qDebug(" line : %s",line.toLatin1().data());
+            if(line.contains("hardware_version")){
+                if(line.contains("3")){
+                    m_vRate = 4;
+                }
+                else{
+                    m_vRate = 36;
+                }
+                break;
+            }
+        }
+        fcmdline.close();
+    }
+
+}
+int numEditor::getVrate(int r)
+{
+    int ret=r;
+
+    if(m_vRate==4){
+        if(r>4608) ret=-1;
+    }
+    return ret;
+}
+
 void numEditor::setArrayRate(objPara::enumPara psk)
 {
     int i;
     for(i=0;i<32;i++)m_pnRate[i]=-1;
     switch(psk){
     case objPara::Mod_qpsk12:
-        for(i=0;i<16;i++)m_pnRate[i]=m_pnRate0[i];
+        for(i=0;i<16;i++){
+            m_pnRate[i]=getVrate(m_pnRate0[i]) ;
+        }
         break;
     case objPara::Mod_qpsk34:
     case objPara::Mod_8psk12:
-        for(i=0;i<16;i++)m_pnRate[i]=m_pnRate0[i]+(m_pnRate0[i]>>1);
+        for(i=0;i<16;i++)m_pnRate[i]=getVrate( m_pnRate0[i]+(m_pnRate0[i]>>1) );
         break;
     default:// mod_8psk34
-        for(i=0;i<16;i++)m_pnRate[i]=(m_pnRate0[i]<<1)+(m_pnRate0[i]>>2);
+        for(i=0;i<16;i++)m_pnRate[i]=getVrate( (m_pnRate0[i]<<1)+(m_pnRate0[i]>>2) );
         break;
     }
 
@@ -72,19 +110,20 @@ void numEditor::incRatePSK(int one)
                 break;
             }
         }
-        if(!f){
-            m_num = m_pnRate[0];
-        }
+        //if(!f){
+        //    m_num = m_pnRate[0];
+        //}
     }
     else{
         for(int i=15;i>=0;i--){
-            if(m_pnRate[i]<m_num){
+            if(m_pnRate[i]<0)continue;
+            if(m_pnRate[i]<m_num ){
                 m_num = m_pnRate[i];
                 f=true;
                 break;
             }
         }
-        if(!f) m_num = m_pnRate[15];
+        //if(!f) m_num = m_pnRate[15];
     }
 }
 
@@ -147,10 +186,25 @@ void numEditor::checkCursor()
     if(m_posCursor>m_maxPos) m_posCursor=m_maxPos;
     setStep();
 }
+bool numEditor::isValidRate()
+{
+    bool b=true;
+
+    if(m_vRate==4){
+        if(m_ArrayRate[m_nIdxRate]>4096) b  = false;
+    }
+
+    return b;
+}
+
 void numEditor::incIdx()
 {
     m_nIdxRate++;
     if(m_nIdxRate>m_maxIdxRate) m_nIdxRate = m_minIdxRate;
+    if(!isValidRate()){
+        m_nIdxRate--;
+        if(m_nIdxRate<0) m_nIdxRate=0;
+    }
 }
 void numEditor::decIdx()
 {

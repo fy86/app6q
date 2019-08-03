@@ -28,8 +28,10 @@ void objstatus::setInvalid()
 {
     m_TxFreq = -1;
     m_RxFreq = -1;
-    m_TxRate = -1;
-    m_RxRate = -1;
+    m_txRate = -1;
+    m_rxRate = -1;
+    m_txRateC = -1;
+    m_rxRateC = -1;
 
     m_power100 = 1;
 

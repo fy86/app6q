@@ -5,6 +5,8 @@ objPara::objPara(QObject *parent) :
 {
     m_freqOffset = 0;
 
+    m_vRate = 36;
+
     m_cwDevID = "cwdev_id: ";
 
     m_strCallID="190072";
@@ -40,15 +42,21 @@ objPara::objPara(QObject *parent) :
     m_maxRxFreq =  2150000000;
     m_minRxFreq =   950000000;
 
-    m_BUCfreq = 13050000000;//13g
-    m_LNBfreq = 11300000000;// 13g
+    //m_BUCfreq = 13050000000;//13g
+    //m_LNBfreq = 11300000000;// 13g
+    m_BUCfreq = 1000;//13g
+    m_LNBfreq = 1000;// 13g
 
-    m_TxRate = 1024;
+    m_txRate = 1152;
     m_maxTxRate = 4096;
     m_minTxRate = 16;
-    m_RxRate = 1024;
+    m_rxRate = 1152;
     m_maxRxRate = 4096;
     m_minRxRate = 16;
+
+    m_txRateC = 1024;
+    m_rxRateC = 1024;
+
 
     m_power100 = -1100;
     m_maxPower = -1100;
@@ -85,6 +93,7 @@ objPara::objPara(QObject *parent) :
     m_rxPSK = Mod_8psk34;
     m_txPSK = Mod_8psk34;
 
+    //loadv();
     load();
 #if 0
     int i,j,k;
@@ -160,24 +169,64 @@ qint64 objPara::getRate(int sn, int type, int r)
 
 }
 
-QString objPara::strTxRate()
+QString objPara::strTXrate()
 {
     QString str="发送速率:  -- k";
-    if(m_TxRate<0) return str;
+    if(m_txRate<0) return str;
     //if(m_TxRate<=m_maxTxRate && m_TxRate>=m_minTxRate){
-        str = QString("发送速率: %1k").arg(m_TxRate);
+        str = QString("发送速率: %1k").arg(m_txRate);
     //}
     return str;
 }
-QString objPara::strRxRate()
+QString objPara::strRXrate()
 {
     QString str="接收速率:  -- k";
-    if(m_RxRate<0) return str;
+    if(m_rxRate<0) return str;
 
     //if(m_RxRate<=m_maxRxRate && m_RxRate>=m_minRxRate){
-        str = QString("接收速率: %1k").arg(m_RxRate);
+        str = QString("接收速率: %1k").arg(m_rxRate);
     //}
     return str;
+}
+QString objPara::strTXrateC()
+{
+    QString str="发送速率:  -- k";
+    if(m_txRateC<0) return str;
+    //if(m_TxRate<=m_maxTxRate && m_TxRate>=m_minTxRate){
+        str = QString("发送速率: %1k").arg(m_txRateC);
+    //}
+    return str;
+}
+QString objPara::strRXrateC()
+{
+    QString str="接收速率:  -- k";
+    if(m_rxRateC<0) return str;
+
+    //if(m_RxRate<=m_maxRxRate && m_RxRate>=m_minRxRate){
+        str = QString("接收速率: %1k").arg(m_rxRateC);
+    //}
+    return str;
+}
+void objPara::loadv()
+{
+    QFile fcmdline("/opt/satcs/conf/rixi_config.json");
+    if(fcmdline.open(QIODevice::ReadOnly)){
+        //qDebug("    open.ok  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxx load >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
+        QTextStream in(&fcmdline);
+        while(!in.atEnd()){
+            QString line=in.readLine();
+            //qDebug(" line : %s",line.toLatin1().data());
+            if(line.contains("hardware_version")){
+                if(line.contains("3")){
+                    m_vRate = 4;
+                }
+                else m_vRate = 36;
+                break;
+            }
+        }
+        fcmdline.close();
+    }
+
 }
 
 void objPara::load()
@@ -203,20 +252,30 @@ void objPara::load()
                 m_RxFreq=sl.at(1).toLongLong(&b);
             }
             else if(0==sl.at(0).compare(QString("txrate_p2p"),Qt::CaseInsensitive)){
-                m_TxRate=sl.at(1).toInt(&b);
+                m_txRate=sl.at(1).toInt(&b);
             }
             else if(0==sl.at(0).compare(QString("rxrate_p2p"),Qt::CaseInsensitive)){
-                m_RxRate=sl.at(1).toInt(&b);
+                m_rxRate=sl.at(1).toInt(&b);
             }
+
+            else if(0==sl.at(0).compare(QString("txrate_c"),Qt::CaseInsensitive)){
+                m_txRateC=sl.at(1).toInt(&b);
+            }
+            else if(0==sl.at(0).compare(QString("rxrate_c"),Qt::CaseInsensitive)){
+                m_rxRateC=sl.at(1).toInt(&b);
+            }
+
             else if(0==sl.at(0).compare(QString("power_p2p"),Qt::CaseInsensitive)){
                 m_power100=sl.at(1).toLongLong(&b);
             }
+#if 0
             else if(0==sl.at(0).compare(QString("bucfreq_p2p"),Qt::CaseInsensitive)){
                 m_BUCfreq=sl.at(1).toLongLong(&b);
             }
             else if(0==sl.at(0).compare(QString("lnbfreq_p2p"),Qt::CaseInsensitive)){
                 m_LNBfreq=sl.at(1).toLongLong(&b);
             }
+#endif
             else if(0==sl.at(0).compare(QString("devmode_p2p"),Qt::CaseInsensitive)){
                 if(0==sl.at(1).compare(QString("bridge"),Qt::CaseInsensitive)){
                     m_devMode = objPara::DevMode_bridge;
@@ -276,24 +335,31 @@ void objPara::save()
     if(f.open(QIODevice::WriteOnly|QIODevice::Truncate)){
         sprintf(buf,"testfreq %lld\n",m_testFreq);
         f.write(buf,strlen(buf));
-        sprintf(buf,"testpwr %lld\n",m_testPwr);
+        sprintf(buf,"testpwr %d\n",m_testPwr);
         f.write(buf,strlen(buf));
 
         sprintf(buf,"txfreq_p2p %lld\n",m_TxFreq);
         f.write(buf,strlen(buf));
         sprintf(buf,"rxfreq_p2p %lld\n",m_RxFreq);
         f.write(buf,strlen(buf));
-        sprintf(buf,"txrate_p2p %d\n",m_TxRate);
+        sprintf(buf,"txrate_p2p %d\n",m_txRate);
         f.write(buf,strlen(buf));
-        sprintf(buf,"rxrate_p2p %d\n",m_RxRate);
-        f.write(buf,strlen(buf));
-        sprintf(buf,"power_p2p %lld\n",m_power100);
+        sprintf(buf,"rxrate_p2p %d\n",m_rxRate);
         f.write(buf,strlen(buf));
 
+        sprintf(buf,"txrate_c %d\n",m_txRateC);
+        f.write(buf,strlen(buf));
+        sprintf(buf,"rxrate_c %d\n",m_rxRateC);
+        f.write(buf,strlen(buf));
+
+        sprintf(buf,"power_p2p %lld\n",m_power100);
+        f.write(buf,strlen(buf));
+#if 0
         sprintf(buf,"bucfreq %lld\n",m_BUCfreq);
         f.write(buf,strlen(buf));
         sprintf(buf,"lnbfreq %lld\n",m_LNBfreq);
         f.write(buf,strlen(buf));
+#endif
         switch(m_devMode){
         case objPara::DevMode_bridge:
             sprintf(buf,"devmode_p2p bridge\n");

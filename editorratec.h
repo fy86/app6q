@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QList>
+#include <QFile>
+#include <QTextStream>
 
 class editorRateC : public QObject
 {
@@ -15,10 +17,16 @@ public:
     int m_nLen;
     int m_nIdx;
 
+    int m_vRate;
+    void loadv();
+    bool isValidRate();
+
     int setRate(int rate);
     int getRate();
     void inc();
     void dec();
+
+
 
 
 signals:
